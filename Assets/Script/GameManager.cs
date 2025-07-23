@@ -286,7 +286,6 @@ public class GameManager : MonoBehaviour
         // Hiệu ứng GlowBurst
 
     }
-    [SerializeField] private String colorCode = "FE0D40";
     private void HandleMergeEffects(CircleComponent c1, CircleComponent c2, Vector3 spawnPos)
     {
         // Spawn con vật cấp tiếp theo
