@@ -8,18 +8,20 @@ public class BoosterPopup : MonoBehaviour
     public Transform popupBox;
     public Text boosterTitle;
 
-    private float originalScale;  // lệ gốc của popup
+    private Vector3 originalScale;  // lệ gốc của popup
+    private void Awake()
+    {
+        originalScale = popupBox.localScale;  // Lưu scale gốc một lần
+    }
 
     public void Show(int boosterIndex)
     {
-        originalScale = transform.localScale.x; // Tỷ lệ gốc của popup
-
         gameObject.SetActive(true);
         canvasGroup.alpha = 0;
         popupBox.localScale = Vector3.zero;
 
         canvasGroup.DOFade(1f,0.25f);
-        popupBox.DOScale(originalScale, 0.3f).SetEase(Ease.OutBack);
+        popupBox.DOScale(originalScale.x, 0.3f).SetEase(Ease.OutBack);
 
         string[] names = { "Boom", "Hammer", "Upgrade", "Shuffle" };
         if (boosterTitle != null)

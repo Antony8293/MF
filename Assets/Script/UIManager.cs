@@ -34,6 +34,9 @@ public class UIManager : MonoBehaviour
         currentPopup = boosterPopups[index];
         currentPopup.Show(index);
         darkBG.SetActive(true); // Hiện nền mờ
+
+        // ❌ CHẶN KÉO khi mở popup
+        GameManager.instance.draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = true;
     }
 
     public void CloseCurrentPopup()
@@ -45,5 +48,9 @@ public class UIManager : MonoBehaviour
         }
 
         darkBG.SetActive(false); // Ẩn nền mờ
+
+        // ✅ CHO KÉO LẠI khi đóng popup
+        GameManager.instance.draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = false;
+
     }
 }

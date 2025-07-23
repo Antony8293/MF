@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     private AnimalData draggingCircleAData;
 
     private GameObject nextCircleGO;
-    private GameObject draggingCircleGO;
+    public GameObject draggingCircleGO;
 
     [SerializeField]
     private RectTransform waitingUIPos;
