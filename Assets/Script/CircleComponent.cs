@@ -12,6 +12,8 @@ public class CircleComponent : MonoBehaviour
 {
     public static event Action<CircleComponent> AddCircleQueueToDestroy;
 
+    public static event Action<String, Vector3, Color> PracticeEffect;
+
     public static event Action<CircleComponent, CircleComponent, UnityEngine.Vector3> OnCircleMerged;
 
     public Action OnUpgrade;
@@ -32,7 +34,7 @@ public class CircleComponent : MonoBehaviour
     }
     public int Level => level;
     public void SetLevel(int l) => level = l;
-    [SerializeField] private AnimalEvolutionTree evolutionTree;
+    [SerializeField] public AnimalEvolutionTree evolutionTree;
     public void SetEvolutionTree(AnimalEvolutionTree tree) => evolutionTree = tree;
 
     private Material outlineMaterial;
@@ -284,18 +286,17 @@ public class CircleComponent : MonoBehaviour
 
     private void ChangeToUpgrade()
     {
-        // if (data.next_circle)
-        // {
-        //     var next_circle = Instantiate(data.next_circle, gameObject.transform.position, new Quaternion());
-
-        //     AfterUpgrade?.Invoke(next_circle);
-        // }
          int nextLevel = Level + 1;
         if (nextLevel <= evolutionTree.GetMaxLevel() + 1)  //vẫn trong mảng circle có thể next được
         {
             GameObject newObj = GameManager.instance.SpawnAnimalAtLevel(nextLevel, transform.position);
             if (newObj != null)
             {
+                  // Hiệu ứng glowFx
+                PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
+
+                // Hiệu ứng SparkleBurst
+                PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
 

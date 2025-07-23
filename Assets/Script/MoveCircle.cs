@@ -9,6 +9,8 @@ public class MoveCircle : MonoBehaviour
 
     public static event Action SetDropping;
 
+    public static event Action<String, Vector3, Color> PracticeEffect;
+
     public bool isDrop = false;
 
     private bool isDragging = false;
@@ -209,6 +211,12 @@ public class MoveCircle : MonoBehaviour
 
     private void FinishBosster()
     {
+        // Hiệu ứng glowFx
+        PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
+
+        // Hiệu ứng SparkleBurst
+        PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
+
         GameManager.TriggerMouseNotChoosing();
 
         Destroy(gameObject);
