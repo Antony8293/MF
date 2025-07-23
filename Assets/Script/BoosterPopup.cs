@@ -9,9 +9,11 @@ public class BoosterPopup : MonoBehaviour
     public Text boosterTitle;
 
     private Vector3 originalScale;  // scale gốc của popup
+    private UIManager uiManager;
     private void Awake()
     {
         originalScale = popupBox.localScale;  // Lưu scale gốc một lần
+        uiManager = FindObjectOfType<UIManager>(); // Tìm UIManager trong scene
     }
 
     public void Show(int boosterIndex)
@@ -37,7 +39,7 @@ public class BoosterPopup : MonoBehaviour
 
     public void OnCloseClicked()
     {
-        FindObjectOfType<UIManager>()?.CloseCurrentPopup(); // Gọi về UIManager
+        uiManager?.CloseCurrentPopup(); // Gọi về UIManager
     }
 
     public void OnUseBoosterClicked(int boosterIndex)
