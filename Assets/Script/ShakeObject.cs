@@ -6,7 +6,7 @@ public class ShakeObject : MonoBehaviour
     private float duration = 0.5f;
 
     [SerializeField]
-    private float magnitude = 0.8f; 
+    private float magnitude = 0.3f; 
     
     private float rotationMagnitude = 5f;
 
@@ -46,17 +46,17 @@ public class ShakeObject : MonoBehaviour
     {
         if (isShaking)
         {
-            if (elapsed < duration)
+            if (elapsed < duration) //rung trong thời gian cài
             {
+                //Tạo giá trị ngẫu nhiên cho vị trí X và Y, giúp đối tượng di chuyển nhẹ quanh vị trí gốc, tạo cảm giác rung.
                 float x = Random.Range(-1f, 1f) * magnitude;
                 float y = Random.Range(-1f, 1f) * magnitude;
-
+                //Tạo giá trị ngẫu nhiên cho góc xoay Z, giúp đối tượng xoay nhẹ quanh trục Z, tạo cảm giác rung.
                 float zRot = Mathf.Sin(Time.time * 50f) * rotationMagnitude;
-
+                //Cập nhật vị trí và góc xoay của đối tượng dựa trên các giá trị ngẫu nhiên đã tạo.
                 transform.localPosition = originalPos + new Vector3(x, y, 0f);
                 transform.localRotation = Quaternion.Euler(0, 0, zRot);
-
-
+                //Tăng thời gian đã trôi qua.
                 elapsed += Time.deltaTime;
             }
             else
