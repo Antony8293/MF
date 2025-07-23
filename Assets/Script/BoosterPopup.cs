@@ -49,22 +49,22 @@ public class BoosterPopup : MonoBehaviour
         {
             case 0:
                 // Sử dụng booster Smallest
-                FindObjectOfType<UIManager>()?.CloseCurrentPopup(); // Đóng popup sau
+                uiManager?.CloseCurrentPopup(); // Đóng popup sau
                 Booster.Booster1Clicked();
                 break;
             case 1:
                 // Sử dụng booster Hammer
-                FindObjectOfType<UIManager>()?.CloseCurrentPopup(); // Đóng popup sau
+                uiManager?.CloseCurrentPopup(); // Đóng popup sau
                 Booster.Booster2Clicked();
                 break;
             case 2:
                 // Sử dụng booster Upgrade
-                FindObjectOfType<UIManager>()?.CloseCurrentPopup(); // Đóng popup sau
+                uiManager?.CloseCurrentPopup(); // Đóng popup sau
                 Booster.Booster3Clicked();
                 break;
             case 3:
                 // Sử dụng booster Shake the Box
-                FindObjectOfType<UIManager>()?.CloseCurrentPopup(); // Đóng popup sau
+                uiManager?.CloseCurrentPopup(); // Đóng popup sau
                 Booster.Booster4Clicked();
                 break;
         }
