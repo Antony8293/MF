@@ -9,6 +9,8 @@ public class MoveCircle : MonoBehaviour
 
     public static event Action SetDropping;
 
+    public static event Action<String, Vector3, Color> PracticeEffect;
+
     public bool isDrop = false;
 
     private bool isDragging = false;
@@ -80,14 +82,13 @@ public class MoveCircle : MonoBehaviour
     {
         if (GameManager.MouseState == mouseState.DestroyChoosing && isDrop)
         {
-            FinishBosster();
-
+            FinishBosster(true);
         }
         else if (GameManager.MouseState == mouseState.UpgradeChoosing && isDrop)
         {
             gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
 
-            FinishBosster();
+            FinishBosster(false);
 
         }
     }
@@ -207,8 +208,17 @@ public class MoveCircle : MonoBehaviour
         circle.GetComponent<MoveCircle>().isDragging = false;
     }
 
-    private void FinishBosster()
+    private void FinishBosster(Boolean isColorEffect = false)
     {
+        if (isColorEffect)
+        {
+            // Hiệu ứng glowFx
+            PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
+
+            // Hiệu ứng SparkleBurst
+            PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
+        }
+      
         GameManager.TriggerMouseNotChoosing();
 
         Destroy(gameObject);

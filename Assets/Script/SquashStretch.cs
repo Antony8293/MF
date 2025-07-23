@@ -173,7 +173,7 @@ public class SquashStretch : MonoBehaviour
             // Tách visual ra để tránh bị xoay/di chuyển
             visual.SetParent(null);
 
-            transform.position = visual.position; // Trả về vị trí gốc của visual => merge đúng vị trí
+            // transform.position = visual.position; // Trả về vị trí gốc của visual => merge đúng vị trí // Uncomment bị di chuyển không hợp lý
 
             // sau khi squash/stretch:
             // transform.rotation = originalRotation;

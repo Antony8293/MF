@@ -75,8 +75,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1467709841
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: -6204909849718679112, guid: e690199b2062dfb4481b718677b9675f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -229,6 +229,7 @@ MonoBehaviour:
   isReady: 1
   GameoverY: 0
   maxForceToAddWhenDrop: 2
+  isBlockByUI: 0
 --- !u!120 &8659442019293334421
 LineRenderer:
   serializedVersion: 2
@@ -271,8 +272,8 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1467709841
+  m_SortingLayer: 2
   m_SortingOrder: -1
   m_Positions:
   - {x: 0, y: 0, z: 0}
