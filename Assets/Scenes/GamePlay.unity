@@ -2163,7 +2163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duration: 0.5
-  magnitude: 0.3
+  magnitude: 0.2
 --- !u!114 &540393693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8466,6 +8466,7 @@ GameObject:
   - component: {fileID: 1937300395}
   - component: {fileID: 1937300397}
   - component: {fileID: 1937300398}
+  - component: {fileID: 1937300399}
   m_Layer: 0
   m_Name: DynamicBoxCollider
   m_TagString: Untagged
@@ -8543,6 +8544,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a59cf5cf8021c344aef64453c74a0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1937300399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937300394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 0.5
+  magnitude: 0.15
 --- !u!1 &1982552977
 GameObject:
   m_ObjectHideFlags: 0
