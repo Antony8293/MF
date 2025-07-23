@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public RectTransform draggingUIPos;
     private bool hasrun = false;
-    [SerializeField] public GameObject pausePanel;
+    [SerializeField] public SettingPanelUI pausePanel;
     public GameObject darkUIBackground;
     public bool isPaused = false;
 
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
         if (lineGameOver != null)
         {
             lineGameOverY = lineGameOver.transform.position.y;
-        } 
+        }
     }
 
     private Vector3 UIToWorldPosition(RectTransform uiRect)
@@ -500,27 +500,36 @@ public class GameManager : MonoBehaviour
 
     public void TogglePause()
     {
-        if (pausePanel == null) return;
+        Debug.Log("TogglePause clicked");
+        if (pausePanel == null)
+        {
+            Debug.LogWarning("pausePanel is null!");
+            return;
+        }
 
         isPaused = !isPaused;
-        pausePanel.SetActive(isPaused);
         darkUIBackground.SetActive(isPaused);
 
-        Time.timeScale = isPaused ? 0 : 1;
+        if (isPaused)
+        {
+            Time.timeScale = 0;
+            pausePanel.Show(); // DOTween show
+        }
+        else
+        {
+            Time.timeScale = 1;
+            pausePanel.Hide(); // DOTween hide
+        }
 
-        draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
+        if (draggingCircleGO != null)
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
     }
+
 
     public void ResumeGame()
     {
-        if (pausePanel == null) return;
-
-        isPaused = false;
-        pausePanel.SetActive(false);
-        darkUIBackground.SetActive(false);
-        Time.timeScale = 1;
-
-        draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = false;
+        if (!isPaused) return;
+        TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
     }
 
     private void DelayNotChoosingMouseState()
