@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 4db537111d9a84ecdaa80ca94ff47bbb
+guid: af147374d127daf4d80816d3502f7ce1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1389729080030442496
-    second: Group (4)_0
-  - first:
-      213: 7762238144124804858
-    second: Group (4)_1
-  - first:
-      213: 8177456582970076963
-    second: Group (4)_2
+      213: -26329759613171845
+    second: Group 4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -119,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group (4)_0
+      name: Group 4_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 60
-        width: 1866
-        height: 262
+        y: 0
+        width: 1007
+        height: 1219
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,52 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 00c41cac3c0b6bce0800000000000000
-      internalID: -1389729080030442496
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Group (4)_1
-      rect:
-        serializedVersion: 2
-        x: 1303
-        y: 2
-        width: 6
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: afedb8a477209bb60800000000000000
-      internalID: 7762238144124804858
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Group (4)_2
-      rect:
-        serializedVersion: 2
-        x: 1309
-        y: 2
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 32f6c1aaf692c7170800000000000000
-      internalID: 8177456582970076963
+      spriteID: b774c3f193572aff0800000000000000
+      internalID: -26329759613171845
       vertices: []
       indices: 
       edges: []
@@ -197,10 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Group (4)_0: -1389729080030442496
-      Group (4)_1: 7762238144124804858
-      Group (4)_2: 8177456582970076963
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
