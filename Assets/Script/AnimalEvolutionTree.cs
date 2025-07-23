@@ -37,4 +37,5 @@ public class AnimalData
     public string name;
     public GameObject prefab;
     public float scaleRatio = 1f;
+    public Color colorEffect = Color.white;
 }

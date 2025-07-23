@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
 
     public static event Action MouseNotChoosing;
 
+    
+
     public static event Action SetDragging;
 
     public static mouseState MouseState { get; private set; } = mouseState.notChoosing;
@@ -105,6 +107,8 @@ public class GameManager : MonoBehaviour
         CircleComponent.AddCircleQueueToDestroy -= ReportCollision;
         CircleComponent.OnCircleMerged -= MergeCircles;
         GameOverLine.GameOVer -= GameOver;
+        MoveCircle.PracticeEffect -= PracticeEffect;
+        CircleComponent.PracticeEffect -= PracticeEffect;
 
     }
     private void OnEnable()
@@ -117,6 +121,8 @@ public class GameManager : MonoBehaviour
         CircleComponent.AddCircleQueueToDestroy += ReportCollision;
         CircleComponent.OnCircleMerged += MergeCircles;
         GameOverLine.GameOVer += GameOver;
+        MoveCircle.PracticeEffect += PracticeEffect;
+        CircleComponent.PracticeEffect += PracticeEffect;
 
         if (evolutionTree == null)
         {
@@ -280,26 +286,16 @@ public class GameManager : MonoBehaviour
         // Hiệu ứng GlowBurst
 
     }
-
     private void HandleMergeEffects(CircleComponent c1, CircleComponent c2, Vector3 spawnPos)
     {
-        GameObject glowFx = Resources.Load<GameObject>("MergeEffect");
-        if (glowFx != null)
-        {
-            GameObject vfx1 = Instantiate(glowFx, spawnPos, Quaternion.identity);
-            Destroy(vfx1, 2f);
-        }
-
-        // Hiệu ứng SparkleBurst
-        GameObject sparkleFx = Resources.Load<GameObject>("MergeEffect1");
-        if (sparkleFx != null)
-        {
-            GameObject vfx2 = Instantiate(sparkleFx, spawnPos, Quaternion.identity);
-            Destroy(vfx2, 2f);
-        }
-
         // Spawn con vật cấp tiếp theo
         int nextLevel = c1.Level + 1;
+
+        // Hiệu ứng glowFx
+        PracticeEffect("MergeEffect", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
+
+        // Hiệu ứng SparkleBurst
+        PracticeEffect("MergeEffect1", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
 
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
@@ -317,6 +313,40 @@ public class GameManager : MonoBehaviour
         Destroy(c1.gameObject);
         Destroy(c2.gameObject);
     }
+    
+    private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default){
+        GameObject gameEffect = Resources.Load<GameObject>(effectName);
+        if (gameEffect != null)
+        {
+            GameObject vfx2 = Instantiate(gameEffect, position, Quaternion.identity);
+            SetColorEffect(vfx2, colorEffect); // Đổi màu hiệu ứng
+            Destroy(vfx2, 2f);
+        }
+    }
+
+    private void SetColorEffect(GameObject vfx, Color colorEffect)
+    {
+        // Đổi màu cho hiệu ứng (ví dụ: màu vàng)
+        colorEffect.a = 1f; // Opacity 100%
+        // Nếu là SpriteRenderer
+        var spriteRenderer = vfx.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+            spriteRenderer.color = colorEffect;
+
+        // Nếu là ParticleSystem
+        var ps = vfx.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            var main = ps.main;
+            main.startColor = colorEffect;
+        }
+
+        // Nếu là MeshRenderer
+        var meshRenderer = vfx.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+            meshRenderer.material.color = colorEffect;
+    }
+
     public void InstantiateMergedCircle(int level, Vector3 spawnPos, bool isOverLineTriggeredChild = false)
     {
         if (level <= evolutionTree.GetMaxLevel() + 1)  //vẫn trong mảng circle có thể next được
@@ -429,6 +459,11 @@ public class GameManager : MonoBehaviour
             smallest = (circle as Transform).gameObject;
             if (smallest.GetComponent<CircleComponent>().Level == 1 || smallest.GetComponent<CircleComponent>().Level == 2)
             {
+                // Hiệu ứng glowFx
+                PracticeEffect("MergeEffect", smallest.GameObject().transform.position, evolutionTree.levels[smallest.GetComponent<CircleComponent>().Level - 1].colorEffect);
+
+                // Hiệu ứng SparkleBurst
+                PracticeEffect("MergeEffect1", smallest.GameObject().transform.position, evolutionTree.levels[smallest.GetComponent<CircleComponent>().Level - 1].colorEffect);
                 Destroy(smallest.GameObject());
             }
         }
