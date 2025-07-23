@@ -8,7 +8,7 @@ public class BoosterPopup : MonoBehaviour
     public Transform popupBox;
     public Text boosterTitle;
 
-    private Vector3 originalScale;  // lệ gốc của popup
+    private Vector3 originalScale;  // scale gốc của popup
     private void Awake()
     {
         originalScale = popupBox.localScale;  // Lưu scale gốc một lần
