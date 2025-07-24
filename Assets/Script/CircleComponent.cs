@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 public class CircleComponent : MonoBehaviour
 {
-    public static event Action<CircleComponent> AddCircleQueueToDestroy;
+    // public static event Action<CircleComponent> AddCircleQueueToDestroy;
 
     public static event Action<String, Vector3, Color> PracticeEffect;
 

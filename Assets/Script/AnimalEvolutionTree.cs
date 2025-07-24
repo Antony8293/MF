@@ -9,20 +9,29 @@ public class AnimalEvolutionTree : ScriptableObject
     {
         if (level == 0)
         {
-            // Tỉ lệ: 1-5 là 15%, 25%, 20%, 25%, 15%
-            int[] cumulative = { 15, 40, 60, 85, 100 }; // Cộng dồn
-            int rand = UnityEngine.Random.Range(0, 100);
-            int chosenLevel = 0;
-            for (int i = 0; i < cumulative.Length; i++)
+            if (WarningLine.onWarning) // Nếu đang cảnh báo, sinh theo FruitCount()
             {
-                if (rand < cumulative[i])
-                {
-                    chosenLevel = i;
-                    break;
-                }
+                level = GameManager.instance.FruitCount(); // Không trả về dữ liệu nếu đang cảnh báo
+                Debug.Log($"[AnimalEvolutionTree] Warning mode - spawning level {level} fruit");
             }
-            level = chosenLevel;
-            // level = UnityEngine.Random.Range(0, levels.Count);
+            if(level <= 0)
+            {
+                // Tỉ lệ: 1-5 là 15%, 25%, 20%, 25%, 15%
+                int[] cumulative = { 15, 40, 60, 85, 100 }; // Cộng dồn
+                int rand = UnityEngine.Random.Range(0, 100);
+                int chosenLevel = 0;
+                for (int i = 0; i < cumulative.Length; i++)
+                {
+                    if (rand < cumulative[i])
+                    {
+                        chosenLevel = i;
+                        break;
+                    }
+                }
+                level = chosenLevel;
+                // level = UnityEngine.Random.Range(0, levels.Count);
+            }
+
             return levels[level];
         }
         return (level >= 0 && level < levels.Count) ? levels[level] : null;
