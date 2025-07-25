@@ -7,7 +7,11 @@ public class SquashStretch : MonoBehaviour
     [Header("Cấu hình squash")]
     public float squashX = 1.05f;
     public float squashY = 0.95f;
-    public float duration = 0.05f;
+    [Space]
+    [Header("Timing - Duration cho từng giai đoạn")]
+    public float squashDuration = 0.06f; // Squash nhanh hơn (va chạm)
+    public float stretchDuration = 0.08f; // Stretch bình thường
+    public float returnDuration = 0.1f; // Về original chậm hơn (smooth)
     public float minVelocity = 1f;
 
     [Header("Cooldown")]
@@ -86,14 +90,14 @@ public class SquashStretch : MonoBehaviour
     {
         // Normalize velocity (0-1 range) với threshold thấp hơn
         float velocityFactor = Mathf.Clamp(velocity / 8f, 0f, 1f);
-        
+
         // Tính squash/stretch với intensity dựa trên velocity
         float squashIntensity = Mathf.Lerp(0f, 1f, velocityFactor);
-        
+
         // Squash: X tăng, Y giảm khi có velocity
         float dx = Mathf.Lerp(1f, squashX, squashIntensity);
         float dy = Mathf.Lerp(1f, squashY, squashIntensity);
-        
+
         // Clamp để đảm bảo giá trị hợp lý với biên độ nhỏ
         // dx: biên độ nhỏ từ 0.95 (co lại) đến 1.05 (giãn ra) theo trục X
         dx = Mathf.Clamp(dx, 0.95f, 1.05f);
@@ -112,9 +116,9 @@ public class SquashStretch : MonoBehaviour
 
         squashXOut = dx;
         squashYOut = dy;
-        
-        // Debug để kiểm tra giá trị
-        // Debug.Log($"Velocity: {velocity:F2}, Factor: {velocityFactor:F2}, dx: {dx:F2}, dy: {dy:F2}, Ratio: {ratio:F2}");
+
+        // Debug để kiểm tra giá trị factors
+        // Debug.Log($"[{name}] Squash Factors - dx: {dx:F3}, dy: {dy:F3}, velocity: {velocity:F2}");
     }
 
     public void TriggerSquash(Vector2 normal, float velocity, Vector2 contactPoint, bool isFirstCollision = false)
@@ -122,7 +126,7 @@ public class SquashStretch : MonoBehaviour
         if (isCoolingDown || visual == null) return;
         StartCoroutine(RotateAndSquash(normal, velocity, contactPoint, isFirstCollision));
     }
-    
+
     private System.Collections.IEnumerator RotateAndSquash(Vector2 normal, float velocity, Vector2 contactPoint, bool isFirstCollision = false)
     {
         if (transform.localScale.x < 0.01f || transform.localScale.y < 0.01f)
@@ -177,30 +181,31 @@ public class SquashStretch : MonoBehaviour
         );
 
         // Giai đoạn 2: STRETCH - đảo ngược nhẹ với biên độ nhỏ
-        float stretchX = Mathf.Lerp(1f, 2f - dx, 0.5f); // Giảm cường độ stretch xuống 50%
-        float stretchY = Mathf.Lerp(1f, 2f - dy, 0.5f);
-        
+        float stretchX = Mathf.Lerp(1f, 2f - dx, 1f); // Giảm cường độ stretch xuống 50%
+        float stretchY = Mathf.Lerp(1f, 2f - dy, 1f);
+
         Vector3 stretchScale = new Vector3(
             baseScale.x * stretchX,
             baseScale.y * stretchY,
             baseScale.z
         );
 
-        sequence.Append(transform.DOScale(squashScale, duration).SetEase(Ease.OutQuad));
-        sequence.Append(transform.DOScale(stretchScale, duration).SetEase(Ease.OutQuad));
-        sequence.Append(transform.DOScale(baseScale, duration).SetEase(Ease.OutQuad));
+        sequence.Append(transform.DOScale(squashScale, squashDuration).SetEase(Ease.OutQuad));
+        sequence.Append(transform.DOScale(stretchScale, stretchDuration).SetEase(Ease.OutQuad));
+        sequence.Append(transform.DOScale(baseScale, returnDuration).SetEase(Ease.OutQuad));
+
         sequence.OnComplete(() =>
         {
             /** Set pivot về vị trí gốc của visual */
-                // Tách visual ra để tránh bị xoay/di chuyển
-                // visual.SetParent(null);
+            // Tách visual ra để tránh bị xoay/di chuyển
+            // visual.SetParent(null);
 
-                // transform.position = visual.position; // Trả về vị trí gốc của visual => merge đúng vị trí // Uncomment bị di chuyển không hợp lý
+            // transform.position = visual.position; // Trả về vị trí gốc của visual => merge đúng vị trí // Uncomment bị di chuyển không hợp lý
 
-                // sau khi squash/stretch:
-                // transform.rotation = originalRotation;
+            // sau khi squash/stretch:
+            // transform.rotation = originalRotation;
 
-                // visual.SetParent(transform, worldPositionStays: true);
+            // visual.SetParent(transform, worldPositionStays: true);
             Invoke(nameof(ResetCooldown), cooldown);
         });
 
