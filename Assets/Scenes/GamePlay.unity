@@ -1076,6 +1076,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameOverLine: {fileID: 785483762}
+  GameWarningLine: {fileID: 294798559}
+  dynamicBox: {fileID: 1043268580}
 --- !u!1 &316611854
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameOverLine : MonoBehaviour
 {
-    public static event Action GameOVer;
+    // public static event Action GameOVer;
 
     // private float time;
     // private float TargetTime = 2.0f;

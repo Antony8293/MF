@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 public class CircleComponent : MonoBehaviour
 {
-    public static event Action<CircleComponent> AddCircleQueueToDestroy;
+    // public static event Action<CircleComponent> AddCircleQueueToDestroy;
 
     public static event Action<String, Vector3, Color> PracticeEffect;
 
@@ -286,13 +286,12 @@ public class CircleComponent : MonoBehaviour
 
     private void ChangeToUpgrade()
     {
-         int nextLevel = Level + 1;
+        int nextLevel = Level + 1;
         if (nextLevel <= evolutionTree.GetMaxLevel() + 1)  //vẫn trong mảng circle có thể next được
         {
             GameObject newObj = GameManager.instance.SpawnAnimalAtLevel(nextLevel, transform.position);
             if (newObj != null)
-            {
-                  // Hiệu ứng glowFx
+            {// Hiệu ứng glowFx
                 PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
 
                 // Hiệu ứng SparkleBurst
@@ -325,6 +324,15 @@ public class CircleComponent : MonoBehaviour
             }
             AfterUpgrade?.Invoke(newObj);
         }
+        else
+        {
+            // Hiệu ứng glowFx
+            PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, Color.white);
+
+            // Hiệu ứng SparkleBurst
+            PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, Color.white);
+        }
+        
     }
 
     private void ApplyFixedOutlineWidth()
