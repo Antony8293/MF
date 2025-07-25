@@ -9,10 +9,13 @@ public class AnimalEvolutionTree : ScriptableObject
     {
         if (level == 0)
         {
-            if (WarningLine.onWarning) // Nếu đang cảnh báo, sinh theo thuật toán khác
+            if (WarningLine.onWarning && WarningLine.timeWarning >= WarningLine.TargetWarningTime) // Nếu đang cảnh báo, sinh theo thuật toán khác
             {
+
                 //level = GameManager.instance.FruitCount();          // trả về loại quả có nhiều nhất
                 level = GameManager.instance.GetHighestFruitByY(); // trả về loại quả có Y cao nhất
+                // Debug.Log("GetLevelData: " + level);
+                // GameManager.instance.ListWarningCircles();
             }
             if(level <= 0)
             {
