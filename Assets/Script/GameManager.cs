@@ -22,8 +22,6 @@ public class GameManager : MonoBehaviour
 
     public static event Action MouseNotChoosing;
 
-    
-
     public static event Action SetDragging;
 
     public static mouseState MouseState { get; private set; } = mouseState.notChoosing;
@@ -79,6 +77,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pipeGO;
 
     private PipeSquashEffect pipeSquash;
+
+    // Mảng lưu trữ các CircleComponent cùng loại
+    public List<CircleComponent> warningCircles = new List<CircleComponent>();
+
     private float lineGameOverY;
     public bool isGameOver = false;
 
@@ -104,9 +106,9 @@ public class GameManager : MonoBehaviour
         Booster.booster2 -= ChangeDestroyMouseState;
         Booster.booster3 -= ChangeUpgradeMouseState;
         MouseNotChoosing -= ChangeNotChoosingMouseState;
-        CircleComponent.AddCircleQueueToDestroy -= ReportCollision;
+        // CircleComponent.AddCircleQueueToDestroy -= ReportCollision;
         CircleComponent.OnCircleMerged -= MergeCircles;
-        GameOverLine.GameOVer -= GameOver;
+        // GameOverLine.GameOVer -= GameOver;
         MoveCircle.PracticeEffect -= PracticeEffect;
         CircleComponent.PracticeEffect -= PracticeEffect;
 
@@ -118,9 +120,9 @@ public class GameManager : MonoBehaviour
         Booster.booster2 += ChangeDestroyMouseState;
         Booster.booster3 += ChangeUpgradeMouseState;
         MouseNotChoosing += ChangeNotChoosingMouseState;
-        CircleComponent.AddCircleQueueToDestroy += ReportCollision;
+        // CircleComponent.AddCircleQueueToDestroy += ReportCollision;
         CircleComponent.OnCircleMerged += MergeCircles;
-        GameOverLine.GameOVer += GameOver;
+        // GameOverLine.GameOVer += GameOver;
         MoveCircle.PracticeEffect += PracticeEffect;
         CircleComponent.PracticeEffect += PracticeEffect;
 
@@ -135,6 +137,76 @@ public class GameManager : MonoBehaviour
 
         pipeSquash = pipeGO.GetComponent<PipeSquashEffect>();
     }
+    
+    public int GetHighestFruitByY()
+    {
+        CircleComponent highestCircleY = null;
+        foreach (var circle in warningCircles)
+        {
+            if (circle != null)
+            {
+                if (highestCircleY == null || circle.transform.position.y > highestCircleY.transform.position.y)
+                {
+                    highestCircleY = circle.GetComponent<CircleComponent>();
+                }
+            }
+        }
+        if (highestCircleY == null)
+        {
+            Debug.LogWarning("Không tìm thấy CircleComponent nào trong warningCircles!");
+            return 0; // Hoặc giá trị mặc định khác
+        }
+
+        //Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
+        return highestCircleY.Level - 1; // Giảm 1 vì mảng bắt đầu từ 0
+    }
+
+    public int FruitCount()
+    {
+        // Thống kê quả có số lượng nhiều nhất trong circleComponents
+        Dictionary<int, int> fruitCount = new Dictionary<int, int>();
+
+        foreach (var circle in warningCircles)
+        {
+            if (circle != null)
+            {
+                int fruitLevel = circle.Level; // Assuming fruitValue represents fruit type
+                if (fruitCount.ContainsKey(fruitLevel))
+                {
+                    fruitCount[fruitLevel]++;
+                }
+                else
+                {
+                    fruitCount[fruitLevel] = 1;
+                }
+            }
+        }
+
+        // Tìm loại quả có số lượng nhiều nhất
+        int mostFruitLevel = 0;
+        int maxCount = 0;
+        foreach (var kvp in fruitCount)
+        {
+            //Debug.Log($"Loại quả: {kvp.Key} với {kvp.Value} quả");
+            if (kvp.Key > maxLevelSpawn) continue; // Bỏ qua loại quả không trong phạm vi spawn
+            if (kvp.Value >= maxCount)
+            {
+                if (kvp.Key > mostFruitLevel)
+                {
+                    // Chỉ cập nhật nếu loại quả mới có số lượng lớn hơn hoặc bằng
+                    // và loại quả mới có giá trị lớn hơn loại quả hiện tại
+                    maxCount = kvp.Value;
+                    mostFruitLevel = kvp.Key;
+                }
+            }
+        }
+
+        //Debug.Log($"Loại quả nhiều nhất: {mostFruitLevel} với {maxCount} quả");
+
+        return mostFruitLevel - 1; // Giảm 1 vì mảng bắt đầu từ 0
+    }
+
+   
 
     void Start()
     {
@@ -283,7 +355,6 @@ public class GameManager : MonoBehaviour
         {
             HandleMergeEffects(c1, c2, spawnPos);
         });
-        // Hiệu ứng GlowBurst
 
     }
     private void HandleMergeEffects(CircleComponent c1, CircleComponent c2, Vector3 spawnPos)
@@ -292,10 +363,10 @@ public class GameManager : MonoBehaviour
         int nextLevel = c1.Level + 1;
 
         // Hiệu ứng glowFx
-        PracticeEffect("MergeEffect", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
+        PracticeEffect("MergeEffect", spawnPos, nextLevel > evolutionTree.GetMaxLevel() + 1 ? Color.white : evolutionTree.levels[nextLevel - 1].colorEffect);
 
         // Hiệu ứng SparkleBurst
-        PracticeEffect("MergeEffect1", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
+        PracticeEffect("MergeEffect1", spawnPos, nextLevel > evolutionTree.GetMaxLevel() + 1 ? Color.white : evolutionTree.levels[nextLevel - 1].colorEffect);
 
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
