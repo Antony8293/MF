@@ -143,8 +143,10 @@ public class GameManager : MonoBehaviour
         CircleComponent highestCircleY = null;
         foreach (var circle in warningCircles)
         {
+            
             if (circle != null)
             {
+                if (circle.Level > maxLevelSpawn) continue; // Bỏ qua loại quả không trong phạm vi spawn
                 if (highestCircleY == null || circle.transform.position.y > highestCircleY.transform.position.y)
                 {
                     highestCircleY = circle.GetComponent<CircleComponent>();
