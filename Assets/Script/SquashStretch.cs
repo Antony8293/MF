@@ -21,7 +21,7 @@ public class SquashStretch : MonoBehaviour
     private CircleComponent circleComp;
 
     [Header("Giới hạn")]
-    public float maxSquashStretchRatio = 1.05f;
+    public float maxSquashStretchRatio = 1.02f;
 
     void Start()
     {
@@ -94,12 +94,11 @@ public class SquashStretch : MonoBehaviour
         float dx = Mathf.Lerp(1f, squashX, squashIntensity);
         float dy = Mathf.Lerp(1f, squashY, squashIntensity);
         
-        // Clamp để đảm bảo giá trị hợp lý
-        // dx: cho phép cả squash (0.8) và stretch (1.4) theo trục X
-        dx = Mathf.Clamp(dx, 0.8f, 1.4f);
-        // dy: chỉ cho phép squash (0.6-1.0), không stretch theo trục Y
-        // Lý do: Vật lý thực tế - objects chỉ bị nén xuống khi va chạm, không kéo dài lên
-        dy = Mathf.Clamp(dy, 0.6f, 1.0f);
+        // Clamp để đảm bảo giá trị hợp lý với biên độ nhỏ
+        // dx: biên độ nhỏ từ 0.95 (co lại) đến 1.05 (giãn ra) theo trục X
+        dx = Mathf.Clamp(dx, 0.95f, 1.05f);
+        // dy: biên độ nhỏ từ 0.95 (co lại) đến 1.05 (giãn ra) theo trục Y
+        dy = Mathf.Clamp(dy, 0.95f, 1.05f);
 
         // Kiểm tra tỷ lệ max và cân bằng nếu cần
         float ratio = dx / dy;
@@ -170,15 +169,20 @@ public class SquashStretch : MonoBehaviour
 
         Sequence sequence = DOTween.Sequence().SetLink(gameObject, LinkBehaviour.KillOnDestroy);
 
+        // Giai đoạn 1: SQUASH - với biên độ nhỏ
         Vector3 squashScale = new Vector3(
-            baseScale.x * dx,
-            baseScale.y * dy,
+            baseScale.x * dx,  // X factor (0.95-1.05)
+            baseScale.y * dy,  // Y factor (0.95-1.05)
             baseScale.z
         );
 
+        // Giai đoạn 2: STRETCH - đảo ngược nhẹ với biên độ nhỏ
+        float stretchX = Mathf.Lerp(1f, 2f - dx, 0.5f); // Giảm cường độ stretch xuống 50%
+        float stretchY = Mathf.Lerp(1f, 2f - dy, 0.5f);
+        
         Vector3 stretchScale = new Vector3(
-            baseScale.x * dy,
-            baseScale.y * dx,
+            baseScale.x * stretchX,
+            baseScale.y * stretchY,
             baseScale.z
         );
 

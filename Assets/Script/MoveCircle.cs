@@ -171,7 +171,7 @@ public class MoveCircle : MonoBehaviour
                 rb.gravityScale = 2;
 
                 float force = maxForceToAddWhenDrop * rb.mass;
-                rb.AddForce(Vector2.down * force, ForceMode2D.Impulse);
+                // rb.AddForce(Vector2.down * force, ForceMode2D.Impulse);
             }
 
             transform.SetParent(GameObject.Find("Circles").transform);
