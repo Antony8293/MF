@@ -291,11 +291,8 @@ public class CircleComponent : MonoBehaviour
         {
             GameObject newObj = GameManager.instance.SpawnAnimalAtLevel(nextLevel, transform.position);
             if (newObj != null)
-            {// Hiệu ứng glowFx
-                PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
-
-                // Hiệu ứng SparkleBurst
-                PracticeEffect?.Invoke("Custom_FruitExplosion", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
+            {
+                PracticeEffect?.Invoke("RespawnExplosion", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
 
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
@@ -326,13 +323,9 @@ public class CircleComponent : MonoBehaviour
         }
         else
         {
-            // Hiệu ứng glowFx
-            PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, Color.white);
-
-            // Hiệu ứng SparkleBurst
-            PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, Color.white);
+            PracticeEffect?.Invoke("Custom_FruitExplosion", gameObject.transform.position, Color.white);
         }
-        
+
     }
 
     private void ApplyFixedOutlineWidth()
