@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviour
             return 0; // Hoặc giá trị mặc định khác
         }
 
-        Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
+        //Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
         return highestCircleY.Level - 1; // Giảm 1 vì mảng bắt đầu từ 0
     }
 
@@ -187,7 +187,7 @@ public class GameManager : MonoBehaviour
         int maxCount = 0;
         foreach (var kvp in fruitCount)
         {
-            Debug.Log($"Loại quả: {kvp.Key} với {kvp.Value} quả");
+            //Debug.Log($"Loại quả: {kvp.Key} với {kvp.Value} quả");
             if (kvp.Key > maxLevelSpawn) continue; // Bỏ qua loại quả không trong phạm vi spawn
             if (kvp.Value >= maxCount)
             {
@@ -201,7 +201,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"Loại quả nhiều nhất: {mostFruitLevel} với {maxCount} quả");
+        //Debug.Log($"Loại quả nhiều nhất: {mostFruitLevel} với {maxCount} quả");
 
         return mostFruitLevel - 1; // Giảm 1 vì mảng bắt đầu từ 0
     }
@@ -371,7 +371,6 @@ public class GameManager : MonoBehaviour
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
 
-        Debug.Log($"Merged {c1.name} and {c2.name} into level {nextLevel} at position {spawnPos}");
         //set scores
         SetScore(nextLevel);
 
