@@ -9,10 +9,10 @@ public class AnimalEvolutionTree : ScriptableObject
     {
         if (level == 0)
         {
-            if (WarningLine.onWarning) // Nếu đang cảnh báo, sinh theo FruitCount()
+            if (WarningLine.onWarning) // Nếu đang cảnh báo, sinh theo thuật toán khác
             {
-                level = GameManager.instance.FruitCount(); // Không trả về dữ liệu nếu đang cảnh báo
-                Debug.Log($"[AnimalEvolutionTree] Warning mode - spawning level {level} fruit");
+                //level = GameManager.instance.FruitCount();          // trả về loại quả có nhiều nhất
+                level = GameManager.instance.GetHighestFruitByY(); // trả về loại quả có Y cao nhất
             }
             if(level <= 0)
             {
@@ -37,7 +37,7 @@ public class AnimalEvolutionTree : ScriptableObject
         return (level >= 0 && level < levels.Count) ? levels[level] : null;
     }
 
-    public int GetMaxLevel() => levels.Count - 1;
+    public int GetMaxLevel() => levels.Count - 1;  //MaxLevel 10
 }
 
 [System.Serializable]

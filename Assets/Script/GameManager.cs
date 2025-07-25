@@ -137,6 +137,29 @@ public class GameManager : MonoBehaviour
 
         pipeSquash = pipeGO.GetComponent<PipeSquashEffect>();
     }
+    
+    public int GetHighestFruitByY()
+    {
+        CircleComponent highestCircleY = null;
+        foreach (var circle in warningCircles)
+        {
+            if (circle != null)
+            {
+                if (highestCircleY == null || circle.transform.position.y > highestCircleY.transform.position.y)
+                {
+                    highestCircleY = circle.GetComponent<CircleComponent>();
+                }
+            }
+        }
+        if (highestCircleY == null)
+        {
+            Debug.LogWarning("Không tìm thấy CircleComponent nào trong warningCircles!");
+            return 0; // Hoặc giá trị mặc định khác
+        }
+
+        Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
+        return highestCircleY.Level - 1; // Giảm 1 vì mảng bắt đầu từ 0
+    }
 
     public int FruitCount()
     {
@@ -147,14 +170,14 @@ public class GameManager : MonoBehaviour
         {
             if (circle != null)
             {
-                int fruitType = circle.Level; // Assuming fruitValue represents fruit type
-                if (fruitCount.ContainsKey(fruitType))
+                int fruitLevel = circle.Level; // Assuming fruitValue represents fruit type
+                if (fruitCount.ContainsKey(fruitLevel))
                 {
-                    fruitCount[fruitType]++;
+                    fruitCount[fruitLevel]++;
                 }
                 else
                 {
-                    fruitCount[fruitType] = 1;
+                    fruitCount[fruitLevel] = 1;
                 }
             }
         }
@@ -165,7 +188,7 @@ public class GameManager : MonoBehaviour
         foreach (var kvp in fruitCount)
         {
             Debug.Log($"Loại quả: {kvp.Key} với {kvp.Value} quả");
-            if(kvp.Key > maxLevelSpawn) continue; // Bỏ qua loại quả không trong phạm vi spawn
+            if (kvp.Key > maxLevelSpawn) continue; // Bỏ qua loại quả không trong phạm vi spawn
             if (kvp.Value >= maxCount)
             {
                 if (kvp.Key > mostFruitLevel)
@@ -182,6 +205,8 @@ public class GameManager : MonoBehaviour
 
         return mostFruitLevel - 1; // Giảm 1 vì mảng bắt đầu từ 0
     }
+
+   
 
     void Start()
     {
@@ -330,7 +355,6 @@ public class GameManager : MonoBehaviour
         {
             HandleMergeEffects(c1, c2, spawnPos);
         });
-        // Hiệu ứng GlowBurst
 
     }
     private void HandleMergeEffects(CircleComponent c1, CircleComponent c2, Vector3 spawnPos)
@@ -339,14 +363,15 @@ public class GameManager : MonoBehaviour
         int nextLevel = c1.Level + 1;
 
         // Hiệu ứng glowFx
-        PracticeEffect("MergeEffect", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
+        PracticeEffect("MergeEffect", spawnPos, nextLevel > evolutionTree.GetMaxLevel() + 1 ? Color.white : evolutionTree.levels[nextLevel - 1].colorEffect);
 
         // Hiệu ứng SparkleBurst
-        PracticeEffect("MergeEffect1", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
+        PracticeEffect("MergeEffect1", spawnPos, nextLevel > evolutionTree.GetMaxLevel() + 1 ? Color.white : evolutionTree.levels[nextLevel - 1].colorEffect);
 
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
 
+        Debug.Log($"Merged {c1.name} and {c2.name} into level {nextLevel} at position {spawnPos}");
         //set scores
         SetScore(nextLevel);
 
