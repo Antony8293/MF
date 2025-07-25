@@ -213,10 +213,10 @@ public class MoveCircle : MonoBehaviour
         if (isColorEffect)
         {
             // Hiệu ứng glowFx
-            PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
+            // PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
 
             // Hiệu ứng SparkleBurst
-            PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
+            PracticeEffect?.Invoke("Custom_FruitExplosion", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
         }
       
         GameManager.TriggerMouseNotChoosing();

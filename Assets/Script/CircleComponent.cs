@@ -296,7 +296,7 @@ public class CircleComponent : MonoBehaviour
                 PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
 
                 // Hiệu ứng SparkleBurst
-                PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
+                PracticeEffect?.Invoke("Custom_FruitExplosion", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
 
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
