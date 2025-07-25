@@ -170,15 +170,16 @@ public class SquashStretch : MonoBehaviour
         sequence.Append(transform.DOScale(baseScale, duration).SetEase(Ease.OutQuad));
         sequence.OnComplete(() =>
         {
-            // Tách visual ra để tránh bị xoay/di chuyển
-            visual.SetParent(null);
+            /** Set pivot về vị trí gốc của visual */
+                // Tách visual ra để tránh bị xoay/di chuyển
+                // visual.SetParent(null);
 
-            // transform.position = visual.position; // Trả về vị trí gốc của visual => merge đúng vị trí // Uncomment bị di chuyển không hợp lý
+                // transform.position = visual.position; // Trả về vị trí gốc của visual => merge đúng vị trí // Uncomment bị di chuyển không hợp lý
 
-            // sau khi squash/stretch:
-            // transform.rotation = originalRotation;
+                // sau khi squash/stretch:
+                // transform.rotation = originalRotation;
 
-            visual.SetParent(transform, worldPositionStays: true);
+                // visual.SetParent(transform, worldPositionStays: true);
             Invoke(nameof(ResetCooldown), cooldown);
         });
 
