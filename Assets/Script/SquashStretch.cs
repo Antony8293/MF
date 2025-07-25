@@ -84,10 +84,24 @@ public class SquashStretch : MonoBehaviour
 
     private void CalculateSquashFactors(float velocity, out float squashXOut, out float squashYOut)
     {
-        float velocityFactor = Mathf.Clamp(velocity / 6f, 0.95f, 1.2f);
-        float dx = Mathf.Clamp(squashX * velocityFactor, 0.9f, 1.3f);
-        float dy = Mathf.Clamp(squashY * (2f - velocityFactor), 0.7f, 0.95f);
+        // Normalize velocity (0-1 range) với threshold thấp hơn
+        float velocityFactor = Mathf.Clamp(velocity / 8f, 0f, 1f);
+        
+        // Tính squash/stretch với intensity dựa trên velocity
+        float squashIntensity = Mathf.Lerp(0f, 1f, velocityFactor);
+        
+        // Squash: X tăng, Y giảm khi có velocity
+        float dx = Mathf.Lerp(1f, squashX, squashIntensity);
+        float dy = Mathf.Lerp(1f, squashY, squashIntensity);
+        
+        // Clamp để đảm bảo giá trị hợp lý
+        // dx: cho phép cả squash (0.8) và stretch (1.4) theo trục X
+        dx = Mathf.Clamp(dx, 0.8f, 1.4f);
+        // dy: chỉ cho phép squash (0.6-1.0), không stretch theo trục Y
+        // Lý do: Vật lý thực tế - objects chỉ bị nén xuống khi va chạm, không kéo dài lên
+        dy = Mathf.Clamp(dy, 0.6f, 1.0f);
 
+        // Kiểm tra tỷ lệ max và cân bằng nếu cần
         float ratio = dx / dy;
         if (ratio > maxSquashStretchRatio)
         {
@@ -99,6 +113,9 @@ public class SquashStretch : MonoBehaviour
 
         squashXOut = dx;
         squashYOut = dy;
+        
+        // Debug để kiểm tra giá trị
+        // Debug.Log($"Velocity: {velocity:F2}, Factor: {velocityFactor:F2}, dx: {dx:F2}, dy: {dy:F2}, Ratio: {ratio:F2}");
     }
 
     public void TriggerSquash(Vector2 normal, float velocity, Vector2 contactPoint, bool isFirstCollision = false)
