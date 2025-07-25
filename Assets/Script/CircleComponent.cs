@@ -96,7 +96,7 @@ public class CircleComponent : MonoBehaviour
         PolygonCollider2D col = GetComponent<PolygonCollider2D>();
         if (col != null)
         {
-            PhysicsMaterial2D bounceMaterial = Resources.Load<PhysicsMaterial2D>("Physics/BouncyMat");
+            PhysicsMaterial2D bounceMaterial = Resources.Load<PhysicsMaterial2D>("Materials/Physics/BouncyMat");
 
 
             if (bounceMaterial != null)
@@ -291,11 +291,9 @@ public class CircleComponent : MonoBehaviour
         {
             GameObject newObj = GameManager.instance.SpawnAnimalAtLevel(nextLevel, transform.position);
             if (newObj != null)
-            {// Hiệu ứng glowFx
-                PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
+            {
+                PracticeEffect?.Invoke("VFX/Custom_RespawnExplosion", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
 
-                // Hiệu ứng SparkleBurst
-                PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
 
@@ -325,13 +323,9 @@ public class CircleComponent : MonoBehaviour
         }
         else
         {
-            // Hiệu ứng glowFx
-            PracticeEffect?.Invoke("MergeEffect", gameObject.transform.position, Color.white);
-
-            // Hiệu ứng SparkleBurst
-            PracticeEffect?.Invoke("MergeEffect1", gameObject.transform.position, Color.white);
+            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, Color.white);
         }
-        
+
     }
 
     private void ApplyFixedOutlineWidth()

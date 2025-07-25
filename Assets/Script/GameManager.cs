@@ -137,14 +137,16 @@ public class GameManager : MonoBehaviour
 
         pipeSquash = pipeGO.GetComponent<PipeSquashEffect>();
     }
-    
+
     public int GetHighestFruitByY()
     {
         CircleComponent highestCircleY = null;
         foreach (var circle in warningCircles)
         {
+
             if (circle != null)
             {
+                if (circle.Level > maxLevelSpawn) continue; // Bỏ qua loại quả không trong phạm vi spawn
                 if (highestCircleY == null || circle.transform.position.y > highestCircleY.transform.position.y)
                 {
                     highestCircleY = circle.GetComponent<CircleComponent>();
@@ -157,8 +159,24 @@ public class GameManager : MonoBehaviour
             return 0; // Hoặc giá trị mặc định khác
         }
 
-        //Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
+        // Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
         return highestCircleY.Level - 1; // Giảm 1 vì mảng bắt đầu từ 0
+    }
+
+    public void ListWarningCircles()
+    {
+        Debug.Log("Danh sách warningCircles:");
+        foreach (var circle in warningCircles)
+        {
+            if (circle != null)
+            {
+                Debug.Log($"Circle: {circle.name}, Level: {circle.Level}, Position: {circle.transform.position}");
+            }
+            else
+            {
+                Debug.LogWarning("CircleComponent is null in warningCircles!");
+            }
+        }
     }
 
     public int FruitCount()
@@ -206,7 +224,7 @@ public class GameManager : MonoBehaviour
         return mostFruitLevel - 1; // Giảm 1 vì mảng bắt đầu từ 0
     }
 
-   
+
 
     void Start()
     {
@@ -362,11 +380,7 @@ public class GameManager : MonoBehaviour
         // Spawn con vật cấp tiếp theo
         int nextLevel = c1.Level + 1;
 
-        // Hiệu ứng glowFx
-        PracticeEffect("MergeEffect", spawnPos, nextLevel > evolutionTree.GetMaxLevel() + 1 ? Color.white : evolutionTree.levels[nextLevel - 1].colorEffect);
-
-        // Hiệu ứng SparkleBurst
-        PracticeEffect("MergeEffect1", spawnPos, nextLevel > evolutionTree.GetMaxLevel() + 1 ? Color.white : evolutionTree.levels[nextLevel - 1].colorEffect);
+        PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
 
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
@@ -383,9 +397,11 @@ public class GameManager : MonoBehaviour
         // Huỷ 2 object cũ
         Destroy(c1.gameObject);
         Destroy(c2.gameObject);
+
     }
-    
-    private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default){
+
+    private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default)
+    {
         GameObject gameEffect = Resources.Load<GameObject>(effectName);
         if (gameEffect != null)
         {
@@ -404,9 +420,9 @@ public class GameManager : MonoBehaviour
         if (spriteRenderer != null)
             spriteRenderer.color = colorEffect;
 
-        // Nếu là ParticleSystem
-        var ps = vfx.GetComponent<ParticleSystem>();
-        if (ps != null)
+        // Nếu là ParticleSystem - lấy tất cả ParticleSystem con
+        var particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
+        foreach (var ps in particleSystems)
         {
             var main = ps.main;
             main.startColor = colorEffect;
@@ -530,11 +546,7 @@ public class GameManager : MonoBehaviour
             smallest = (circle as Transform).gameObject;
             if (smallest.GetComponent<CircleComponent>().Level == 1 || smallest.GetComponent<CircleComponent>().Level == 2)
             {
-                // Hiệu ứng glowFx
-                PracticeEffect("MergeEffect", smallest.GameObject().transform.position, evolutionTree.levels[smallest.GetComponent<CircleComponent>().Level - 1].colorEffect);
-
-                // Hiệu ứng SparkleBurst
-                PracticeEffect("MergeEffect1", smallest.GameObject().transform.position, evolutionTree.levels[smallest.GetComponent<CircleComponent>().Level - 1].colorEffect);
+                PracticeEffect("VFX/Custom_FruitExplosion", smallest.GameObject().transform.position, evolutionTree.levels[smallest.GetComponent<CircleComponent>().Level - 1].colorEffect);
                 Destroy(smallest.GameObject());
             }
         }

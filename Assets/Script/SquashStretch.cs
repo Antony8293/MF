@@ -55,7 +55,7 @@ public class SquashStretch : MonoBehaviour
 
             if (childCollider != null)
             {
-                PhysicsMaterial2D bouncyMat = Resources.Load<PhysicsMaterial2D>("Physics/BouncyMat");
+                PhysicsMaterial2D bouncyMat = Resources.Load<PhysicsMaterial2D>("Materials/Physics/BouncyMat");
                 if (bouncyMat != null)
                 {
                     childCollider.sharedMaterial = bouncyMat;
