@@ -14,8 +14,8 @@ public class WarningLine : MonoBehaviour
     [SerializeField]
     private GameObject GameWarningLine;
 
-    private float time;
-    private float TargetTime = 1.0f;
+    public static float timeWarning;
+    public static float TargetWarningTime = 1.0f;
 
     public static bool onWarning = false;
     private SpriteRenderer overLineRenderer;
@@ -76,7 +76,7 @@ public class WarningLine : MonoBehaviour
         if (!onWarning)
         {
             overLineRenderer.enabled = false;
-            time = 0.0f;
+            timeWarning = 0.0f;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -92,6 +92,8 @@ public class WarningLine : MonoBehaviour
         }
 
         onWarning = false;
+        // Debug.Log("Exit Warning: " + collision.name + " at " + Time.time);
+        // GameManager.instance.ListWarningCircles();
         Invoke("CheckWarning", 2f);
 
     }
@@ -116,8 +118,8 @@ public class WarningLine : MonoBehaviour
     {
         if (onWarning)
         {
-            time += math.clamp(Time.deltaTime, 0, TargetTime);
-            if (time >= TargetTime && !GameManager.instance.isPaused)
+            timeWarning += math.clamp(Time.deltaTime, 0, TargetWarningTime);
+            if (timeWarning >= TargetWarningTime && !GameManager.instance.isPaused)
             {
                 overLineRenderer.enabled = true;
                 // GameOverLine.SetActive(true);

@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
         CircleComponent highestCircleY = null;
         foreach (var circle in warningCircles)
         {
-            
+
             if (circle != null)
             {
                 if (circle.Level > maxLevelSpawn) continue; // Bỏ qua loại quả không trong phạm vi spawn
@@ -159,8 +159,24 @@ public class GameManager : MonoBehaviour
             return 0; // Hoặc giá trị mặc định khác
         }
 
-        //Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
+        // Debug.Log("Loại quả cao nhất:" + highestCircleY.Level);
         return highestCircleY.Level - 1; // Giảm 1 vì mảng bắt đầu từ 0
+    }
+
+    public void ListWarningCircles()
+    {
+        Debug.Log("Danh sách warningCircles:");
+        foreach (var circle in warningCircles)
+        {
+            if (circle != null)
+            {
+                Debug.Log($"Circle: {circle.name}, Level: {circle.Level}, Position: {circle.transform.position}");
+            }
+            else
+            {
+                Debug.LogWarning("CircleComponent is null in warningCircles!");
+            }
+        }
     }
 
     public int FruitCount()
@@ -385,6 +401,7 @@ public class GameManager : MonoBehaviour
         // Huỷ 2 object cũ
         Destroy(c1.gameObject);
         Destroy(c2.gameObject);
+
     }
     
     private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default){
