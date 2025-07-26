@@ -12,7 +12,7 @@ public class CircleComponent : MonoBehaviour
 {
     // public static event Action<CircleComponent> AddCircleQueueToDestroy;
 
-    public static event Action<String, Vector3, Color> PracticeEffect;
+    public static event Action<String, Vector3, Color, int> PracticeEffect;
 
     public static event Action<CircleComponent, CircleComponent, UnityEngine.Vector3> OnCircleMerged;
 
@@ -301,7 +301,7 @@ public class CircleComponent : MonoBehaviour
             GameObject newObj = GameManager.instance.SpawnAnimalAtLevel(nextLevel, transform.position);
             if (newObj != null)
             {
-                PracticeEffect?.Invoke("VFX/Custom_RespawnExplosion", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect);
+                PracticeEffect?.Invoke("VFX/Custom_RespawnExplosion", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect, nextLevel);
 
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
@@ -332,7 +332,7 @@ public class CircleComponent : MonoBehaviour
         }
         else
         {
-            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, Color.white);
+            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, Color.white, nextLevel);
         }
 
     }

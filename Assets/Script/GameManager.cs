@@ -328,7 +328,7 @@ public class GameManager : MonoBehaviour
         if (nextCircleAData != null && nextCircleAData.prefab != null)
         {
             Vector3 spawnPos = UIToWorldPosition(waitingUIPos);
-            nextCircleGO = Instantiate(nextCircleAData.prefab, spawnPos, Quaternion.identity);
+            nextCircleGO = Instantiate(nextCircleAData.prefab, spawnPos, nextCircleAData.prefab.transform.rotation);
             nextCircleGO.GetComponent<CircleComponent>().SetTargetScale(nextCircleAData.prefab.transform.localScale * nextCircleAData.scaleRatio);
             nextCircleGO.GetComponent<Rigidbody2D>().gravityScale = 0;
             nextCircleGO.GetComponent<MoveCircle>().isReady = false;
@@ -342,8 +342,8 @@ public class GameManager : MonoBehaviour
         AnimalData data = evolutionTree.GetLevelData(level - 1);
         if (data == null) return null;
 
-        GameObject obj = Instantiate(data.prefab, position, Quaternion.identity);
-        
+        GameObject obj = Instantiate(data.prefab, position, data.prefab.transform.rotation);
+
         if (isMerged)
         {
             // Tắt auto scale ngay sau khi instantiate (trước khi Start() chạy)
@@ -353,7 +353,7 @@ public class GameManager : MonoBehaviour
                 circleComp.isAutoScale = false; // Tắt auto scale cho merged objects
             }
         }
-        
+
         // obj.transform.localScale = data.prefab.transform.localScale * data.scaleRatio;
         obj.GetComponent<CircleComponent>().SetTargetScale(data.prefab.transform.localScale * data.scaleRatio);
 
@@ -391,7 +391,7 @@ public class GameManager : MonoBehaviour
         // Spawn con vật cấp tiếp theo
         int nextLevel = c1.Level + 1;
 
-        PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
+        PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect, nextLevel);
 
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
@@ -411,16 +411,67 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default)
+    private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default, int level = 2)
     {
         GameObject gameEffect = Resources.Load<GameObject>(effectName);
         if (gameEffect != null)
         {
-            GameObject vfx2 = Instantiate(gameEffect, position, Quaternion.identity);
+            GameObject vfx2 = Instantiate(gameEffect, position, gameEffect.transform.rotation);
             SetColorEffect(vfx2, colorEffect); // Đổi màu hiệu ứng
+
+            if (effectName == "VFX/Custom_FruitExplosion")
+            {
+                ScaleParticleEffectByLevel(vfx2, level, evolutionTree.GetMaxLevel(), 1.0f, 2.0f);
+            }
+
             Destroy(vfx2, 2f);
         }
     }
+
+    public static void ScaleParticleEffectByLevel(GameObject vfxRoot, int level, int maxLevel = 12, float minScale = 1.0f, float maxScale = 2.0f)
+    {
+        float levelFactor = Mathf.Clamp01((float)level / maxLevel);
+        float finalScale = Mathf.Lerp(minScale, maxScale, levelFactor);
+
+        var particleSystems = vfxRoot.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
+
+        foreach (var ps in particleSystems)
+        {
+            var main = ps.main;
+
+
+            // Emission burst count
+            var emission = ps.emission;
+            if (emission.burstCount > 0)
+            {
+                var bursts = new ParticleSystem.Burst[emission.burstCount];
+                emission.GetBursts(bursts);
+
+                for (int i = 0; i < bursts.Length; i++)
+                {
+                    float baseCount = bursts[i].count.constant;
+                    bursts[i].count = Mathf.Max(1, Mathf.RoundToInt(baseCount * level * 1.5f)); // Sửa từ levelFactor thành finalScale
+                }
+
+                emission.SetBursts(bursts);
+            }
+
+            // Shape scale (nếu là Cone)
+            var shape = ps.shape;
+            if (shape.shapeType == ParticleSystemShapeType.Cone)
+            {
+                Vector3 currentScale = shape.scale;
+                shape.scale = new Vector3(
+                    currentScale.x * finalScale * 3.5f,
+                    currentScale.y * finalScale,
+                    currentScale.z * finalScale * 3f
+                );
+            }
+        }
+
+        Debug.Log($"[ScaleEffect] Scaled all particles with level {level} → scale {finalScale:F2}");
+    }
+
 
     private void SetColorEffect(GameObject vfx, Color colorEffect)
     {
@@ -482,7 +533,7 @@ public class GameManager : MonoBehaviour
 
                     // DOTween Sequence: Kết hợp Grow + SquashStretch
                     DG.Tweening.Sequence scaleSequence = DOTween.Sequence();
-                    
+
                     // Giai đoạn 1: Stretch (giãn X, co Y)
                     Vector3 stretchScale = new Vector3(
                         circleComp.targetScale.x * 1.1f, // Giãn X
@@ -490,7 +541,7 @@ public class GameManager : MonoBehaviour
                         circleComp.targetScale.z
                     );
                     scaleSequence.Append(newObj.transform.DOScale(stretchScale, 0.15f).SetEase(Ease.OutQuad));
-                    
+
 
                     // Giai đoạn 2: Squash (co X, giãn Y)
                     Vector3 squashScale = new Vector3(
@@ -509,7 +560,7 @@ public class GameManager : MonoBehaviour
 
                     // Giai đoạn 3: Settle về targetScale (ổn định) + Đổi màu trở lại bình thường
                     scaleSequence.Append(newObj.transform.DOScale(circleComp.targetScale, 0.2f).SetEase(Ease.OutBounce));
-                    
+
 
                     // Giai đoạn 4: Bật lại SquashStretch sau khi animation xong
                     scaleSequence.OnComplete(() =>
@@ -519,7 +570,7 @@ public class GameManager : MonoBehaviour
                             squashStretch.enabled = true;
                             Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
                         }
-                        
+
                         // Đảm bảo màu về đúng trạng thái cuối
                         if (spriteRenderer != null)
                         {
@@ -527,7 +578,7 @@ public class GameManager : MonoBehaviour
                             Debug.Log($"[{newObj.name}] Sprite color restored to normal");
                         }
                     });
-                    
+
                     Debug.Log($"[{newObj.name}] Started combined grow+squash sequence: {newObj.transform.localScale} → squash → stretch → {circleComp.targetScale}");
                 }
                 else
@@ -639,7 +690,8 @@ public class GameManager : MonoBehaviour
             smallest = (circle as Transform).gameObject;
             if (smallest.GetComponent<CircleComponent>().Level == 1 || smallest.GetComponent<CircleComponent>().Level == 2)
             {
-                PracticeEffect("VFX/Custom_FruitExplosion", smallest.GameObject().transform.position, evolutionTree.levels[smallest.GetComponent<CircleComponent>().Level - 1].colorEffect);
+                int smallestLevel = smallest.GetComponent<CircleComponent>().Level;
+                PracticeEffect("VFX/Custom_FruitExplosion", smallest.GameObject().transform.position, evolutionTree.levels[smallestLevel - 1].colorEffect, smallestLevel);
                 Destroy(smallest.GameObject());
             }
         }
@@ -755,11 +807,11 @@ public class GameManager : MonoBehaviour
     private void DelaySpawnCircles() => Invoke("HandleSpawnCircles", 0.2f);
 
     private void ChangeUpgradeMouseState() => MouseState = mouseState.UpgradeChoosing;
-    
+
     private IEnumerator DelayedSquashTrigger(SquashStretch squashStretch, Vector2 normal, float velocity, Vector2 contactPoint, float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         if (squashStretch != null && squashStretch.enabled)
         {
             squashStretch.TriggerSquash(normal, velocity, contactPoint, false);
