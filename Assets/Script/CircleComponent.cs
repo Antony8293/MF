@@ -21,6 +21,7 @@ public class CircleComponent : MonoBehaviour
     public static event Action<UnityEngine.Object> AfterUpgrade;
 
     public Vector3 targetScale;
+    public bool isAutoScale = true; // Flag để kiểm soát auto scale
     Vector3 currentScale = Vector3.zero;
 
     private Vector2 contactPoint;
@@ -62,7 +63,11 @@ public class CircleComponent : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _moveCircle = GetComponent<MoveCircle>();
 
-        transform.localScale = Vector3.zero; // Khi thả auto scale về 0 - bug
+        // Chỉ reset scale về 0 nếu được cho phép auto scale
+        if (isAutoScale)
+        {
+            transform.localScale = Vector3.zero; // Khi thả auto scale về 0 - bug
+        }
 
         // Gán Anim
         _animator = GetComponentInChildren<Animator>();
@@ -116,8 +121,12 @@ public class CircleComponent : MonoBehaviour
             evolutionTree = GameManager.instance.evolutionTree;
             data = evolutionTree.GetLevelData(Level - 1);
 
-
-            transform.DOScale(targetScale, 0.25f);
+            // Chỉ auto scale nếu được cho phép
+            if (isAutoScale)
+            {
+                transform.DOScale(targetScale, 0.25f);
+            }
+            
             transform.GetComponent<Rigidbody2D>().mass = maxMass / evolutionTree.GetMaxLevel() * Level;
             // ApplyFixedOutlineWidth();
         }

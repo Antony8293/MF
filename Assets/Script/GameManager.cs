@@ -337,12 +337,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameObject SpawnAnimalAtLevel(int level, Vector3 position)
+    public GameObject SpawnAnimalAtLevel(int level, Vector3 position, bool isMerged = false)
     {
         AnimalData data = evolutionTree.GetLevelData(level - 1);
         if (data == null) return null;
 
         GameObject obj = Instantiate(data.prefab, position, Quaternion.identity);
+        
+        if (isMerged)
+        {
+            // Tắt auto scale ngay sau khi instantiate (trước khi Start() chạy)
+            CircleComponent circleComp = obj.GetComponent<CircleComponent>();
+            if (circleComp != null)
+            {
+                circleComp.isAutoScale = false; // Tắt auto scale cho merged objects
+            }
+        }
+        
         // obj.transform.localScale = data.prefab.transform.localScale * data.scaleRatio;
         obj.GetComponent<CircleComponent>().SetTargetScale(data.prefab.transform.localScale * data.scaleRatio);
 
@@ -438,9 +449,64 @@ public class GameManager : MonoBehaviour
     {
         if (level <= evolutionTree.GetMaxLevel() + 1)  //vẫn trong mảng circle có thể next được
         {
-            GameObject newObj = SpawnAnimalAtLevel(level, spawnPos);
+            GameObject newObj = SpawnAnimalAtLevel(level, spawnPos, true);
             if (newObj != null)
             {
+                // Kiểm tra và set scale ngay sau khi spawn
+                CircleComponent circleComp = newObj.GetComponent<CircleComponent>();
+                if (circleComp != null && circleComp.targetScale != Vector3.zero)
+                {
+                    // Kill tween cũ để tránh bị override
+                    newObj.transform.DOKill();
+
+                    newObj.transform.localScale = circleComp.targetScale * 0.7f; // Giảm kích thước xuống 50%
+                    Debug.Log($"[{newObj.name}] Scale set to: {newObj.transform.localScale} (target: {circleComp.targetScale})");
+
+                    // Tắt SquashStretch để tránh conflict
+                    var squashStretch = newObj.GetComponent<SquashStretch>();
+                    if (squashStretch != null)
+                    {
+                        squashStretch.enabled = false;
+                    }
+
+                    // DOTween Sequence: Kết hợp Grow + SquashStretch
+                    DG.Tweening.Sequence scaleSequence = DOTween.Sequence();
+                    
+                    // Giai đoạn 1: Stretch (giãn X, co Y)
+                    Vector3 stretchScale = new Vector3(
+                        circleComp.targetScale.x * 1.1f, // Giãn X
+                        circleComp.targetScale.y * 0.9f, // Co Y
+                        circleComp.targetScale.z
+                    );
+                    scaleSequence.Append(newObj.transform.DOScale(stretchScale, 0.15f).SetEase(Ease.OutQuad));
+                    
+                    // Giai đoạn 2: Squash (co X, giãn Y)
+                    Vector3 squashScale = new Vector3(
+                        circleComp.targetScale.x * 0.9f, // Co X
+                        circleComp.targetScale.y * 1.1f, // Giãn Y
+                        circleComp.targetScale.z
+                    );
+                    scaleSequence.Append(newObj.transform.DOScale(squashScale, 0.15f).SetEase(Ease.OutBack));
+                    
+                    // Giai đoạn 3: Settle về targetScale (ổn định)
+                    scaleSequence.Append(newObj.transform.DOScale(circleComp.targetScale, 0.2f).SetEase(Ease.OutBounce));
+                    
+                    // Giai đoạn 4: Bật lại SquashStretch sau khi animation xong
+                    scaleSequence.OnComplete(() =>
+                    {
+                        if (squashStretch != null)
+                        {
+                            squashStretch.enabled = true;
+                            Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
+                        }
+                    });
+                    
+                    Debug.Log($"[{newObj.name}] Started combined grow+squash sequence: {newObj.transform.localScale} → squash → stretch → {circleComp.targetScale}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[{newObj.name}] CircleComponent hoặc targetScale không hợp lệ!");
+                }
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
 
@@ -662,4 +728,15 @@ public class GameManager : MonoBehaviour
     private void DelaySpawnCircles() => Invoke("HandleSpawnCircles", 0.2f);
 
     private void ChangeUpgradeMouseState() => MouseState = mouseState.UpgradeChoosing;
+    
+    private IEnumerator DelayedSquashTrigger(SquashStretch squashStretch, Vector2 normal, float velocity, Vector2 contactPoint, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        if (squashStretch != null && squashStretch.enabled)
+        {
+            squashStretch.TriggerSquash(normal, velocity, contactPoint, false);
+            Debug.Log($"[{squashStretch.name}] Triggered squash effect: normal={normal}, velocity={velocity}");
+        }
+    }
 }
