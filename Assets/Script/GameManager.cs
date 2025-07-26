@@ -469,6 +469,17 @@ public class GameManager : MonoBehaviour
                         squashStretch.enabled = false;
                     }
 
+                    // Lấy SpriteRenderer để đổi màu
+                    var spriteRenderer = newObj.GetComponentInChildren<SpriteRenderer>();
+                    Color originalColor = Color.white;
+                    if (spriteRenderer != null)
+                    {
+                        originalColor = spriteRenderer.color;
+                        // Đổi màu tối khi sinh ra
+                        spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Màu tối
+                        Debug.Log($"[{newObj.name}] Sprite color set to dark");
+                    }
+
                     // DOTween Sequence: Kết hợp Grow + SquashStretch
                     DG.Tweening.Sequence scaleSequence = DOTween.Sequence();
                     
@@ -480,6 +491,7 @@ public class GameManager : MonoBehaviour
                     );
                     scaleSequence.Append(newObj.transform.DOScale(stretchScale, 0.15f).SetEase(Ease.OutQuad));
                     
+
                     // Giai đoạn 2: Squash (co X, giãn Y)
                     Vector3 squashScale = new Vector3(
                         circleComp.targetScale.x * 0.9f, // Co X
@@ -487,10 +499,18 @@ public class GameManager : MonoBehaviour
                         circleComp.targetScale.z
                     );
                     scaleSequence.Append(newObj.transform.DOScale(squashScale, 0.15f).SetEase(Ease.OutBack));
-                    
-                    // Giai đoạn 3: Settle về targetScale (ổn định)
+
+                    // Đồng thời đổi màu từ tối về bình thường trong giai đoạn settle
+                    if (spriteRenderer != null)
+                    {
+                        scaleSequence.Join(spriteRenderer.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
+                        Debug.Log($"[{newObj.name}] Started color transition back to normal");
+                    }
+
+                    // Giai đoạn 3: Settle về targetScale (ổn định) + Đổi màu trở lại bình thường
                     scaleSequence.Append(newObj.transform.DOScale(circleComp.targetScale, 0.2f).SetEase(Ease.OutBounce));
                     
+
                     // Giai đoạn 4: Bật lại SquashStretch sau khi animation xong
                     scaleSequence.OnComplete(() =>
                     {
@@ -498,6 +518,13 @@ public class GameManager : MonoBehaviour
                         {
                             squashStretch.enabled = true;
                             Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
+                        }
+                        
+                        // Đảm bảo màu về đúng trạng thái cuối
+                        if (spriteRenderer != null)
+                        {
+                            spriteRenderer.color = originalColor;
+                            Debug.Log($"[{newObj.name}] Sprite color restored to normal");
                         }
                     });
                     
