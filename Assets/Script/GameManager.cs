@@ -450,7 +450,7 @@ public class GameManager : MonoBehaviour
                 for (int i = 0; i < bursts.Length; i++)
                 {
                     float baseCount = bursts[i].count.constant;
-                    bursts[i].count = Mathf.Max(1, Mathf.RoundToInt(baseCount * level * 1.5f)); // Sửa từ levelFactor thành finalScale
+                    bursts[i].count = Mathf.Max(1, Mathf.RoundToInt(baseCount * level)); // Sửa từ levelFactor thành finalScale
                 }
 
                 emission.SetBursts(bursts);
@@ -477,23 +477,17 @@ public class GameManager : MonoBehaviour
     {
         // Đổi màu cho hiệu ứng (ví dụ: màu vàng)
         colorEffect.a = 1f; // Opacity 100%
-        // Nếu là SpriteRenderer
-        var spriteRenderer = vfx.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-            spriteRenderer.color = colorEffect;
 
         // Nếu là ParticleSystem - lấy tất cả ParticleSystem con
         var particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
         foreach (var ps in particleSystems)
         {
             var main = ps.main;
-            main.startColor = colorEffect;
+            // Set startColor mode thành Random Between Two Colors
+            Color darkColor = new Color(colorEffect.r * 0.9f, colorEffect.g * 0.9f, colorEffect.b * 0.9f, colorEffect.a);
+            main.startColor = new ParticleSystem.MinMaxGradient(colorEffect, darkColor);
         }
 
-        // Nếu là MeshRenderer
-        var meshRenderer = vfx.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
-            meshRenderer.material.color = colorEffect;
     }
 
     public void InstantiateMergedCircle(int level, Vector3 spawnPos, bool isOverLineTriggeredChild = false)
