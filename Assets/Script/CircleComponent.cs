@@ -60,6 +60,8 @@ public class CircleComponent : MonoBehaviour
     [SerializeField]
     public bool isAnimated = true;
     public bool hasTriggeredDead = false;
+    public float timeTriggerMerge = 0f;
+    public bool isMergeAnimationPlaying = false;
 
     private void OnEnable()
     {
@@ -163,19 +165,25 @@ public class CircleComponent : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Debug.Log($"[{name}] OnTriggerEnter2D for [{collision.gameObject.name}]");
         if (triggerMergeCollider != null)
         {
-            collision.gameObject.GetComponentInChildren<Animator>()?.SetTrigger("TriggerMerge");
-
+            var circleComponent = collision.gameObject.GetComponentInParent<CircleComponent>();
+            if (circleComponent != null)
+            {
+                // Cho phép reset timer ngay cả khi đang chạy animation merge
+                circleComponent.timeTriggerMerge = 2f;
+                // Debug.Log($"[{name}] Set timeTriggerMerge = 2f for [{collision.gameObject.name}]");
+            }
             // Delay 0.5s trước khi xóa trigger collider
-            StartCoroutine(DelayDestroyTriggerCollider());
+            StartCoroutine(DelayDestroyTriggerCollider(2f));
         }
     }
 
-    private IEnumerator DelayDestroyTriggerCollider()
+    private IEnumerator DelayDestroyTriggerCollider(float delay = 0.5f)
     {
-        yield return new WaitForSeconds(0.5f);
-        
+        yield return new WaitForSeconds(delay);
+
         // Xóa trigger collider sau delay
         if (triggerMergeCollider != null)
         {
@@ -198,6 +206,29 @@ public class CircleComponent : MonoBehaviour
             hasTriggeredDead = false;
             _animator.SetTrigger("TriggerIdle");
             StopDeadEffect();
+        }
+
+        if (timeTriggerMerge > 0f)
+        {
+            // Trigger merge animation chỉ một lần khi bắt đầu
+            if (!isMergeAnimationPlaying && !hasTriggeredDead)
+            {
+                _animator.SetTrigger("TriggerMerge");
+                isMergeAnimationPlaying = true;
+            }
+
+            timeTriggerMerge -= Time.deltaTime;
+        }
+        else if (timeTriggerMerge <= 0f && isMergeAnimationPlaying)
+        {
+            // Kết thúc merge animation, trigger back
+            isMergeAnimationPlaying = false;
+
+            _animator.SetTrigger("TriggerIdle");
+
+
+            // Reset timer để tránh trigger lại
+            timeTriggerMerge = 0f;
         }
 
         if (GameManager.instance.isGameOver && !hasTriggeredDead)
