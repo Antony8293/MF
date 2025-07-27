@@ -56,7 +56,13 @@ public class CircleComponent : MonoBehaviour
     [SerializeField]
     public bool isAnimated = true;
     public bool hasTriggeredDead = false;
-    private void Awake()
+
+    private void OnEnable()
+    {
+
+    }
+
+    private void Start()
     {
         OnUpgrade += ChangeToUpgrade;
         //
@@ -87,16 +93,6 @@ public class CircleComponent : MonoBehaviour
             // Tắt anim
             _animator.enabled = false;
         }
-    }
-
-    private void OnEnable()
-    {
-
-    }
-
-    private void Start()
-    {
-
 
         PolygonCollider2D col = GetComponent<PolygonCollider2D>();
         if (col != null)
@@ -126,7 +122,7 @@ public class CircleComponent : MonoBehaviour
             {
                 transform.DOScale(targetScale, 0.25f);
             }
-            
+
             transform.GetComponent<Rigidbody2D>().mass = maxMass / evolutionTree.GetMaxLevel() * Level;
             // ApplyFixedOutlineWidth();
         }
