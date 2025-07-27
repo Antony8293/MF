@@ -181,8 +181,9 @@ MonoBehaviour:
   evolutionTree: {fileID: 0}
   isFirstCollision: 1
   isOverLineTriggered: 0
-  idleClip: {fileID: 7400000, guid: 0bc142a1bc3b0d44db84ef387721939a, type: 2}
-  deadClip: {fileID: 7400000, guid: a7a34cc71d71a1a4f96424fe9d052ec1, type: 2}
+  deadClip: {fileID: 7400000, guid: 355594b6ee17fab4785cfb42c53f6eae, type: 2}
+  idleClip: {fileID: 7400000, guid: 2dabf0224ca748b43b6a71da1ecb9b2c, type: 2}
+  mergeClip: {fileID: 7400000, guid: e2322d31c614be84f86e11021c04412d, type: 2}
   isAnimated: 1
   hasTriggeredDead: 0
 --- !u!114 &6270593136505055436
@@ -271,6 +272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3548587724982469746}
   - component: {fileID: 1162042230254656953}
+  - component: {fileID: 2678879853023432813}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -348,6 +350,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &2678879853023432813
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3523561390663977181}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4d614b74d637fab4fa4b0c96e51f2195, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3769469143054521551
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,7 +383,6 @@ GameObject:
   - component: {fileID: 3717474299932916167}
   - component: {fileID: 5756127256078128098}
   - component: {fileID: 7604274775655190205}
-  - component: {fileID: 3934631709261090127}
   - component: {fileID: 7366690755951058141}
   m_Layer: 0
   m_Name: CircleSprite
@@ -475,28 +498,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: -0.02, y: -0.03}
   m_Radius: 3.96
---- !u!95 &3934631709261090127
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3769469143054521551}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3b6db213097cc814393f191c133583da, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7366690755951058141
 MonoBehaviour:
   m_ObjectHideFlags: 0

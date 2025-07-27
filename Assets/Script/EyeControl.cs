@@ -39,13 +39,13 @@ public class EyesControl : MonoBehaviour
                 float mouseDelta = Vector3.Distance(currentMousePosition, lastMousePosition);
                 bool isDragging = mouseDelta > 1f; // Threshold là 1 pixel
                 
-                Debug.Log($"Mouse Delta: {mouseDelta:F2} pixels, isDragging={isDragging}");
+                // Debug.Log($"Mouse Delta: {mouseDelta:F2} pixels, isDragging={isDragging}");
                 
                 if (isDragging)
                 {
                     lastDragTime = Time.time; // Cập nhật thời gian drag cuối cùng
                     intensity = originalIntensity; // Khôi phục intensity khi có drag
-                    Debug.Log("Dragging detected, intensity restored to original value.");
+                    // Debug.Log("Dragging detected, intensity restored to original value.");
                 }
                 else
                 {
@@ -112,6 +112,13 @@ public class EyesControl : MonoBehaviour
         // var mouseWorldCoord = camera.ScreenPointToRay(Input.mousePosition).origin;
 
         // Tính vector từ vị trí hiện tại đến target
+        if (GameManager.instance.isGameOver || target == null)
+        {
+            GetComponent<EyesControl>().enabled = false; // Tắt điều khiển mắt nếu game over hoặc không có target
+
+            return;
+        }
+
         var originToTarget = target.position - this.transform.position;
 
         // Giới hạn khoảng cách để mắt không di chuyển quá xa

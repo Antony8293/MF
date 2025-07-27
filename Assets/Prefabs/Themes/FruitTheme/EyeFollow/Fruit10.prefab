@@ -181,8 +181,9 @@ MonoBehaviour:
   evolutionTree: {fileID: 0}
   isFirstCollision: 1
   isOverLineTriggered: 0
-  idleClip: {fileID: 7400000, guid: ce9a139b9f2ff4149a06fc3c869cebe3, type: 2}
-  deadClip: {fileID: 7400000, guid: c5df6ddc656ae3540975ef23a6e15b67, type: 2}
+  deadClip: {fileID: 7400000, guid: f7d16ae43f5e27642873af0ec8fc57bd, type: 2}
+  idleClip: {fileID: 7400000, guid: e3df03f68e5581b4ba1975b719420dc8, type: 2}
+  mergeClip: {fileID: 7400000, guid: 938a4abb328e1ce42b8738bfe90b2224, type: 2}
   isAnimated: 1
   hasTriggeredDead: 0
 --- !u!114 &6270593136505055436
@@ -271,6 +272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5363334485492673582}
   - component: {fileID: 1525873912318845752}
+  - component: {fileID: 7538683434615784323}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -336,7 +338,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1467709841
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 9d5161864e82bca4ab8bb70f3d266fbf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -348,6 +350,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &7538683434615784323
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2772555593839907321}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4d614b74d637fab4fa4b0c96e51f2195, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3596662603273699891
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,7 +383,6 @@ GameObject:
   - component: {fileID: 284404919905210389}
   - component: {fileID: 8145091028895278890}
   - component: {fileID: 445525099464609841}
-  - component: {fileID: 2816923839282261293}
   - component: {fileID: 8046777580989549261}
   m_Layer: 0
   m_Name: CircleSprite
@@ -475,28 +498,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: -0.18}
   m_Radius: 4.89
---- !u!95 &2816923839282261293
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3596662603273699891}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3b6db213097cc814393f191c133583da, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8046777580989549261
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4016984100199086559}
   - component: {fileID: 1224266549447427734}
+  - component: {fileID: 4923825018238082481}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -87,6 +88,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &4923825018238082481
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2604631296244264436}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4d614b74d637fab4fa4b0c96e51f2195, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4771497075367422696
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,7 +121,6 @@ GameObject:
   - component: {fileID: 6013135251718450450}
   - component: {fileID: 4848238381271728736}
   - component: {fileID: 846943010840013645}
-  - component: {fileID: 3550601633172983632}
   - component: {fileID: 6294325812127822901}
   m_Layer: 0
   m_Name: CircleSprite
@@ -214,28 +236,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.83
---- !u!95 &3550601633172983632
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4771497075367422696}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3b6db213097cc814393f191c133583da, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6294325812127822901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -461,8 +461,8 @@ MonoBehaviour:
   evolutionTree: {fileID: 0}
   isFirstCollision: 1
   isOverLineTriggered: 0
-  idleClip: {fileID: 7400000, guid: 85d7cde7c5fa0324092bf34736ce9a6a, type: 2}
-  deadClip: {fileID: 7400000, guid: 78402e1224a158641b5f80e529e6bffc, type: 2}
+  idleClip: {fileID: 7400000, guid: 09d65fa33c3168644b733f83735d7f9e, type: 2}
+  deadClip: {fileID: 7400000, guid: d9d893ecf1e594b4d954651b4d1d10dd, type: 2}
   isAnimated: 1
   hasTriggeredDead: 0
 --- !u!114 &722239139689237297

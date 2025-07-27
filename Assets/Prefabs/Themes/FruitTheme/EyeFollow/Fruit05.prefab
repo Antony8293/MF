@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4703376246080401059}
   - component: {fileID: 884610261983678035}
+  - component: {fileID: 564680489417276479}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -87,6 +88,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &564680489417276479
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109968537607545951}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4d614b74d637fab4fa4b0c96e51f2195, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1459430481230685380
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,8 +291,9 @@ MonoBehaviour:
   evolutionTree: {fileID: 0}
   isFirstCollision: 1
   isOverLineTriggered: 0
-  idleClip: {fileID: 7400000, guid: c15e9c623aa51a042b34f118e3118065, type: 2}
-  deadClip: {fileID: 7400000, guid: b0871b320c785df4384dc98c8e590f15, type: 2}
+  deadClip: {fileID: 7400000, guid: caddb515998e70345b21f6cff074e33f, type: 2}
+  idleClip: {fileID: 7400000, guid: 34f52d1765ae0d84bab6d844b9baf014, type: 2}
+  mergeClip: {fileID: 7400000, guid: 6b4c0c7846424a24cb33fb3984cf5557, type: 2}
   isAnimated: 1
   hasTriggeredDead: 0
 --- !u!114 &6270593136505055436
@@ -359,7 +383,6 @@ GameObject:
   - component: {fileID: 8403327785089758303}
   - component: {fileID: 5178143455712409881}
   - component: {fileID: 7986934074615282762}
-  - component: {fileID: 4260662646790363139}
   - component: {fileID: 2070204506284039321}
   m_Layer: 0
   m_Name: CircleSprite
@@ -475,28 +498,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 1.86
---- !u!95 &4260662646790363139
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8603881450494657950}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3b6db213097cc814393f191c133583da, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &2070204506284039321
 MonoBehaviour:
   m_ObjectHideFlags: 0

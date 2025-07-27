@@ -51,8 +51,9 @@ public class CircleComponent : MonoBehaviour
     public bool isFirstCollision = true;
     public bool isOverLineTriggered = false;
 
-    public AnimationClip idleClip;
     public AnimationClip deadClip;
+    public AnimationClip idleClip;
+    public AnimationClip mergeClip;
     [SerializeField]
     public bool isAnimated = true;
     public bool hasTriggeredDead = false;
@@ -82,8 +83,9 @@ public class CircleComponent : MonoBehaviour
             // Bật
             var overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
 
-            overrideController["idle_c1"] = idleClip;
-            overrideController["dead_c1"] = deadClip;
+            overrideController["eyefollow_idle_f1"] = idleClip;
+            overrideController["eyefollow_merge_f1"] = mergeClip;
+            overrideController["eyefollow_dead_f1"] = deadClip;
 
             _animator.runtimeAnimatorController = overrideController;
 
@@ -222,7 +224,7 @@ public class CircleComponent : MonoBehaviour
         if (isFirstCollision && ((collision.GetContact(0).collider.gameObject.name == "LeftWall" ||
             collision.GetContact(0).collider.gameObject.name == "RightWall")))
         {
-            Debug.Log($"{name} va chạm với {collision.GetContact(0).collider.gameObject.name} lần đầu, bỏ qua");
+            // Debug.Log($"{name} va chạm với {collision.GetContact(0).collider.gameObject.name} lần đầu, bỏ qua");
             return;
         }
 
