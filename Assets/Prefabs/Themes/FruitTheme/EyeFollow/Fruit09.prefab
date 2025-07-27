@@ -512,5 +512,5 @@ MonoBehaviour:
   eyes: {fileID: 3523561390663977181}
   camera: {fileID: 0}
   target: {fileID: 0}
-  intensity: 0.08
+  intensity: 0.2
   speed: 5

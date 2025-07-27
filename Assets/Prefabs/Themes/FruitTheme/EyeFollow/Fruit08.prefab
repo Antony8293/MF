@@ -164,7 +164,7 @@ MonoBehaviour:
   eyes: {fileID: 6618141977514919712}
   camera: {fileID: 0}
   target: {fileID: 0}
-  intensity: 0.07
+  intensity: 0.18
   speed: 5
 --- !u!1 &1459430481230685380
 GameObject:

@@ -10,12 +10,17 @@ public class EyesControl : MonoBehaviour
     
     private float originalIntensity; // Lưu giá trị intensity ban đầu
     private float lastTouchTime; // Thời gian touch cuối cùng
+    private float lastDragTime; // Thời gian drag cuối cùng
+    private Vector3 lastMousePosition; // Vị trí chuột frame trước
     private const float NO_TOUCH_TIMEOUT = 2f; // 2 giây không touch
+    private const float NO_DRAG_TIMEOUT = 2f; // 2 giây không drag
     void Start()
     {
         camera = Camera.main;         // Gán camera mặc định của scene (nếu chưa gán sẵn trong Inspector)
         originalIntensity = intensity; // Lưu giá trị intensity ban đầu
         lastTouchTime = Time.time; // Khởi tạo thời gian touch cuối cùng
+        lastDragTime = Time.time; // Khởi tạo thời gian drag cuối cùng
+        lastMousePosition = Input.mousePosition; // Khởi tạo vị trí chuột
 
         target = GameManager.instance.draggingCircleGO.transform; // Gán mục tiêu là CircleComponent đang kéo   
     }
@@ -24,11 +29,38 @@ public class EyesControl : MonoBehaviour
     {
         if (camera != null)
         {
-            // Kiểm tra touch screen - nếu có touch thì khôi phục intensity, thả tay >2s mới set về 0
+            // Kiểm tra touch screen và drag
             if (Input.GetMouseButton(0))
             {
                 lastTouchTime = Time.time; // Cập nhật thời gian touch cuối cùng
-                intensity = originalIntensity; // Khôi phục intensity khi có touch
+                
+                // Kiểm tra có drag không - so sánh vị trí chuột giữa các frame
+                Vector3 currentMousePosition = Input.mousePosition;
+                float mouseDelta = Vector3.Distance(currentMousePosition, lastMousePosition);
+                bool isDragging = mouseDelta > 1f; // Threshold là 1 pixel
+                
+                Debug.Log($"Mouse Delta: {mouseDelta:F2} pixels, isDragging={isDragging}");
+                
+                if (isDragging)
+                {
+                    lastDragTime = Time.time; // Cập nhật thời gian drag cuối cùng
+                    intensity = originalIntensity; // Khôi phục intensity khi có drag
+                    Debug.Log("Dragging detected, intensity restored to original value.");
+                }
+                else
+                {
+                    // Đang touch nhưng không drag - kiểm tra timeout
+                    if (Time.time - lastDragTime > NO_DRAG_TIMEOUT)
+                    {
+                        intensity = 0f; // Đặt intensity = 0 sau 2 giây không drag
+                    }
+                    else
+                    {
+                        intensity = originalIntensity; // Vẫn giữ intensity trong thời gian grace
+                    }
+                }
+                
+                lastMousePosition = currentMousePosition; // Cập nhật vị trí chuột cho frame tiếp theo
             }
             else
             {

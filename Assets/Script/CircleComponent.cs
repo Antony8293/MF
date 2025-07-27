@@ -217,6 +217,7 @@ public class CircleComponent : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (gameObject.GetComponent<MoveCircle>().enabled) return;
         // Va chạm tường bên lần đầu không tính va chạm đầu => tránh trigger dead anim
         if (isFirstCollision && ((collision.GetContact(0).collider.gameObject.name == "LeftWall" ||
             collision.GetContact(0).collider.gameObject.name == "RightWall")))
