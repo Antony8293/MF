@@ -373,6 +373,7 @@ public class GameManager : MonoBehaviour
             if (circleComp != null)
             {
                 circleComp.isAutoScale = false; // Tắt auto scale cho merged objects
+                Debug.Log($"[{obj.name}] Đã tắt auto scale sau khi instantiate.");
             }
         }
 

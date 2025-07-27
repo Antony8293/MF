@@ -21,7 +21,7 @@ public class CircleComponent : MonoBehaviour
     public static event Action<UnityEngine.Object> AfterUpgrade;
 
     public Vector3 targetScale;
-    public bool isAutoScale = true; // Flag để kiểm soát auto scale
+    public bool isAutoScale = true; // Flag để kiểm soát auto scale = quả sinh ra bởi merge
     Vector3 currentScale = Vector3.zero;
 
     private Vector2 contactPoint;
@@ -51,6 +51,9 @@ public class CircleComponent : MonoBehaviour
     public bool isFirstCollision = true;
     public bool isOverLineTriggered = false;
 
+    // Reference để lưu trigger collider được tạo ra
+    private CircleCollider2D triggerMergeCollider;
+
     public AnimationClip deadClip;
     public AnimationClip idleClip;
     public AnimationClip mergeClip;
@@ -59,11 +62,6 @@ public class CircleComponent : MonoBehaviour
     public bool hasTriggeredDead = false;
 
     private void OnEnable()
-    {
-
-    }
-
-    private void Start()
     {
         OnUpgrade += ChangeToUpgrade;
         //
@@ -111,6 +109,10 @@ public class CircleComponent : MonoBehaviour
                 Debug.LogWarning("BouncyMaterial not found in Resources folder!");
             }
         }
+    }
+
+    private void Start()
+    {
 
 
         // 1. Kiểm tra nếu evolutionTree đã được gán
@@ -124,11 +126,62 @@ public class CircleComponent : MonoBehaviour
             {
                 transform.DOScale(targetScale, 0.25f);
             }
+            else
+            {
+                // Nếu không auto scale thì tạo collider để trigger merge
+                Debug.Log($"[{name}] Không auto scale, tạo collider để trigger merge.");
+                CreateTriggerMergeCollider();
+            }
 
             transform.GetComponent<Rigidbody2D>().mass = maxMass / evolutionTree.GetMaxLevel() * Level;
             // ApplyFixedOutlineWidth();
         }
 
+    }
+
+    private void CreateTriggerMergeCollider()
+    {
+        // Tạo collider để trigger merge
+        triggerMergeCollider = gameObject.AddComponent<CircleCollider2D>();
+        triggerMergeCollider.isTrigger = true;
+
+        // Tính radius dựa trên targetScale thay vì scale hiện tại (vì lúc này scale = 0)
+        var childCollider = gameObject.GetComponentInChildren<CircleCollider2D>();
+        if (childCollider != null)
+        {
+            float baseRadius = childCollider.radius;
+            float scaleMultiplier = Mathf.Max(targetScale.x, targetScale.y);
+            triggerMergeCollider.radius = baseRadius * scaleMultiplier * 10f;
+        }
+        else
+        {
+            triggerMergeCollider.radius = 2f; // Fallback value
+        }
+
+        triggerMergeCollider.offset = Vector2.zero; // Vị trí tùy chỉnh nếu cần
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (triggerMergeCollider != null)
+        {
+            collision.gameObject.GetComponentInChildren<Animator>()?.SetTrigger("TriggerMerge");
+
+            // Delay 0.5s trước khi xóa trigger collider
+            StartCoroutine(DelayDestroyTriggerCollider());
+        }
+    }
+
+    private IEnumerator DelayDestroyTriggerCollider()
+    {
+        yield return new WaitForSeconds(0.5f);
+        
+        // Xóa trigger collider sau delay
+        if (triggerMergeCollider != null)
+        {
+            Destroy(triggerMergeCollider);
+            triggerMergeCollider = null;
+        }
     }
 
     private void Update()
