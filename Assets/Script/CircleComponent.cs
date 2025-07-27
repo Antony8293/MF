@@ -62,6 +62,7 @@ public class CircleComponent : MonoBehaviour
     public bool hasTriggeredDead = false;
     public float timeTriggerMerge = 0f;
     public bool isMergeAnimationPlaying = false;
+    public GameObject mergingNeighbor;
 
     private void OnEnable()
     {
@@ -173,6 +174,7 @@ public class CircleComponent : MonoBehaviour
             {
                 // Cho phép reset timer ngay cả khi đang chạy animation merge
                 circleComponent.timeTriggerMerge = 2f;
+                circleComponent.mergingNeighbor = collision.gameObject;
                 // Debug.Log($"[{name}] Set timeTriggerMerge = 2f for [{collision.gameObject.name}]");
             }
             // Delay 0.5s trước khi xóa trigger collider
