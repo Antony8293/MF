@@ -294,6 +294,28 @@ public class GameManager : MonoBehaviour
         draggingCircleGO = nextCircleGO;
 
         draggingCircleGO.AddComponent<PipeSquashEffect>();
+        
+        // Play swoosh sound effect
+        AudioSource audioSource = draggingCircleGO.GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = draggingCircleGO.AddComponent<AudioSource>();
+        }
+        
+        // Set volume to 50%
+        audioSource.volume = 0.5f;
+        
+        AudioClip swooshClip = Resources.Load<AudioClip>("SFX/funny-swish");
+        if (swooshClip != null)
+        {
+            audioSource.clip = swooshClip;
+            audioSource.Play();
+        }
+        else
+        {
+            Debug.LogWarning("SFX/funny-swish.mp3 not found in Resources folder!");
+        }
+        
         draggingCircleGO.transform.DOMove(droppingCirclePos, 0.5f).SetEase(Ease.OutExpo).OnComplete(() =>
         {
             draggingCircleGO.GetComponent<PipeSquashEffect>().TriggerDraggingSquash();
