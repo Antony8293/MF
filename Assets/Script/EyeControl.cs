@@ -10,12 +10,25 @@ public class EyesControl : MonoBehaviour
     void Start()
     {
         camera = Camera.main;         // Gán camera mặc định của scene (nếu chưa gán sẵn trong Inspector)
+
+        target = GameManager.instance.draggingCircleGO.transform; // Gán mục tiêu là CircleComponent đang kéo   
     }
 
     void Update()
     {
         if (camera != null)
         {
+            // Kiểm tra nếu target hiện tại có isFirstCollision = true, thì chuyển sang draggingCircleGO mới
+            if (target != null && GameManager.instance.draggingCircleGO != null)
+            {
+                var circleComp = target.GetComponent<CircleComponent>();
+                if (circleComp != null && !circleComp.isFirstCollision)
+                {
+                    // Chuyển target sang draggingCircleGO mới
+                    target = GameManager.instance.draggingCircleGO.transform;
+                }
+            }
+            
             EyesAim2();                // Gọi hàm điều khiển mắt mỗi frame
         }
     }
