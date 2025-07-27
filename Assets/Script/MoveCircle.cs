@@ -9,7 +9,7 @@ public class MoveCircle : MonoBehaviour
 
     public static event Action SetDropping;
 
-    public static event Action<String, Vector3, Color> PracticeEffect;
+    public static event Action<String, Vector3, Color, int> PracticeEffect;
 
     public bool isDrop = false;
 
@@ -171,7 +171,7 @@ public class MoveCircle : MonoBehaviour
                 rb.gravityScale = 2;
 
                 float force = maxForceToAddWhenDrop * rb.mass;
-                rb.AddForce(Vector2.down * force, ForceMode2D.Impulse);
+                // rb.AddForce(Vector2.down * force, ForceMode2D.Impulse);
             }
 
             transform.SetParent(GameObject.Find("Circles").transform);
@@ -212,7 +212,7 @@ public class MoveCircle : MonoBehaviour
     {
         if (isColorEffect)
         {
-            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect);
+            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect, gameObject.GetComponent<CircleComponent>().Level);
         }
 
         GameManager.TriggerMouseNotChoosing();

@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
         }
         else Destroy(this);
 
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 120;
     }
 
 
@@ -328,7 +328,7 @@ public class GameManager : MonoBehaviour
         if (nextCircleAData != null && nextCircleAData.prefab != null)
         {
             Vector3 spawnPos = UIToWorldPosition(waitingUIPos);
-            nextCircleGO = Instantiate(nextCircleAData.prefab, spawnPos, Quaternion.identity);
+            nextCircleGO = Instantiate(nextCircleAData.prefab, spawnPos, nextCircleAData.prefab.transform.rotation);
             nextCircleGO.GetComponent<CircleComponent>().SetTargetScale(nextCircleAData.prefab.transform.localScale * nextCircleAData.scaleRatio);
             nextCircleGO.GetComponent<Rigidbody2D>().gravityScale = 0;
             nextCircleGO.GetComponent<MoveCircle>().isReady = false;
@@ -337,12 +337,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameObject SpawnAnimalAtLevel(int level, Vector3 position)
+    public GameObject SpawnAnimalAtLevel(int level, Vector3 position, bool isMerged = false)
     {
         AnimalData data = evolutionTree.GetLevelData(level - 1);
         if (data == null) return null;
 
-        GameObject obj = Instantiate(data.prefab, position, Quaternion.identity);
+        GameObject obj = Instantiate(data.prefab, position, data.prefab.transform.rotation);
+
+        if (isMerged)
+        {
+            // Tắt auto scale ngay sau khi instantiate (trước khi Start() chạy)
+            CircleComponent circleComp = obj.GetComponent<CircleComponent>();
+            if (circleComp != null)
+            {
+                circleComp.isAutoScale = false; // Tắt auto scale cho merged objects
+            }
+        }
+
         // obj.transform.localScale = data.prefab.transform.localScale * data.scaleRatio;
         obj.GetComponent<CircleComponent>().SetTargetScale(data.prefab.transform.localScale * data.scaleRatio);
 
@@ -380,7 +391,7 @@ public class GameManager : MonoBehaviour
         // Spawn con vật cấp tiếp theo
         int nextLevel = c1.Level + 1;
 
-        PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect);
+        PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect, nextLevel);
 
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
@@ -400,47 +411,174 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default)
+    private void PracticeEffect(String effectName, Vector3 position, Color colorEffect = default, int level = 2)
     {
         GameObject gameEffect = Resources.Load<GameObject>(effectName);
         if (gameEffect != null)
         {
-            GameObject vfx2 = Instantiate(gameEffect, position, Quaternion.identity);
+            GameObject vfx2 = Instantiate(gameEffect, position, gameEffect.transform.rotation);
             SetColorEffect(vfx2, colorEffect); // Đổi màu hiệu ứng
+
+            if (effectName == "VFX/Custom_FruitExplosion")
+            {
+                ScaleParticleEffectByLevel(vfx2, level, evolutionTree.GetMaxLevel(), 1.0f, 2.0f);
+            }
+
             Destroy(vfx2, 2f);
         }
     }
+
+    public static void ScaleParticleEffectByLevel(GameObject vfxRoot, int level, int maxLevel = 12, float minScale = 1.0f, float maxScale = 2.0f)
+    {
+        float levelFactor = Mathf.Clamp01((float)level / maxLevel);
+        float finalScale = Mathf.Lerp(minScale, maxScale, levelFactor);
+
+        var particleSystems = vfxRoot.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
+
+        foreach (var ps in particleSystems)
+        {
+            var main = ps.main;
+
+
+            // Emission burst count
+            var emission = ps.emission;
+            if (emission.burstCount > 0)
+            {
+                var bursts = new ParticleSystem.Burst[emission.burstCount];
+                emission.GetBursts(bursts);
+
+                for (int i = 0; i < bursts.Length; i++)
+                {
+                    float baseCount = bursts[i].count.constant;
+                    bursts[i].count = Mathf.Max(1, Mathf.RoundToInt(baseCount * level)); // Sửa từ levelFactor thành finalScale
+                }
+
+                emission.SetBursts(bursts);
+            }
+
+            // Shape scale (nếu là Cone)
+            var shape = ps.shape;
+            if (shape.shapeType == ParticleSystemShapeType.Cone)
+            {
+                Vector3 currentScale = shape.scale;
+                shape.scale = new Vector3(
+                    currentScale.x * finalScale * 3.5f,
+                    currentScale.y * finalScale,
+                    currentScale.z * finalScale * 3f
+                );
+            }
+        }
+
+        Debug.Log($"[ScaleEffect] Scaled all particles with level {level} → scale {finalScale:F2}");
+    }
+
 
     private void SetColorEffect(GameObject vfx, Color colorEffect)
     {
         // Đổi màu cho hiệu ứng (ví dụ: màu vàng)
         colorEffect.a = 1f; // Opacity 100%
-        // Nếu là SpriteRenderer
-        var spriteRenderer = vfx.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-            spriteRenderer.color = colorEffect;
 
         // Nếu là ParticleSystem - lấy tất cả ParticleSystem con
         var particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
         foreach (var ps in particleSystems)
         {
             var main = ps.main;
-            main.startColor = colorEffect;
+            // Set startColor mode thành Random Between Two Colors
+            Color darkColor = new Color(colorEffect.r * 0.9f, colorEffect.g * 0.9f, colorEffect.b * 0.9f, colorEffect.a);
+            main.startColor = new ParticleSystem.MinMaxGradient(colorEffect, darkColor);
         }
 
-        // Nếu là MeshRenderer
-        var meshRenderer = vfx.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
-            meshRenderer.material.color = colorEffect;
     }
 
     public void InstantiateMergedCircle(int level, Vector3 spawnPos, bool isOverLineTriggeredChild = false)
     {
         if (level <= evolutionTree.GetMaxLevel() + 1)  //vẫn trong mảng circle có thể next được
         {
-            GameObject newObj = SpawnAnimalAtLevel(level, spawnPos);
+            GameObject newObj = SpawnAnimalAtLevel(level, spawnPos, true);
             if (newObj != null)
             {
+                // Kiểm tra và set scale ngay sau khi spawn
+                CircleComponent circleComp = newObj.GetComponent<CircleComponent>();
+                if (circleComp != null && circleComp.targetScale != Vector3.zero)
+                {
+                    // Kill tween cũ để tránh bị override
+                    newObj.transform.DOKill();
+
+                    newObj.transform.localScale = circleComp.targetScale * 0.7f; // Giảm kích thước xuống 50%
+                    Debug.Log($"[{newObj.name}] Scale set to: {newObj.transform.localScale} (target: {circleComp.targetScale})");
+
+                    // Tắt SquashStretch để tránh conflict
+                    var squashStretch = newObj.GetComponent<SquashStretch>();
+                    if (squashStretch != null)
+                    {
+                        squashStretch.enabled = false;
+                    }
+
+                    // Lấy SpriteRenderer để đổi màu
+                    var spriteRenderer = newObj.GetComponentInChildren<SpriteRenderer>();
+                    Color originalColor = Color.white;
+                    if (spriteRenderer != null)
+                    {
+                        originalColor = spriteRenderer.color;
+                        // Đổi màu tối khi sinh ra
+                        spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Màu tối
+                        Debug.Log($"[{newObj.name}] Sprite color set to dark");
+                    }
+
+                    // DOTween Sequence: Kết hợp Grow + SquashStretch
+                    DG.Tweening.Sequence scaleSequence = DOTween.Sequence();
+
+                    // Giai đoạn 1: Stretch (giãn X, co Y)
+                    Vector3 stretchScale = new Vector3(
+                        circleComp.targetScale.x * 1.1f, // Giãn X
+                        circleComp.targetScale.y * 0.9f, // Co Y
+                        circleComp.targetScale.z
+                    );
+                    scaleSequence.Append(newObj.transform.DOScale(stretchScale, 0.15f).SetEase(Ease.OutQuad));
+
+
+                    // Giai đoạn 2: Squash (co X, giãn Y)
+                    Vector3 squashScale = new Vector3(
+                        circleComp.targetScale.x * 0.9f, // Co X
+                        circleComp.targetScale.y * 1.1f, // Giãn Y
+                        circleComp.targetScale.z
+                    );
+                    scaleSequence.Append(newObj.transform.DOScale(squashScale, 0.15f).SetEase(Ease.OutBack));
+
+                    // Đồng thời đổi màu từ tối về bình thường trong giai đoạn settle
+                    if (spriteRenderer != null)
+                    {
+                        scaleSequence.Join(spriteRenderer.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
+                        Debug.Log($"[{newObj.name}] Started color transition back to normal");
+                    }
+
+                    // Giai đoạn 3: Settle về targetScale (ổn định) + Đổi màu trở lại bình thường
+                    scaleSequence.Append(newObj.transform.DOScale(circleComp.targetScale, 0.2f).SetEase(Ease.OutBounce));
+
+
+                    // Giai đoạn 4: Bật lại SquashStretch sau khi animation xong
+                    scaleSequence.OnComplete(() =>
+                    {
+                        if (squashStretch != null)
+                        {
+                            squashStretch.enabled = true;
+                            Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
+                        }
+
+                        // Đảm bảo màu về đúng trạng thái cuối
+                        if (spriteRenderer != null)
+                        {
+                            spriteRenderer.color = originalColor;
+                            Debug.Log($"[{newObj.name}] Sprite color restored to normal");
+                        }
+                    });
+
+                    Debug.Log($"[{newObj.name}] Started combined grow+squash sequence: {newObj.transform.localScale} → squash → stretch → {circleComp.targetScale}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[{newObj.name}] CircleComponent hoặc targetScale không hợp lệ!");
+                }
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
 
@@ -546,7 +684,8 @@ public class GameManager : MonoBehaviour
             smallest = (circle as Transform).gameObject;
             if (smallest.GetComponent<CircleComponent>().Level == 1 || smallest.GetComponent<CircleComponent>().Level == 2)
             {
-                PracticeEffect("VFX/Custom_FruitExplosion", smallest.GameObject().transform.position, evolutionTree.levels[smallest.GetComponent<CircleComponent>().Level - 1].colorEffect);
+                int smallestLevel = smallest.GetComponent<CircleComponent>().Level;
+                PracticeEffect("VFX/Custom_FruitExplosion", smallest.GameObject().transform.position, evolutionTree.levels[smallestLevel - 1].colorEffect, smallestLevel);
                 Destroy(smallest.GameObject());
             }
         }
@@ -662,4 +801,15 @@ public class GameManager : MonoBehaviour
     private void DelaySpawnCircles() => Invoke("HandleSpawnCircles", 0.2f);
 
     private void ChangeUpgradeMouseState() => MouseState = mouseState.UpgradeChoosing;
+
+    private IEnumerator DelayedSquashTrigger(SquashStretch squashStretch, Vector2 normal, float velocity, Vector2 contactPoint, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (squashStretch != null && squashStretch.enabled)
+        {
+            squashStretch.TriggerSquash(normal, velocity, contactPoint, false);
+            Debug.Log($"[{squashStretch.name}] Triggered squash effect: normal={normal}, velocity={velocity}");
+        }
+    }
 }
