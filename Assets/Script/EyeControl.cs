@@ -7,9 +7,15 @@ public class EyesControl : MonoBehaviour
     public Transform target; // Mục tiêu để mắt hướng tới (có thể là chuột hoặc một đối tượng khác)
     public float intensity = 0.5f; // Khả năng di chuyển tối đa của mắt
     public float speed = 5f; // Tốc độ di chuyển của mắt
+    
+    private float originalIntensity; // Lưu giá trị intensity ban đầu
+    private float lastTouchTime; // Thời gian touch cuối cùng
+    private const float NO_TOUCH_TIMEOUT = 2f; // 2 giây không touch
     void Start()
     {
         camera = Camera.main;         // Gán camera mặc định của scene (nếu chưa gán sẵn trong Inspector)
+        originalIntensity = intensity; // Lưu giá trị intensity ban đầu
+        lastTouchTime = Time.time; // Khởi tạo thời gian touch cuối cùng
 
         target = GameManager.instance.draggingCircleGO.transform; // Gán mục tiêu là CircleComponent đang kéo   
     }
@@ -18,6 +24,21 @@ public class EyesControl : MonoBehaviour
     {
         if (camera != null)
         {
+            // Kiểm tra touch screen - nếu có touch thì khôi phục intensity, thả tay >2s mới set về 0
+            if (Input.GetMouseButton(0))
+            {
+                lastTouchTime = Time.time; // Cập nhật thời gian touch cuối cùng
+                intensity = originalIntensity; // Khôi phục intensity khi có touch
+            }
+            else
+            {
+                // Chỉ set intensity = 0 sau khi thả tay >2 giây
+                if (Time.time - lastTouchTime > NO_TOUCH_TIMEOUT)
+                {
+                    intensity = 0f; // Đặt intensity = 0 sau 2 giây không touch
+                }
+            }
+            
             // Kiểm tra nếu target hiện tại có isFirstCollision = true, thì chuyển sang draggingCircleGO mới
             if (target != null && GameManager.instance.draggingCircleGO != null)
             {
