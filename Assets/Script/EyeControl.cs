@@ -6,6 +6,7 @@ public class EyesControl : MonoBehaviour
     public GameObject eyes;           // Đối tượng "mắt" sẽ di chuyển theo chuột
     public Camera camera;             // Camera chính dùng để chuyển đổi tọa độ màn hình => thế giới
     public Transform target; // Mục tiêu để mắt hướng tới (có thể là chuột hoặc một đối tượng khác)
+    public Transform updatedTarget; // Biến để lưu trữ target đã cập nhật
     public float intensity = 0.5f; // Khả năng di chuyển tối đa của mắt
     public float speed = 5f; // Tốc độ di chuyển của mắt
 
@@ -26,11 +27,12 @@ public class EyesControl : MonoBehaviour
         lastDragTime = Time.time; // Khởi tạo thời gian drag cuối cùng
         lastMousePosition = Input.mousePosition; // Khởi tạo vị trí chuột
 
-        target = GameManager.instance.draggingCircleGO.transform; // Gán mục tiêu là CircleComponent đang kéo   
+        // target = GameManager.instance.draggingCircleGO.transform; // Gán mục tiêu là CircleComponent đang kéo   
         isDelaying = false; // target là draggingCircleGO, mặc định không delay
 
         // Lấy CircleComponent từ GameObject cha
         circleCompParent = GetComponentInParent<CircleComponent>();
+        updatedTarget = target; // Cập nhật target ban đầu
     }
 
     void Update()
@@ -79,48 +81,24 @@ public class EyesControl : MonoBehaviour
                 }
             }
 
-            // Nếu không đang theo dõi target, tìm target mới
-            if (!isDelaying)
-            {
-                FindTarget(); // Tìm kiếm target mới nếu cần
-            }
+            UpdateTarget(); // Cập nhật target nếu cần
 
-
-
-
-            EyesAim2();                // Gọi hàm điều khiển mắt mỗi frame
+            EyesAim2(); // Gọi hàm điều khiển mắt mỗi frame
         }
     }
 
-    void FindTarget()
+    void UpdateTarget()
     {
-        if (circleCompParent.isMergeAnimationPlaying)
+        var circleComp = target.GetComponent<CircleComponent>();
+        if (circleComp != null && !circleComp.isFirstCollision)
         {
-            target = circleCompParent.mergingNeighbor.transform; // Cập nhật target sang đối tượng merge mới
-            isDelaying = true; // Đặt cờ để tránh gọi nhiều lần
-
-            StartCoroutine(DelaySetTarget(GameManager.instance.draggingCircleGO.transform));
-            return; // Không cần tìm target mới nếu đang trong quá trình merge
+            // updatedTarget = GameManager.instance.draggingCircleGO.transform; // Cập nhật target sang draggingCircleGO mới
+            DelaySetTarget(GameManager.instance.draggingCircleGO.transform);
         }
 
-        // Kiểm tra nếu target hiện tại có isFirstCollision = true, thì chuyển sang draggingCircleGO mới
-        if (target != null && GameManager.instance.draggingCircleGO != null)
+        if (!circleCompParent.isMergeAnimationPlaying && target != updatedTarget)
         {
-            var circleComp = target.GetComponent<CircleComponent>();
-            if (circleComp != null && !circleComp.isFirstCollision)
-            {
-                // Tạo GameObject tạm thời tại vị trí hiện tại của target
-                if (fixedPositionTarget == null)
-                {
-                    fixedPositionTarget = new GameObject("FixedPositionTarget");
-                }
-                fixedPositionTarget.transform.position = circleComp.transform.position;
-                target = fixedPositionTarget.transform;
-                
-                // Chuyển target sang draggingCircleGO mới sau delay
-                isDelaying = true; // Đặt cờ để tránh gọi nhiều lần
-                StartCoroutine(DelaySetTarget(GameManager.instance.draggingCircleGO.transform));
-            }
+            SetTargetEyes(updatedTarget);
         }
     }
 
@@ -128,10 +106,23 @@ public class EyesControl : MonoBehaviour
     {
         yield return new WaitForSeconds(2f); // Delay 2 giây trước khi set target mới
 
-        isDelaying = false; // Reset cờ sau khi hoàn thành
+        // isDelaying = false; // Reset cờ sau khi hoàn thành
 
-        target = newTarget; // Cập nhật target mới
+        updatedTarget = newTarget; // Cập nhật target mới
         Debug.Log($"[{name}] Target updated to: {target.name}");
+    }
+
+    public void SetTargetEyes(Transform newTarget)
+    {
+        if (newTarget != null)
+        {
+            target = newTarget;
+            // Debug.Log($"[{name}] Target set immediately to: {target.name}");
+        }
+    }
+
+    public Transform GetCurrentTarget() {
+        return updatedTarget;
     }
 
     void EyesAim()

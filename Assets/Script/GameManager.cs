@@ -373,7 +373,7 @@ public class GameManager : MonoBehaviour
             if (circleComp != null)
             {
                 circleComp.isAutoScale = false; // Tắt auto scale cho merged objects
-                Debug.Log($"[{obj.name}] Đã tắt auto scale sau khi instantiate.");
+                // Debug.Log($"[{obj.name}] Đã tắt auto scale sau khi instantiate.");
             }
         }
 
@@ -428,9 +428,13 @@ public class GameManager : MonoBehaviour
         float force = 1f;
         Explode(explosionPos, radius, force);
 
-        // Huỷ 2 object cũ
-        Destroy(c1.gameObject);
-        Destroy(c2.gameObject);
+        c1.transform.DOKill();
+        c2.transform.DOKill();
+        c1.gameObject.SetActive(false); // Ẩn c1
+        c2.gameObject.SetActive(false); // Ẩn c2
+
+        // Huỷ 2 object cũ sau delay 3 giây
+        StartCoroutine(DelayedDestroy(c1.gameObject, c2.gameObject, 3f));
 
     }
 
@@ -833,6 +837,21 @@ public class GameManager : MonoBehaviour
         {
             squashStretch.TriggerSquash(normal, velocity, contactPoint, false);
             Debug.Log($"[{squashStretch.name}] Triggered squash effect: normal={normal}, velocity={velocity}");
+        }
+    }
+
+    private IEnumerator DelayedDestroy(GameObject obj1, GameObject obj2, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // Kiểm tra null trước khi destroy để tránh lỗi
+        if (obj1 != null)
+        {
+            Destroy(obj1);
+        }
+        if (obj2 != null)
+        {
+            Destroy(obj2);
         }
     }
 }

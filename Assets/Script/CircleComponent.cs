@@ -63,6 +63,7 @@ public class CircleComponent : MonoBehaviour
     public float timeTriggerMerge = 0f;
     public bool isMergeAnimationPlaying = false;
     public GameObject mergingNeighbor;
+    public EyesControl _eyesControl;
 
     private void OnEnable()
     {
@@ -112,6 +113,9 @@ public class CircleComponent : MonoBehaviour
                 Debug.LogWarning("BouncyMaterial not found in Resources folder!");
             }
         }
+
+        _eyesControl = GetComponentInChildren<EyesControl>();
+ 
     }
 
     private void Start()
@@ -132,12 +136,25 @@ public class CircleComponent : MonoBehaviour
             else
             {
                 // Nếu không auto scale thì tạo collider để trigger merge
-                Debug.Log($"[{name}] Không auto scale, tạo collider để trigger merge.");
+                // Debug.Log($"[{name}] Không auto scale, tạo collider để trigger merge.");
                 CreateTriggerMergeCollider();
+
+                // Hiệu ứng merge default khi sinh
+                timeTriggerMerge = 2f; // Thời gian trigger merge
+                mergingNeighbor = gameObject; // Đặt mergingNeighbor là chính nó
             }
 
             transform.GetComponent<Rigidbody2D>().mass = maxMass / evolutionTree.GetMaxLevel() * Level;
             // ApplyFixedOutlineWidth();
+        }
+
+        if (_eyesControl != null)
+        {
+            _eyesControl.SetTargetEyes(GameManager.instance.draggingCircleGO.transform);
+        }
+        else
+        {
+            Debug.LogWarning("EyesControl not found in CircleComponent!");
         }
 
     }
@@ -174,7 +191,7 @@ public class CircleComponent : MonoBehaviour
             {
                 // Cho phép reset timer ngay cả khi đang chạy animation merge
                 circleComponent.timeTriggerMerge = 2f;
-                circleComponent.mergingNeighbor = collision.gameObject;
+                circleComponent.mergingNeighbor = gameObject;
                 // Debug.Log($"[{name}] Set timeTriggerMerge = 2f for [{collision.gameObject.name}]");
             }
             // Delay 0.5s trước khi xóa trigger collider
@@ -217,6 +234,12 @@ public class CircleComponent : MonoBehaviour
             {
                 _animator.SetTrigger("TriggerMerge");
                 isMergeAnimationPlaying = true;
+
+                // Nếu đổi đối tượng merge neighbor hoặc chuyển từ draggingCircleGO => cập nhật mergingNeighbor
+                if (_eyesControl.target != mergingNeighbor.transform)
+                    _eyesControl?.SetTargetEyes(mergingNeighbor.transform);
+
+                // Debug.Log($"[{name}] Trigger merge animation with neighbor: {mergingNeighbor.name}");
             }
 
             timeTriggerMerge -= Time.deltaTime;
@@ -227,7 +250,7 @@ public class CircleComponent : MonoBehaviour
             isMergeAnimationPlaying = false;
 
             _animator.SetTrigger("TriggerIdle");
-
+            _eyesControl?.SetTargetEyes(_eyesControl.target);
 
             // Reset timer để tránh trigger lại
             timeTriggerMerge = 0f;
