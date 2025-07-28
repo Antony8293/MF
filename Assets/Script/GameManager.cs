@@ -8,6 +8,7 @@ using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 
 public enum mouseState
 {
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float baseOutlineWidth = 0.03f;
     public float BaseOutlineWidth => baseOutlineWidth;
 
-    private int Scores = 0;
+    public int Scores = 0;
 
     private int HighScore;
 
@@ -77,6 +78,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pipeGO;
 
     private PipeSquashEffect pipeSquash;
+
+    private int circleSpawningSupportCount = 0; // Biến đếm số lượng circle đã spawn
+    private int circleSpawningUnSupportCount = 0; 
 
     // Mảng lưu trữ các CircleComponent cùng loại
     public List<CircleComponent> warningCircles = new List<CircleComponent>();
@@ -138,7 +142,34 @@ public class GameManager : MonoBehaviour
         pipeSquash = pipeGO.GetComponent<PipeSquashEffect>();
     }
 
-    public int GetHighestFruitByY()
+    public int HandleCircleSpawningSupport()
+    {
+        bool isLowScore = Scores <= 1000;
+        bool canSpawnSupport = (isLowScore && circleSpawningSupportCount <= 10) || (!isLowScore && circleSpawningSupportCount <= 5);
+
+        if (canSpawnSupport)
+        {
+            circleSpawningSupportCount++;
+            return GameManager.instance.GetHighestFruitByY();       // Lấy loại quả theo trục Y cao nhất
+            //level = GameManager.instance.FruitCount();            // trả về loại quả có nhiều nhất
+        }
+        else
+        {
+            circleSpawningUnSupportCount++;
+
+            bool shouldResetCount =
+                (isLowScore && circleSpawningUnSupportCount >= 5) ||
+                (!isLowScore && circleSpawningUnSupportCount >= 10);
+
+            if (shouldResetCount)
+            {
+                circleSpawningSupportCount = 0;
+                circleSpawningUnSupportCount = 0;
+            }
+            return 0; // Không spawn circle hỗ trợ, trả về 0
+        }
+    }
+    private int GetHighestFruitByY()
     {
         CircleComponent highestCircleY = null;
         foreach (var circle in warningCircles)
@@ -179,7 +210,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int FruitCount()
+    private int FruitCount()
     {
         // Thống kê quả có số lượng nhiều nhất trong circleComponents
         Dictionary<int, int> fruitCount = new Dictionary<int, int>();
