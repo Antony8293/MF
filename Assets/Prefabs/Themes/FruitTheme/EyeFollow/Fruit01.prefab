@@ -137,8 +137,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4771497075367422696}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.27, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.028355233, y: 0.1377629, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -168,7 +168,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9e01f1f329447bd42a2b2c6d24854f07, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -189,12 +189,12 @@ SpriteRenderer:
   m_SortingLayerID: 1467709841
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 4760619577566495229, guid: 4c9f6d61dbe88df4eb850c58029dbc00, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5c6a89e351b6b744d8dc05ee667bf5b6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.64, y: 1.67}
+  m_Size: {x: 1.56, y: 1.63}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -234,8 +234,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.83
+  m_Offset: {x: 0.01, y: -0.04}
+  m_Radius: 0.76
 --- !u!114 &6294325812127822901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +251,7 @@ MonoBehaviour:
   eyes: {fileID: 2604631296244264436}
   camera: {fileID: 0}
   target: {fileID: 0}
+  updatedTarget: {fileID: 0}
   intensity: 0.02
   speed: 5
 --- !u!1 &6927275930578144116
@@ -461,10 +462,15 @@ MonoBehaviour:
   evolutionTree: {fileID: 0}
   isFirstCollision: 1
   isOverLineTriggered: 0
-  idleClip: {fileID: 7400000, guid: 09d65fa33c3168644b733f83735d7f9e, type: 2}
   deadClip: {fileID: 7400000, guid: d9d893ecf1e594b4d954651b4d1d10dd, type: 2}
+  idleClip: {fileID: 7400000, guid: 09d65fa33c3168644b733f83735d7f9e, type: 2}
+  mergeClip: {fileID: 0}
   isAnimated: 1
   hasTriggeredDead: 0
+  timeTriggerMerge: 0
+  isMergeAnimationPlaying: 0
+  mergingNeighbor: {fileID: 0}
+  _eyesControl: {fileID: 0}
 --- !u!114 &722239139689237297
 MonoBehaviour:
   m_ObjectHideFlags: 0

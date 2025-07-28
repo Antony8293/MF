@@ -186,6 +186,10 @@ MonoBehaviour:
   mergeClip: {fileID: 7400000, guid: 938a4abb328e1ce42b8738bfe90b2224, type: 2}
   isAnimated: 1
   hasTriggeredDead: 0
+  timeTriggerMerge: 0
+  isMergeAnimationPlaying: 0
+  mergingNeighbor: {fileID: 0}
+  _eyesControl: {fileID: 0}
 --- !u!114 &6270593136505055436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,7 +434,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9e01f1f329447bd42a2b2c6d24854f07, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -451,7 +455,7 @@ SpriteRenderer:
   m_SortingLayerID: 1467709841
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 4760619577566495229, guid: ab23502b59691db449430999b31c6c08, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 122f7c8941cae3c4ab5279e2f16b6841, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -497,7 +501,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: -0.18}
-  m_Radius: 4.89
+  m_Radius: 4.71
 --- !u!114 &8046777580989549261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,5 +517,6 @@ MonoBehaviour:
   eyes: {fileID: 2772555593839907321}
   camera: {fileID: 0}
   target: {fileID: 0}
+  updatedTarget: {fileID: 0}
   intensity: 0.2
   speed: 5
