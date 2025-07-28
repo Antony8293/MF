@@ -89,11 +89,16 @@ public class EyesControl : MonoBehaviour
 
     void UpdateTarget()
     {
+        if (target == null)
+        {
+            SetTargetEyes(gameObject.transform); // Nếu target chưa được gán, set về vị trí hiện tại của đối tượng
+            return; // Nếu target chưa được gán, không cần làm gì thêm
+        }
+
         var circleComp = target.GetComponent<CircleComponent>();
         if (circleComp != null && !circleComp.isFirstCollision)
         {
-            // updatedTarget = GameManager.instance.draggingCircleGO.transform; // Cập nhật target sang draggingCircleGO mới
-            DelaySetTarget(GameManager.instance.draggingCircleGO.transform);
+            StartCoroutine(DelaySetDragTarget());
         }
 
         if (!circleCompParent.isMergeAnimationPlaying && target != updatedTarget)
@@ -102,14 +107,15 @@ public class EyesControl : MonoBehaviour
         }
     }
 
-    IEnumerator DelaySetTarget(Transform newTarget)
+    IEnumerator DelaySetDragTarget()
     {
         yield return new WaitForSeconds(2f); // Delay 2 giây trước khi set target mới
 
-        // isDelaying = false; // Reset cờ sau khi hoàn thành
-
-        updatedTarget = newTarget; // Cập nhật target mới
-        Debug.Log($"[{name}] Target updated to: {target.name}");
+        if (updatedTarget != GameManager.instance.draggingCircleGO.transform)
+        {
+            updatedTarget = GameManager.instance.draggingCircleGO.transform; // Cập nhật target mới
+            // Debug.Log($"[{name}] Target updated to: {updatedTarget.name}");
+        }
     }
 
     public void SetTargetEyes(Transform newTarget)
