@@ -115,7 +115,7 @@ public class CircleComponent : MonoBehaviour
         }
 
         _eyesControl = GetComponentInChildren<EyesControl>();
- 
+
     }
 
     private void Start()
@@ -234,14 +234,17 @@ public class CircleComponent : MonoBehaviour
             {
                 _animator.SetTrigger("TriggerMerge");
                 isMergeAnimationPlaying = true;
-
-                // Nếu đổi đối tượng merge neighbor hoặc chuyển từ draggingCircleGO => cập nhật mergingNeighbor
-                if (_eyesControl.target != mergingNeighbor.transform)
-                    _eyesControl?.SetTargetEyes(mergingNeighbor.transform);
-
-                // Debug.Log($"[{name}] Trigger merge animation with neighbor: {mergingNeighbor.name}");
             }
 
+            if (isMergeAnimationPlaying && !hasTriggeredDead)
+            {
+                if (_eyesControl.target != mergingNeighbor.transform)
+                {
+                    _eyesControl?.SetTargetEyes(mergingNeighbor.transform);
+                }
+            }
+
+            // Countdown thời gian trigger merge
             timeTriggerMerge -= Time.deltaTime;
         }
         else if (timeTriggerMerge <= 0f && isMergeAnimationPlaying)
