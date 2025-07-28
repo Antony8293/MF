@@ -376,6 +376,7 @@ public class GameManager : MonoBehaviour
             if (circleComp != null)
             {
                 circleComp.isAutoScale = false; // Tắt auto scale cho merged objects
+                // Debug.Log($"[{obj.name}] Đã tắt auto scale sau khi instantiate.");
             }
         }
 
@@ -430,9 +431,13 @@ public class GameManager : MonoBehaviour
         float force = 1f;
         Explode(explosionPos, radius, force);
 
-        // Huỷ 2 object cũ
-        Destroy(c1.gameObject);
-        Destroy(c2.gameObject);
+        c1.transform.DOKill();
+        c2.transform.DOKill();
+        c1.gameObject.SetActive(false); // Ẩn c1
+        c2.gameObject.SetActive(false); // Ẩn c2
+
+        // Huỷ 2 object cũ sau delay 3 giây
+        StartCoroutine(DelayedDestroy(c1.gameObject, c2.gameObject, 3f));
 
     }
 
@@ -494,7 +499,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"[ScaleEffect] Scaled all particles with level {level} → scale {finalScale:F2}");
+        // Debug.Log($"[ScaleEffect] Scaled all particles with level {level} → scale {finalScale:F2}");
     }
 
 
@@ -530,7 +535,7 @@ public class GameManager : MonoBehaviour
                     newObj.transform.DOKill();
 
                     newObj.transform.localScale = circleComp.targetScale * 0.7f; // Giảm kích thước xuống 50%
-                    Debug.Log($"[{newObj.name}] Scale set to: {newObj.transform.localScale} (target: {circleComp.targetScale})");
+                    // Debug.Log($"[{newObj.name}] Scale set to: {newObj.transform.localScale} (target: {circleComp.targetScale})");
 
                     // Tắt SquashStretch để tránh conflict
                     var squashStretch = newObj.GetComponent<SquashStretch>();
@@ -547,7 +552,7 @@ public class GameManager : MonoBehaviour
                         originalColor = spriteRenderer.color;
                         // Đổi màu tối khi sinh ra
                         spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Màu tối
-                        Debug.Log($"[{newObj.name}] Sprite color set to dark");
+                        // Debug.Log($"[{newObj.name}] Sprite color set to dark");
                     }
 
                     // DOTween Sequence: Kết hợp Grow + SquashStretch
@@ -574,7 +579,7 @@ public class GameManager : MonoBehaviour
                     if (spriteRenderer != null)
                     {
                         scaleSequence.Join(spriteRenderer.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
-                        Debug.Log($"[{newObj.name}] Started color transition back to normal");
+                        // Debug.Log($"[{newObj.name}] Started color transition back to normal");
                     }
 
                     // Giai đoạn 3: Settle về targetScale (ổn định) + Đổi màu trở lại bình thường
@@ -587,18 +592,18 @@ public class GameManager : MonoBehaviour
                         if (squashStretch != null)
                         {
                             squashStretch.enabled = true;
-                            Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
+                            // Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
                         }
 
                         // Đảm bảo màu về đúng trạng thái cuối
                         if (spriteRenderer != null)
                         {
                             spriteRenderer.color = originalColor;
-                            Debug.Log($"[{newObj.name}] Sprite color restored to normal");
+                            // Debug.Log($"[{newObj.name}] Sprite color restored to normal");
                         }
                     });
 
-                    Debug.Log($"[{newObj.name}] Started combined grow+squash sequence: {newObj.transform.localScale} → squash → stretch → {circleComp.targetScale}");
+                    // Debug.Log($"[{newObj.name}] Started combined grow+squash sequence: {newObj.transform.localScale} → squash → stretch → {circleComp.targetScale}");
                 }
                 else
                 {
@@ -867,4 +872,18 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private IEnumerator DelayedDestroy(GameObject obj1, GameObject obj2, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // Kiểm tra null trước khi destroy để tránh lỗi
+        if (obj1 != null)
+        {
+            Destroy(obj1);
+        }
+        if (obj2 != null)
+        {
+            Destroy(obj2);
+        }
+    }
 }
