@@ -8,6 +8,9 @@ using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using System.IO;
+using Sych.ShareAssets.Runtime;
+using Sych.ShareAssets.Example.Tools;
 using UnityEngine.SocialPlatforms.Impl;
 
 public enum mouseState
@@ -325,17 +328,17 @@ public class GameManager : MonoBehaviour
         draggingCircleGO = nextCircleGO;
 
         draggingCircleGO.AddComponent<PipeSquashEffect>();
-        
+
         // Play swoosh sound effect
         AudioSource audioSource = draggingCircleGO.GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = draggingCircleGO.AddComponent<AudioSource>();
         }
-        
+
         // Set volume to 50%
         audioSource.volume = 0.5f;
-        
+
         AudioClip swooshClip = Resources.Load<AudioClip>("SFX/funny-swish");
         if (swooshClip != null)
         {
@@ -346,7 +349,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("SFX/funny-swish.mp3 not found in Resources folder!");
         }
-        
+
         draggingCircleGO.transform.DOMove(droppingCirclePos, 0.5f).SetEase(Ease.OutExpo).OnComplete(() =>
         {
             draggingCircleGO.GetComponent<PipeSquashEffect>().TriggerDraggingSquash();
@@ -847,6 +850,7 @@ public class GameManager : MonoBehaviour
         TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
     }
 
+
     private void DelayNotChoosingMouseState()
     {
         MouseState = mouseState.notChoosing;
@@ -869,6 +873,34 @@ public class GameManager : MonoBehaviour
             squashStretch.TriggerSquash(normal, velocity, contactPoint, false);
             Debug.Log($"[{squashStretch.name}] Triggered squash effect: normal={normal}, velocity={velocity}");
         }
+    }
+
+    /// Chụp ảnh màn hình và lưu ra file PNG, trả về đường dẫn file.
+    /// </summary>
+    public string CaptureScreenshot(string fileName = "merge.png")
+    {
+        Texture2D screenImage = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+        screenImage.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+        screenImage.Apply();
+
+        string filePath = Path.Combine(Application.persistentDataPath, fileName);
+        File.WriteAllBytes(filePath, screenImage.EncodeToPNG());
+        Destroy(screenImage);
+        //Debug.Log($"Screenshot saved: {filePath}");
+        return filePath;
+    }
+
+    public void ShareClicked()
+    {
+        if (!Share.IsPlatformSupported)  return;
+       
+        var items = new List<string>();
+        items.Add(CaptureScreenshot("merge.png"));
+
+        Share.Items(items, success =>     {
+            //logView.LogMessage($"Share: {(success ? "success" : "failed")}");
+        });
+
     }
 
     private IEnumerator DelayedDestroy(GameObject obj1, GameObject obj2, float delay)
