@@ -21,7 +21,7 @@ public class CircleComponent : MonoBehaviour
     public static event Action<UnityEngine.Object> AfterUpgrade;
 
     public Vector3 targetScale;
-    public bool isAutoScale = true; // Flag để kiểm soát auto scale
+    public bool isAutoScale = true; // Flag để kiểm soát auto scale = quả sinh ra bởi merge
     Vector3 currentScale = Vector3.zero;
 
     private Vector2 contactPoint;
@@ -51,12 +51,21 @@ public class CircleComponent : MonoBehaviour
     public bool isFirstCollision = true;
     public bool isOverLineTriggered = false;
 
-    public AnimationClip idleClip;
+    // Reference để lưu trigger collider được tạo ra
+    private CircleCollider2D triggerMergeCollider;
+
     public AnimationClip deadClip;
+    public AnimationClip idleClip;
+    public AnimationClip mergeClip;
     [SerializeField]
     public bool isAnimated = true;
     public bool hasTriggeredDead = false;
-    private void Awake()
+    public float timeTriggerMerge = 0f;
+    public bool isMergeAnimationPlaying = false;
+    public GameObject mergingNeighbor;
+    public EyesControl _eyesControl;
+
+    private void OnEnable()
     {
         OnUpgrade += ChangeToUpgrade;
         //
@@ -76,8 +85,9 @@ public class CircleComponent : MonoBehaviour
             // Bật
             var overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
 
-            overrideController["idle_c1"] = idleClip;
-            overrideController["dead_c1"] = deadClip;
+            overrideController["eyefollow_idle_f1"] = idleClip;
+            overrideController["eyefollow_merge_f1"] = mergeClip;
+            overrideController["eyefollow_dead_f1"] = deadClip;
 
             _animator.runtimeAnimatorController = overrideController;
 
@@ -87,16 +97,6 @@ public class CircleComponent : MonoBehaviour
             // Tắt anim
             _animator.enabled = false;
         }
-    }
-
-    private void OnEnable()
-    {
-
-    }
-
-    private void Start()
-    {
-
 
         PolygonCollider2D col = GetComponent<PolygonCollider2D>();
         if (col != null)
@@ -114,6 +114,13 @@ public class CircleComponent : MonoBehaviour
             }
         }
 
+        _eyesControl = GetComponentInChildren<EyesControl>();
+ 
+    }
+
+    private void Start()
+    {
+
 
         // 1. Kiểm tra nếu evolutionTree đã được gán
         if (evolutionTree == null)
@@ -126,11 +133,82 @@ public class CircleComponent : MonoBehaviour
             {
                 transform.DOScale(targetScale, 0.25f);
             }
-            
+            else
+            {
+                // Nếu không auto scale thì tạo collider để trigger merge
+                // Debug.Log($"[{name}] Không auto scale, tạo collider để trigger merge.");
+                CreateTriggerMergeCollider();
+
+                // Hiệu ứng merge default khi sinh
+                timeTriggerMerge = 2f; // Thời gian trigger merge
+                mergingNeighbor = gameObject; // Đặt mergingNeighbor là chính nó
+            }
+
             transform.GetComponent<Rigidbody2D>().mass = maxMass / evolutionTree.GetMaxLevel() * Level;
             // ApplyFixedOutlineWidth();
         }
 
+        if (_eyesControl != null)
+        {
+            _eyesControl.SetTargetEyes(GameManager.instance.draggingCircleGO.transform);
+        }
+        else
+        {
+            Debug.LogWarning("EyesControl not found in CircleComponent!");
+        }
+
+    }
+
+    private void CreateTriggerMergeCollider()
+    {
+        // Tạo collider để trigger merge
+        triggerMergeCollider = gameObject.AddComponent<CircleCollider2D>();
+        triggerMergeCollider.isTrigger = true;
+
+        // Tính radius dựa trên targetScale thay vì scale hiện tại (vì lúc này scale = 0)
+        var childCollider = gameObject.GetComponentInChildren<CircleCollider2D>();
+        if (childCollider != null)
+        {
+            float baseRadius = childCollider.radius;
+            float scaleMultiplier = Mathf.Max(targetScale.x, targetScale.y);
+            triggerMergeCollider.radius = baseRadius * scaleMultiplier * 10f;
+        }
+        else
+        {
+            triggerMergeCollider.radius = 2f; // Fallback value
+        }
+
+        triggerMergeCollider.offset = Vector2.zero; // Vị trí tùy chỉnh nếu cần
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Debug.Log($"[{name}] OnTriggerEnter2D for [{collision.gameObject.name}]");
+        if (triggerMergeCollider != null)
+        {
+            var circleComponent = collision.gameObject.GetComponentInParent<CircleComponent>();
+            if (circleComponent != null)
+            {
+                // Cho phép reset timer ngay cả khi đang chạy animation merge
+                circleComponent.timeTriggerMerge = 2f;
+                circleComponent.mergingNeighbor = gameObject;
+                // Debug.Log($"[{name}] Set timeTriggerMerge = 2f for [{collision.gameObject.name}]");
+            }
+            // Delay 0.5s trước khi xóa trigger collider
+            StartCoroutine(DelayDestroyTriggerCollider(2f));
+        }
+    }
+
+    private IEnumerator DelayDestroyTriggerCollider(float delay = 0.5f)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Xóa trigger collider sau delay
+        if (triggerMergeCollider != null)
+        {
+            Destroy(triggerMergeCollider);
+            triggerMergeCollider = null;
+        }
     }
 
     private void Update()
@@ -147,6 +225,35 @@ public class CircleComponent : MonoBehaviour
             hasTriggeredDead = false;
             _animator.SetTrigger("TriggerIdle");
             StopDeadEffect();
+        }
+
+        if (timeTriggerMerge > 0f)
+        {
+            // Trigger merge animation chỉ một lần khi bắt đầu
+            if (!isMergeAnimationPlaying && !hasTriggeredDead)
+            {
+                _animator.SetTrigger("TriggerMerge");
+                isMergeAnimationPlaying = true;
+
+                // Nếu đổi đối tượng merge neighbor hoặc chuyển từ draggingCircleGO => cập nhật mergingNeighbor
+                if (_eyesControl.target != mergingNeighbor.transform)
+                    _eyesControl?.SetTargetEyes(mergingNeighbor.transform);
+
+                // Debug.Log($"[{name}] Trigger merge animation with neighbor: {mergingNeighbor.name}");
+            }
+
+            timeTriggerMerge -= Time.deltaTime;
+        }
+        else if (timeTriggerMerge <= 0f && isMergeAnimationPlaying)
+        {
+            // Kết thúc merge animation, trigger back
+            isMergeAnimationPlaying = false;
+
+            _animator.SetTrigger("TriggerIdle");
+            _eyesControl?.SetTargetEyes(_eyesControl.target);
+
+            // Reset timer để tránh trigger lại
+            timeTriggerMerge = 0f;
         }
 
         if (GameManager.instance.isGameOver && !hasTriggeredDead)
@@ -221,11 +328,12 @@ public class CircleComponent : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (gameObject.GetComponent<MoveCircle>().enabled) return;
         // Va chạm tường bên lần đầu không tính va chạm đầu => tránh trigger dead anim
         if (isFirstCollision && ((collision.GetContact(0).collider.gameObject.name == "LeftWall" ||
             collision.GetContact(0).collider.gameObject.name == "RightWall")))
         {
-            Debug.Log($"{name} va chạm với {collision.GetContact(0).collider.gameObject.name} lần đầu, bỏ qua");
+            // Debug.Log($"{name} va chạm với {collision.GetContact(0).collider.gameObject.name} lần đầu, bỏ qua");
             return;
         }
 
