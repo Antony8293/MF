@@ -419,22 +419,34 @@ public class GameManager : MonoBehaviour
     private void MergeCircles(CircleComponent c1, CircleComponent c2, Vector3 spawnPos)
     {
         // Tắt collider trước khi move
-        Collider2D col1 = c1.GetComponent<Collider2D>();
+        Collider2D col1 = c1.GetComponentInChildren<Collider2D>();
         if (col1 != null) col1.enabled = false;
 
-        Collider2D col2 = c2.GetComponent<Collider2D>();
+        Collider2D col2 = c2.GetComponentInChildren<Collider2D>();
         if (col2 != null) col2.enabled = false;
 
-        // Di chuyển về trung tâm trước (hút vào giữa)
+        // Setup physics cho movement
         Rigidbody2D rb1 = c1.GetComponent<Rigidbody2D>();
-        if (rb1 != null) rb1.freezeRotation = true;
+        if (rb1 != null) 
+        {
+            rb1.isKinematic = true; // Tắt vật lý tạm thời để di chuyển chính xác
+            rb1.freezeRotation = true;
+            rb1.linearVelocity = Vector2.zero; // Reset velocity
+        }
 
         Rigidbody2D rb2 = c2.GetComponent<Rigidbody2D>();
-        if (rb2 != null) rb2.freezeRotation = true;
+        if (rb2 != null) 
+        {
+            rb2.isKinematic = true; // Tắt vật lý tạm thời để di chuyển chính xác
+            rb2.freezeRotation = true;
+            rb2.linearVelocity = Vector2.zero; // Reset velocity
+        }
 
+        // Tạo movement sequence với ease
         DG.Tweening.Sequence moveSeq = DOTween.Sequence();
-        moveSeq.Append(c1.transform.DOMove(spawnPos, 0.1f).SetEase(Ease.OutBack));
-        moveSeq.Join(c2.transform.DOMove(spawnPos, 0.1f).SetEase(Ease.OutBack));
+        moveSeq.Append(c1.transform.Find("CircleSprite").DOMove(spawnPos, 0.1f).SetEase(Ease.OutCirc));
+        moveSeq.Join(c2.transform.Find("CircleSprite").DOMove(spawnPos, 0.1f).SetEase(Ease.OutCirc));
+
 
         // Đợi di chuyển xong mới thực hiện các hiệu ứng và spawn mới
         moveSeq.OnComplete(() =>
