@@ -362,7 +362,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &-6248687522078440177
 MonoBehaviour:
@@ -501,7 +501,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 1.82
+  m_Radius: 1.76
 --- !u!114 &2070204506284039321
 MonoBehaviour:
   m_ObjectHideFlags: 0
