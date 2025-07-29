@@ -35,7 +35,7 @@ public class MoveCircle : MonoBehaviour
     public bool isBlockByUI = false;
     private bool isBlockedUntilMouseUp = false;
 
-    void Awake()
+    void Start()
     {
         GameoverY = GameObject.Find("NextCirclePoint").transform.position.y;
         EvolutionTreeY = GameObject.Find("EvolutionTree").transform.position.y;

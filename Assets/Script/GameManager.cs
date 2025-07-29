@@ -8,6 +8,10 @@ using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using System.IO;
+using Sych.ShareAssets.Runtime;
+using Sych.ShareAssets.Example.Tools;
+using UnityEngine.SocialPlatforms.Impl;
 
 public enum mouseState
 {
@@ -53,7 +57,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float baseOutlineWidth = 0.03f;
     public float BaseOutlineWidth => baseOutlineWidth;
 
-    private int Scores = 0;
+    public int Scores = 0;
 
     private int HighScore;
 
@@ -77,6 +81,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pipeGO;
 
     private PipeSquashEffect pipeSquash;
+
+    private int circleSpawningSupportCount = 0; // Biến đếm số lượng circle đã spawn
+    private int circleSpawningUnSupportCount = 0; 
 
     // Mảng lưu trữ các CircleComponent cùng loại
     public List<CircleComponent> warningCircles = new List<CircleComponent>();
@@ -138,7 +145,34 @@ public class GameManager : MonoBehaviour
         pipeSquash = pipeGO.GetComponent<PipeSquashEffect>();
     }
 
-    public int GetHighestFruitByY()
+    public int HandleCircleSpawningSupport()
+    {
+        bool isLowScore = Scores <= 1000;
+        bool canSpawnSupport = (isLowScore && circleSpawningSupportCount <= 10) || (!isLowScore && circleSpawningSupportCount <= 5);
+
+        if (canSpawnSupport)
+        {
+            circleSpawningSupportCount++;
+            return GameManager.instance.GetHighestFruitByY();       // Lấy loại quả theo trục Y cao nhất
+            //level = GameManager.instance.FruitCount();            // trả về loại quả có nhiều nhất
+        }
+        else
+        {
+            circleSpawningUnSupportCount++;
+
+            bool shouldResetCount =
+                (isLowScore && circleSpawningUnSupportCount >= 5) ||
+                (!isLowScore && circleSpawningUnSupportCount >= 10);
+
+            if (shouldResetCount)
+            {
+                circleSpawningSupportCount = 0;
+                circleSpawningUnSupportCount = 0;
+            }
+            return 0; // Không spawn circle hỗ trợ, trả về 0
+        }
+    }
+    private int GetHighestFruitByY()
     {
         CircleComponent highestCircleY = null;
         foreach (var circle in warningCircles)
@@ -179,7 +213,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int FruitCount()
+    private int FruitCount()
     {
         // Thống kê quả có số lượng nhiều nhất trong circleComponents
         Dictionary<int, int> fruitCount = new Dictionary<int, int>();
@@ -294,17 +328,17 @@ public class GameManager : MonoBehaviour
         draggingCircleGO = nextCircleGO;
 
         draggingCircleGO.AddComponent<PipeSquashEffect>();
-        
+
         // Play swoosh sound effect
         AudioSource audioSource = draggingCircleGO.GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = draggingCircleGO.AddComponent<AudioSource>();
         }
-        
+
         // Set volume to 50%
         audioSource.volume = 0.5f;
-        
+
         AudioClip swooshClip = Resources.Load<AudioClip>("SFX/funny-swish");
         if (swooshClip != null)
         {
@@ -315,7 +349,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("SFX/funny-swish.mp3 not found in Resources folder!");
         }
-        
+
         draggingCircleGO.transform.DOMove(droppingCirclePos, 0.5f).SetEase(Ease.OutExpo).OnComplete(() =>
         {
             draggingCircleGO.GetComponent<PipeSquashEffect>().TriggerDraggingSquash();
@@ -373,6 +407,7 @@ public class GameManager : MonoBehaviour
             if (circleComp != null)
             {
                 circleComp.isAutoScale = false; // Tắt auto scale cho merged objects
+                // Debug.Log($"[{obj.name}] Đã tắt auto scale sau khi instantiate.");
             }
         }
 
@@ -427,9 +462,13 @@ public class GameManager : MonoBehaviour
         float force = 1f;
         Explode(explosionPos, radius, force);
 
-        // Huỷ 2 object cũ
-        Destroy(c1.gameObject);
-        Destroy(c2.gameObject);
+        c1.transform.DOKill();
+        c2.transform.DOKill();
+        c1.gameObject.SetActive(false); // Ẩn c1
+        c2.gameObject.SetActive(false); // Ẩn c2
+
+        // Huỷ 2 object cũ sau delay 3 giây
+        StartCoroutine(DelayedDestroy(c1.gameObject, c2.gameObject, 3f));
 
     }
 
@@ -491,7 +530,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"[ScaleEffect] Scaled all particles with level {level} → scale {finalScale:F2}");
+        // Debug.Log($"[ScaleEffect] Scaled all particles with level {level} → scale {finalScale:F2}");
     }
 
 
@@ -527,7 +566,7 @@ public class GameManager : MonoBehaviour
                     newObj.transform.DOKill();
 
                     newObj.transform.localScale = circleComp.targetScale * 0.7f; // Giảm kích thước xuống 50%
-                    Debug.Log($"[{newObj.name}] Scale set to: {newObj.transform.localScale} (target: {circleComp.targetScale})");
+                    // Debug.Log($"[{newObj.name}] Scale set to: {newObj.transform.localScale} (target: {circleComp.targetScale})");
 
                     // Tắt SquashStretch để tránh conflict
                     var squashStretch = newObj.GetComponent<SquashStretch>();
@@ -544,7 +583,7 @@ public class GameManager : MonoBehaviour
                         originalColor = spriteRenderer.color;
                         // Đổi màu tối khi sinh ra
                         spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Màu tối
-                        Debug.Log($"[{newObj.name}] Sprite color set to dark");
+                        // Debug.Log($"[{newObj.name}] Sprite color set to dark");
                     }
 
                     // DOTween Sequence: Kết hợp Grow + SquashStretch
@@ -571,7 +610,7 @@ public class GameManager : MonoBehaviour
                     if (spriteRenderer != null)
                     {
                         scaleSequence.Join(spriteRenderer.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
-                        Debug.Log($"[{newObj.name}] Started color transition back to normal");
+                        // Debug.Log($"[{newObj.name}] Started color transition back to normal");
                     }
 
                     // Giai đoạn 3: Settle về targetScale (ổn định) + Đổi màu trở lại bình thường
@@ -584,18 +623,18 @@ public class GameManager : MonoBehaviour
                         if (squashStretch != null)
                         {
                             squashStretch.enabled = true;
-                            Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
+                            // Debug.Log($"[{newObj.name}] SquashStretch re-enabled after combined grow+squash animation");
                         }
 
                         // Đảm bảo màu về đúng trạng thái cuối
                         if (spriteRenderer != null)
                         {
                             spriteRenderer.color = originalColor;
-                            Debug.Log($"[{newObj.name}] Sprite color restored to normal");
+                            // Debug.Log($"[{newObj.name}] Sprite color restored to normal");
                         }
                     });
 
-                    Debug.Log($"[{newObj.name}] Started combined grow+squash sequence: {newObj.transform.localScale} → squash → stretch → {circleComp.targetScale}");
+                    // Debug.Log($"[{newObj.name}] Started combined grow+squash sequence: {newObj.transform.localScale} → squash → stretch → {circleComp.targetScale}");
                 }
                 else
                 {
@@ -811,6 +850,7 @@ public class GameManager : MonoBehaviour
         TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
     }
 
+
     private void DelayNotChoosingMouseState()
     {
         MouseState = mouseState.notChoosing;
@@ -832,6 +872,49 @@ public class GameManager : MonoBehaviour
         {
             squashStretch.TriggerSquash(normal, velocity, contactPoint, false);
             Debug.Log($"[{squashStretch.name}] Triggered squash effect: normal={normal}, velocity={velocity}");
+        }
+    }
+
+    /// Chụp ảnh màn hình và lưu ra file PNG, trả về đường dẫn file.
+    /// </summary>
+    public string CaptureScreenshot(string fileName = "merge.png")
+    {
+        Texture2D screenImage = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+        screenImage.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+        screenImage.Apply();
+
+        string filePath = Path.Combine(Application.persistentDataPath, fileName);
+        File.WriteAllBytes(filePath, screenImage.EncodeToPNG());
+        Destroy(screenImage);
+        //Debug.Log($"Screenshot saved: {filePath}");
+        return filePath;
+    }
+
+    public void ShareClicked()
+    {
+        if (!Share.IsPlatformSupported)  return;
+       
+        var items = new List<string>();
+        items.Add(CaptureScreenshot("merge.png"));
+
+        Share.Items(items, success =>     {
+            //logView.LogMessage($"Share: {(success ? "success" : "failed")}");
+        });
+
+    }
+
+    private IEnumerator DelayedDestroy(GameObject obj1, GameObject obj2, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // Kiểm tra null trước khi destroy để tránh lỗi
+        if (obj1 != null)
+        {
+            Destroy(obj1);
+        }
+        if (obj2 != null)
+        {
+            Destroy(obj2);
         }
     }
 }
