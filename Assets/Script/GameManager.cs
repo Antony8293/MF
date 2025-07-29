@@ -367,6 +367,7 @@ public class GameManager : MonoBehaviour
         nextCircleGO = null;
 
         SpawnNextCircle();
+        
 
         // SetDragging?.Invoke();
     }
