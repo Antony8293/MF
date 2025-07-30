@@ -75,10 +75,20 @@ public class WarningLine : MonoBehaviour
     {
         if (!onWarning)
         {
+            foreach (var circle in GameManager.instance.warningCircles)
+            {
+                if (circle != null)
+                {
+                    onWarning = true;
+                    return; // Nếu có bất kỳ CircleComponent nào đang cảnh báo, không cần kiểm tra nữa
+                }
+            }
             overLineRenderer.enabled = false;
             timeWarning = 0.0f;
         }
     }
+
+    
     private void OnTriggerExit2D(Collider2D collision)
     {
         var parentCircle = collision.transform.parent?.GetComponent<CircleComponent>();
@@ -127,7 +137,7 @@ public class WarningLine : MonoBehaviour
                 if (overLineRenderer != null)
                 {
                     // Tăng scale X lên 2 lần (hoặc giá trị bạn muốn)
-                    overLineRenderer.transform.localScale = new Vector3(4.5f, 0.08f, overLineRenderer.transform.localScale.z);
+                    overLineRenderer.transform.localScale = new Vector3(4.7f, 0.04f, overLineRenderer.transform.localScale.z);
                     // Fade in nhấp nháy
                     float targetAlpha = Mathf.PingPong(Time.time * 0.5f, 1f); // 0~1, nhấp nháy chậm hơn
                     overLineRenderer.DOFade(targetAlpha, 0.2f).SetUpdate(true).SetEase(Ease.Linear);
