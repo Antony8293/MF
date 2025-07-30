@@ -734,33 +734,6 @@ public class GameManager : MonoBehaviour
         ScoreText.SetText(Scores.ToString());
     }
 
-
-    // private UnityEngine.Object Find_Smallest_Fruit()
-    // {
-    //     Transform parent = GameObject.Find("Circles").transform;
-    //     int min_index = 100;
-    //     UnityEngine.Object smallest = null;
-
-    //     foreach (var circle in parent)
-    //     {
-    //         string name = (circle as Transform).gameObject.name.Replace("(Clone)", "");
-
-    //         for (int i = 0; i < Circles.Length; i++)
-    //         {
-    //             if (Circles[i].name == name)
-    //             {
-    //                 if (i <= min_index)
-    //                 {
-    //                     min_index = i;
-    //                     smallest = (circle as Transform).gameObject;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return smallest;
-    // }
-
-
     private void Destroy_Smallest()
     {
         UnityEngine.Object smallest = null;
