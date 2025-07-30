@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
     private PipeSquashEffect pipeSquash;
 
     private int circleSpawningSupportCount = 0; // Biến đếm số lượng circle đã spawn
-    private int circleSpawningUnSupportCount = 0; 
+    private int circleSpawningUnSupportCount = 0;
 
     // Mảng lưu trữ các CircleComponent cùng loại
     public List<CircleComponent> warningCircles = new List<CircleComponent>();
@@ -303,6 +303,14 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (isGameOver) return; // Tránh gọi nhiều lần
+
+        UIManager.instance.OpenAdsCountdownPopup(); // Hiện countdown ads
+
+    }
+
+    public void TriggerGameOverPanel()
+    {
         Debug.Log("Game Over triggered");
         isGameOver = true;
 
@@ -310,7 +318,11 @@ public class GameManager : MonoBehaviour
 
         GameOverUICanvas.SetActive(true);
         YourScoreText.SetText("Score: " + Scores);
+
         Destroy(nextCircleGO);
+        Destroy(draggingCircleGO);
+        
+        UIManager.instance.CloseCurrentPopup(); // Đóng popup hiện tại nếu có
     }
 
     public void GameRestart()
@@ -855,13 +867,36 @@ public class GameManager : MonoBehaviour
             draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
     }
 
+    public void PauseGame()
+    {
+        isPaused = true;
+
+        Time.timeScale = 0;
+
+        if (draggingCircleGO != null)
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
+    }
 
     public void ResumeGame()
     {
-        if (!isPaused) return;
-        TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
+        // if (!isPaused) return;
+        // TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
+
+        isPaused = false;
+
+        Time.timeScale = 1;
+
+        if (draggingCircleGO != null)
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
     }
 
+    public void SetBlockFruitDragging(bool isBlock)
+    {
+        if (draggingCircleGO != null)
+        {
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isBlock;
+        }
+    }
 
     private void DelayNotChoosingMouseState()
     {
@@ -904,12 +939,13 @@ public class GameManager : MonoBehaviour
 
     public void ShareClicked()
     {
-        if (!Share.IsPlatformSupported)  return;
-       
+        if (!Share.IsPlatformSupported) return;
+
         var items = new List<string>();
         items.Add(CaptureScreenshot("merge.png"));
 
-        Share.Items(items, success =>     {
+        Share.Items(items, success =>
+        {
             //logView.LogMessage($"Share: {(success ? "success" : "failed")}");
         });
 
@@ -918,7 +954,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator DelayedDestroy(GameObject obj1, GameObject obj2, float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         // Kiểm tra null trước khi destroy để tránh lỗi
         if (obj1 != null)
         {
