@@ -17,13 +17,13 @@ public class CustomTimer : MonoBehaviour
     public int minutes;
     [Range(0, 59)]
     public int seconds;
-    
+
     public enum CountMethod
     {
         CountDown,
         CountUp
     };
-    
+
     public enum SeperatorType
     {
         Colon,
@@ -48,7 +48,7 @@ public class CustomTimer : MonoBehaviour
     public bool secondsDisplay = true;
 
     [Space]
-    
+
     [Tooltip("Select to count up or down")]
     public CountMethod countMethod;
 
@@ -62,34 +62,42 @@ public class CustomTimer : MonoBehaviour
     bool timerRunning = false;
     bool timerPaused = false;
     public double timeRemaining;
-    
+    private double timeInput;
+    private Color originalDialColor;
+    private float timePercentWarning = 0.4f; // 30% of the input time
+
+    // Color transition variables
+    private bool isColorTransitioning = false;
+    private float colorTransitionTimer = 0f;
+    private float colorTransitionDuration = 0.1f; // 0.1 second transition (reduced from 0.3f)
+    private bool hasTriggeredWarning = false; // Track if warning has been triggered
 
     private void Awake()
     {
-        if(!standardText)
-            if(GetComponent<Text>())
+        if (!standardText)
+            if (GetComponent<Text>())
             {
                 standardText = GetComponent<Text>();
             }
-        if(!textMeshProText)
-            if(GetComponent<TextMeshProUGUI>())
+        if (!textMeshProText)
+            if (GetComponent<TextMeshProUGUI>())
             {
                 textMeshProText = GetComponent<TextMeshProUGUI>();
             }
-        if(!standardSlider)
-            if(GetComponent<Slider>())
+        if (!standardSlider)
+            if (GetComponent<Slider>())
             {
                 standardSlider = GetComponent<Slider>();
             }
-        if(!dialSlider)
-            if(GetComponent<Image>())
+        if (!dialSlider)
+            if (GetComponent<Image>())
             {
                 dialSlider = GetComponent<Image>();
             }
-        if(standardSlider)
+        if (standardSlider)
         {
             standardSlider.maxValue = ReturnTotalSeconds();
-            if(countMethod == CountMethod.CountDown)
+            if (countMethod == CountMethod.CountDown)
             {
                 standardSlider.value = standardSlider.maxValue;
             }
@@ -98,7 +106,7 @@ public class CustomTimer : MonoBehaviour
                 standardSlider.value = standardSlider.minValue;
             }
         }
-        if(dialSlider)
+        if (dialSlider)
         {
             if (countMethod == CountMethod.CountDown)
             {
@@ -108,23 +116,25 @@ public class CustomTimer : MonoBehaviour
             {
                 dialSlider.fillAmount = 0f;
             }
+            // Store the original color of the dial slider
+            originalDialColor = dialSlider.color;
         }
     }
     void Start()
     {
-        if(startAtRuntime)
+        if (startAtRuntime)
         {
             StartTimer();
         }
         else
         {
-            if(countMethod == CountMethod.CountDown)
+            if (countMethod == CountMethod.CountDown)
             {
-                if(standardText)
+                if (standardText)
                 {
                     standardText.text = DisplayFormattedTime(ReturnTotalSeconds());
                 }
-                if(textMeshProText)
+                if (textMeshProText)
                 {
                     textMeshProText.text = DisplayFormattedTime(ReturnTotalSeconds());
                 }
@@ -141,19 +151,20 @@ public class CustomTimer : MonoBehaviour
                 }
             }
         }
+        timeInput = timeRemaining;
     }
     void Update()
     {
-        if(timerRunning)
+        if (timerRunning)
         {
-            if(countMethod == CountMethod.CountDown)
+            if (countMethod == CountMethod.CountDown)
             {
                 CountDown();
-                if(standardSlider)
+                if (standardSlider)
                 {
                     StandardSliderDown();
                 }
-                if(dialSlider)
+                if (dialSlider)
                 {
                     DialSliderDown();
                 }
@@ -165,7 +176,7 @@ public class CustomTimer : MonoBehaviour
                 {
                     StandardSliderUp();
                 }
-                if(dialSlider)
+                if (dialSlider)
                 {
                     DialSliderUp();
                 }
@@ -177,7 +188,7 @@ public class CustomTimer : MonoBehaviour
     {
         /*If you choose to edit this back to 0 for 100% accuracy,
         1 frame at the end of the timer will display maximum numbers as it takes time to switch to the else statement
-        which sets the time remaining to 0. This is accurate up to 20 milliseconds or 0.02 of a second.*/  
+        which sets the time remaining to 0. This is accurate up to 20 milliseconds or 0.02 of a second.*/
         if (timeRemaining > 0.02)
         {
             timeRemaining -= Time.deltaTime;
@@ -211,7 +222,7 @@ public class CustomTimer : MonoBehaviour
     }
     private void StandardSliderDown()
     {
-        if(standardSlider.value > standardSlider.minValue)
+        if (standardSlider.value > standardSlider.minValue)
         {
             standardSlider.value -= Time.deltaTime;
         }
@@ -227,6 +238,39 @@ public class CustomTimer : MonoBehaviour
     {
         float timeRangeClamped = Mathf.InverseLerp(ReturnTotalSeconds(), 0, (float)timeRemaining);
         dialSlider.fillAmount = Mathf.Lerp(1, 0, timeRangeClamped);
+
+        // Check if we should start color transition
+        if (timeRemaining < timeInput * timePercentWarning && !hasTriggeredWarning)
+        {
+            isColorTransitioning = true;
+            hasTriggeredWarning = true;
+            colorTransitionTimer = 0f;
+        }
+
+        if (isColorTransitioning)
+        {
+            colorTransitionTimer += Time.deltaTime;
+            float colorLerpValue = Mathf.Clamp01(colorTransitionTimer / colorTransitionDuration);
+
+            Color redColor = new Color(1f, 0.2f, 0.2f); // Red color
+            
+            // Simple transition: Original -> Red
+            dialSlider.color = Color.Lerp(originalDialColor, redColor, colorLerpValue);
+
+            if (colorTransitionTimer >= colorTransitionDuration)
+            {
+                isColorTransitioning = false;
+                dialSlider.color = redColor; // Ensure it stays red
+            }
+        }
+
+        // Only reset color if time goes back above warning threshold AND we haven't started warning yet
+        if (timeRemaining >= timeInput * timePercentWarning && hasTriggeredWarning)
+        {
+            hasTriggeredWarning = false;
+            isColorTransitioning = false;
+            dialSlider.color = originalDialColor;
+        }
     }
     private void DialSliderUp()
     {
@@ -267,7 +311,7 @@ public class CustomTimer : MonoBehaviour
     }
     private void StartTimerCustom(double timeToSet)
     {
-        if(!timerRunning && !timerPaused)
+        if (!timerRunning && !timerPaused)
         {
             timeRemaining = timeToSet;
             timerRunning = true;
@@ -282,19 +326,26 @@ public class CustomTimer : MonoBehaviour
     private void ResetTimer()
     {
         timerPaused = false;
-        
+
+        // Reset color transition variables
+        isColorTransitioning = false;
+        hasTriggeredWarning = false;
+        colorTransitionTimer = 0f;
+
         if (countMethod == CountMethod.CountDown)
         {
             timeRemaining = ReturnTotalSeconds();
             DisplayInTextObject();
-            if(standardSlider)
+            if (standardSlider)
             {
                 standardSlider.maxValue = ReturnTotalSeconds();
                 standardSlider.value = standardSlider.maxValue;
             }
-            if(dialSlider)
+            if (dialSlider)
             {
                 dialSlider.fillAmount = 1f;
+                // Reset color to original
+                dialSlider.color = originalDialColor;
             }
         }
         else
@@ -309,6 +360,8 @@ public class CustomTimer : MonoBehaviour
             if (dialSlider)
             {
                 dialSlider.fillAmount = 0f;
+                // Reset color to original
+                dialSlider.color = originalDialColor;
             }
         }
     }
@@ -321,7 +374,7 @@ public class CustomTimer : MonoBehaviour
         totalTimeSet += seconds;
         return totalTimeSet;
     }
-   
+
     public double ConvertToTotalSeconds(float hours, float minutes, float seconds)
     {
         timeRemaining = hours * 60 * 60;
@@ -365,13 +418,20 @@ public class CustomTimer : MonoBehaviour
         {
             if (secondsDisplay)
             {
-                string secondsFormatted; 
-                secondsFormatted = string.Format("{0:00}", seconds);              
+                string secondsFormatted;
+                if (seconds < 10)
+                {
+                    secondsFormatted = string.Format("{0}", (int)seconds); // Display as "x" when < 10
+                }
+                else
+                {
+                    secondsFormatted = string.Format("{0:00}", seconds); // Display as "xx" when >= 10
+                }
                 return secondsFormatted;
             }
             return null;
         }
-        
+
 
         convertedNumber = HoursFormat() + MinutesFormat() + SecondsFormat();
 
