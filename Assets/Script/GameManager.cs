@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     private AnimalData nextCircleAData;
     private AnimalData draggingCircleAData;
 
-    private GameObject nextCircleGO;
+    public GameObject nextCircleGO;
     public GameObject draggingCircleGO;
 
     [SerializeField]
@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviour
     public bool isPlayingTutorial = false;
     private int maxLevelSpawn = 5;
 
+    public bool isShaking = false;
     private void Awake()
     {
         if (instance == null)

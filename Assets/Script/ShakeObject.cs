@@ -64,6 +64,10 @@ public class ShakeObject : MonoBehaviour
                 isShaking = false;
                 transform.localPosition = originalPos;
                 transform.localRotation = originalRot;
+                if (gameObject.name == "DynamicBoxCollider")
+                {
+                    UIManager.instance.UIScaleShakingBoosterEffect(Const.END_EFFECT);
+                }
             }
         }
     }

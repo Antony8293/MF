@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 
 public class UIManager : MonoBehaviour
 {
@@ -16,6 +17,17 @@ public class UIManager : MonoBehaviour
 
     public GameObject adBreakPanel; // Gán GameObject AdBreakPanel
     public SettingPanelUI pausePanel; // Gán GameObject PausePanel
+    public GameObject pipe; // Gán GameObject Pipe
+    public GameObject canvas_world; // Gán GameObject CanvasWorld
+    public GameObject canvas_camera; // Gán GameObject CanvasCamera 
+    public Camera camera; // Gán Camera để sử dụng trong UIScaleShakingBoosterEffect
+    private Vector3 originalCameraPosition; // Lưu vị trí gốc của camera
+
+    public GameObject boxSprite;
+    public GameObject boxCollider; // Gán GameObject BoxCollider để sử dụng trong UIScaleShakingBoosterEffect
+    private Vector3 originalBoxSpritePosition; // Lưu vị trí gốc của BoxSprite
+    private Vector3 originalBoxColliderPosition; // Lưu vị trí gốc của BoxCollider
+    public float scaleShakeDuration = 0.5f; // Thời gian hiệu ứng scale khi sử dụng booster Shake the Box
 
     private void Awake()
     {
@@ -27,6 +39,13 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject); // Nếu đã có instance, hủy đối tượng này
         }
+    }
+
+    private void Start()
+    {
+        originalCameraPosition = camera.transform.position; // Lưu vị trí gốc của camera
+        originalBoxSpritePosition = boxSprite.transform.position; // Lưu vị trí gốc của BoxSprite
+        originalBoxColliderPosition = boxCollider.transform.position; // Lưu vị trí gốc của BoxCollider
     }
 
     private void Update()
@@ -176,5 +195,53 @@ public class UIManager : MonoBehaviour
         }
 
         GameManager.instance.ResumeGame(); // Đóng popup và tiếp tục game
+    }
+
+    public void UIScaleShakingBoosterEffect(bool isStartEffect)
+    {
+        if (isStartEffect == Const.START_EFFECT)
+        {
+            GameManager.instance.draggingCircleGO.SetActive(false); // Ẩn đối tượng kéo khi bắt đầu hiệu ứng
+            GameManager.instance.nextCircleGO.SetActive(false); // Ẩn đối tượng tiếp theo khi bắt đầu hiệu ứng
+
+            camera.orthographic = false; // Đảm bảo camera là perspective
+            pipe.SetActive(false);
+            canvas_world.SetActive(true);
+            canvas_camera.SetActive(false);
+
+            boxCollider.transform.SetParent(boxSprite.transform); // Đặt BoxCollider làm con của BoxSprite
+
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(camera.transform.DOMove(new Vector3(0, 0, -21f), scaleShakeDuration).SetEase(Ease.InOutCubic));
+            sequence.Append(boxSprite.transform.DOMove(originalBoxSpritePosition + new Vector3(0, 0.5f, 0), 1f).SetEase(Ease.InOutCubic));
+            sequence.OnComplete(() =>
+            {
+                Booster.Booster4Clicked();
+            });
+        }
+        else
+        {
+            // Trở về trạng thái ban đầu
+            Sequence sequence = DOTween.Sequence();
+
+            sequence.Append(boxSprite.transform.DOMove(originalBoxSpritePosition, 1f).SetEase(Ease.InOutCubic));
+            sequence.Append(camera.transform.DOMove(
+                originalCameraPosition, // Vị trí cũ của camera
+                scaleShakeDuration // Thời gian hiệu ứng
+            ).SetEase(Ease.InOutCubic)).OnComplete(() =>
+            {
+                camera.orthographic = true; // Đổi về orthographic
+                pipe.SetActive(true);
+                canvas_world.SetActive(false);
+                canvas_camera.SetActive(true);
+
+                GameManager.instance.draggingCircleGO.SetActive(true); // Ẩn đối tượng kéo khi bắt đầu hiệu ứng
+                GameManager.instance.nextCircleGO.SetActive(true); // Ẩn đối tượng tiếp theo khi bắt đầu hiệu ứng
+
+                boxCollider.transform.SetParent(null); // Tách BoxCollider ra khỏi BoxSprite
+            });
+        }
+
     }
 }
