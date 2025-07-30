@@ -120,6 +120,11 @@ public class CustomTimer : MonoBehaviour
             originalDialColor = dialSlider.color;
         }
     }
+
+    private void OnEnable() {
+        timeRemaining = timeInput;
+    }
+
     void Start()
     {
         if (startAtRuntime)

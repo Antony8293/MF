@@ -3,11 +3,24 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [Header("Booster Popups")]
+    public static UIManager instance; // Singleton instance
     public BoosterPopup[] boosterPopups; // Gán 4 popup ở đây theo thứ tự 0-3
 
     private BoosterPopup currentPopup;
     public GameObject darkBG; // Gán GameObject DarkBG
+    public GameObject adsCountdownPanel; // Gán GameObject AdCountdownPanel
 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Nếu đã có instance, hủy đối tượng này
+        }
+    }
 
     public void OpenRateUsURL()
     {
@@ -47,10 +60,48 @@ public class UIManager : MonoBehaviour
             currentPopup = null;
         }
 
+        // Đóng ads countdown popup nếu đang mở
+        if (adsCountdownPanel != null && adsCountdownPanel.activeSelf)
+        {
+            adsCountdownPanel.SetActive(false);
+        }
+
         darkBG.SetActive(false); // Ẩn nền mờ
 
         // ✅ CHO KÉO LẠI khi đóng popup
-        GameManager.instance.draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = false;
+        if (GameManager.instance?.draggingCircleGO != null)
+        {
+            var moveComponent = GameManager.instance.draggingCircleGO.GetComponent<MoveCircle>();
+            if (moveComponent != null)
+                moveComponent.isBlockByUI = false;
+        }
+    }
+    public void OpenAdsCountdownPopup()
+    {
+        if (adsCountdownPanel == null)
+        {
+            Debug.LogError("UIManager: adsCountdownPanel is not assigned!");
+            return;
+        }
 
+        adsCountdownPanel.GetComponent<SettingPanelUI>().Show();
+        darkBG.SetActive(true); // Hiện nền mờ
+
+        // ❌ CHẶN KÉO khi mở popup
+        if (GameManager.instance?.draggingCircleGO != null)
+        {
+            var moveComponent = GameManager.instance.draggingCircleGO.GetComponent<MoveCircle>();
+            if (moveComponent != null)
+                moveComponent.isBlockByUI = true;
+        }
+    }
+    
+    public void CloseAdsCountdownPopup()
+    {
+        if (adsCountdownPanel != null)
+        {
+            adsCountdownPanel.SetActive(false);
+            darkBG.SetActive(false); // Ẩn nền mờ
+        }
     }
 }
