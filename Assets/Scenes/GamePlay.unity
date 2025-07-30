@@ -8852,8 +8852,12 @@ PrefabInstance:
       value: DialMinutesSeconds
       objectReference: {fileID: 0}
     - target: {fileID: 1271682334274413580, guid: e74e546368b8aad42a80e3720a5821f8, type: 3}
+      propertyPath: seconds
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271682334274413580, guid: e74e546368b8aad42a80e3720a5821f8, type: 3}
       propertyPath: timeRemaining
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8624188599562795222, guid: e74e546368b8aad42a80e3720a5821f8, type: 3}
       propertyPath: m_Pivot.x
