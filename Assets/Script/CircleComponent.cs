@@ -72,12 +72,6 @@ public class CircleComponent : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _moveCircle = GetComponent<MoveCircle>();
 
-        // Chỉ reset scale về 0 nếu được cho phép auto scale
-        if (isAutoScale)
-        {
-            transform.localScale = Vector3.zero; // Khi thả auto scale về 0 - bug
-        }
-
         // Gán Anim
         _animator = GetComponentInChildren<Animator>();
         if (isAnimated)
@@ -121,6 +115,11 @@ public class CircleComponent : MonoBehaviour
     private void Start()
     {
 
+        // Chỉ reset scale về 0 nếu được cho phép auto scale
+        if (isAutoScale)
+        {
+            transform.localScale = Vector3.zero; // Khi thả auto scale về 0 - bug
+        }
 
         // 1. Kiểm tra nếu evolutionTree đã được gán
         if (evolutionTree == null)
