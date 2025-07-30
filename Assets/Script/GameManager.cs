@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     private AnimalData nextCircleAData;
     private AnimalData draggingCircleAData;
 
-    private GameObject nextCircleGO;
+    public GameObject nextCircleGO;
     public GameObject draggingCircleGO;
 
     [SerializeField]
@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
     private PipeSquashEffect pipeSquash;
 
     private int circleSpawningSupportCount = 0; // Biến đếm số lượng circle đã spawn
-    private int circleSpawningUnSupportCount = 0; 
+    private int circleSpawningUnSupportCount = 0;
 
     // Mảng lưu trữ các CircleComponent cùng loại
     public List<CircleComponent> warningCircles = new List<CircleComponent>();
@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviour
     public bool isPlayingTutorial = false;
     private int maxLevelSpawn = 5;
 
+    public bool isShaking = false;
     private void Awake()
     {
         if (instance == null)
@@ -303,6 +304,14 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (isGameOver) return; // Tránh gọi nhiều lần
+
+        UIManager.instance.OpenAdsCountdownPopup(); // Hiện countdown ads
+
+    }
+
+    public void TriggerGameOverPanel()
+    {
         Debug.Log("Game Over triggered");
         isGameOver = true;
 
@@ -310,7 +319,11 @@ public class GameManager : MonoBehaviour
 
         GameOverUICanvas.SetActive(true);
         YourScoreText.SetText("Score: " + Scores);
+
         Destroy(nextCircleGO);
+        Destroy(draggingCircleGO);
+        
+        UIManager.instance.CloseCurrentPopup(); // Đóng popup hiện tại nếu có
     }
 
     public void GameRestart()
@@ -419,22 +432,34 @@ public class GameManager : MonoBehaviour
     private void MergeCircles(CircleComponent c1, CircleComponent c2, Vector3 spawnPos)
     {
         // Tắt collider trước khi move
-        Collider2D col1 = c1.GetComponent<Collider2D>();
+        Collider2D col1 = c1.GetComponentInChildren<Collider2D>();
         if (col1 != null) col1.enabled = false;
 
-        Collider2D col2 = c2.GetComponent<Collider2D>();
+        Collider2D col2 = c2.GetComponentInChildren<Collider2D>();
         if (col2 != null) col2.enabled = false;
 
-        // Di chuyển về trung tâm trước (hút vào giữa)
+        // Setup physics cho movement
         Rigidbody2D rb1 = c1.GetComponent<Rigidbody2D>();
-        if (rb1 != null) rb1.freezeRotation = true;
+        if (rb1 != null) 
+        {
+            rb1.isKinematic = true; // Tắt vật lý tạm thời để di chuyển chính xác
+            rb1.freezeRotation = true;
+            rb1.linearVelocity = Vector2.zero; // Reset velocity
+        }
 
         Rigidbody2D rb2 = c2.GetComponent<Rigidbody2D>();
-        if (rb2 != null) rb2.freezeRotation = true;
+        if (rb2 != null) 
+        {
+            rb2.isKinematic = true; // Tắt vật lý tạm thời để di chuyển chính xác
+            rb2.freezeRotation = true;
+            rb2.linearVelocity = Vector2.zero; // Reset velocity
+        }
 
+        // Tạo movement sequence với ease
         DG.Tweening.Sequence moveSeq = DOTween.Sequence();
-        moveSeq.Append(c1.transform.DOMove(spawnPos, 0.1f).SetEase(Ease.OutBack));
-        moveSeq.Join(c2.transform.DOMove(spawnPos, 0.1f).SetEase(Ease.OutBack));
+        moveSeq.Append(c1.transform.Find("CircleSprite").DOMove(spawnPos, 0.1f).SetEase(Ease.OutCirc));
+        moveSeq.Join(c2.transform.Find("CircleSprite").DOMove(spawnPos, 0.1f).SetEase(Ease.OutCirc));
+
 
         // Đợi di chuyển xong mới thực hiện các hiệu ứng và spawn mới
         moveSeq.OnComplete(() =>
@@ -843,13 +868,36 @@ public class GameManager : MonoBehaviour
             draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
     }
 
+    public void PauseGame()
+    {
+        isPaused = true;
+
+        Time.timeScale = 0;
+
+        if (draggingCircleGO != null)
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
+    }
 
     public void ResumeGame()
     {
-        if (!isPaused) return;
-        TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
+        // if (!isPaused) return;
+        // TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
+
+        isPaused = false;
+
+        Time.timeScale = 1;
+
+        if (draggingCircleGO != null)
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
     }
 
+    public void SetBlockFruitDragging(bool isBlock)
+    {
+        if (draggingCircleGO != null)
+        {
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isBlock;
+        }
+    }
 
     private void DelayNotChoosingMouseState()
     {
@@ -892,12 +940,13 @@ public class GameManager : MonoBehaviour
 
     public void ShareClicked()
     {
-        if (!Share.IsPlatformSupported)  return;
-       
+        if (!Share.IsPlatformSupported) return;
+
         var items = new List<string>();
         items.Add(CaptureScreenshot("merge.png"));
 
-        Share.Items(items, success =>     {
+        Share.Items(items, success =>
+        {
             //logView.LogMessage($"Share: {(success ? "success" : "failed")}");
         });
 
@@ -906,7 +955,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator DelayedDestroy(GameObject obj1, GameObject obj2, float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         // Kiểm tra null trước khi destroy để tránh lỗi
         if (obj1 != null)
         {
