@@ -67,9 +67,7 @@ public class BoosterPopup : MonoBehaviour
             case 3:
                 // Sử dụng booster Shake the Box
                 uiManager?.CloseCurrentPopup(); // Đóng popup sau
-                uiManager.UIScaleShakingBoosterEffect(Const.START_EFFECT); // Hiệu ứng scale
-                
-                
+                Booster.Booster4Clicked();
                 break;
         }
     }

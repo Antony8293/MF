@@ -65,14 +65,18 @@ public class CircleComponent : MonoBehaviour
     public GameObject mergingNeighbor;
     public EyesControl _eyesControl;
 
-    private GameObject aimingGO;
-
     private void OnEnable()
     {
         OnUpgrade += ChangeToUpgrade;
         //
         _rigidbody = GetComponent<Rigidbody2D>();
         _moveCircle = GetComponent<MoveCircle>();
+
+        // Chỉ reset scale về 0 nếu được cho phép auto scale
+        if (isAutoScale)
+        {
+            transform.localScale = Vector3.zero; // Khi thả auto scale về 0 - bug
+        }
 
         // Gán Anim
         _animator = GetComponentInChildren<Animator>();
@@ -112,28 +116,11 @@ public class CircleComponent : MonoBehaviour
 
         _eyesControl = GetComponentInChildren<EyesControl>();
 
-        // Cache the reference to the AimingComponent GameObject
-        var aimingComponent = GetComponentInChildren<AimingComponent>();
-        if (aimingComponent != null)
-        {
-            aimingGO = aimingComponent.gameObject;
-            aimingGO.SetActive(false); // Ẩn AimingComponent khi không cần thiết
-        }
-        else
-        {
-            Debug.LogWarning("AimingComponent not found in CircleComponent!");
-        }
-        // aimingGO = aimingTransform != null ? aimingTransform.gameObject : null;
     }
 
     private void Start()
     {
 
-        // Chỉ reset scale về 0 nếu được cho phép auto scale
-        if (isAutoScale)
-        {
-            transform.localScale = Vector3.zero; // Khi thả auto scale về 0 - bug
-        }
 
         // 1. Kiểm tra nếu evolutionTree đã được gán
         if (evolutionTree == null)
@@ -283,19 +270,6 @@ public class CircleComponent : MonoBehaviour
             _deadEffectSequence?.Kill();
             _rigidbody.bodyType = RigidbodyType2D.Static;
             enabled = false;
-        }
-
-        if ((GameManager.MouseState == mouseState.DestroyChoosing || GameManager.MouseState == mouseState.UpgradeChoosing) && _moveCircle.isDrop)
-        {
-            Debug.Log($"[{name}] MouseState is DestroyChoosing, enabling AimingComponent.");
-            if (aimingGO != null)
-                aimingGO.SetActive(true); // Hiện AimingComponent khi đang chọn phá hủy
-        }
-        else
-        {
-            // Tắt AimingComponent khi không ở trạng thái DestroyChoosing
-            if (aimingGO != null && aimingGO.activeSelf)
-                aimingGO.SetActive(false);
         }
     }
 
