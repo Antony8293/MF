@@ -7,12 +7,12 @@ public class ScaleSmall : MonoBehaviour
 
     private void OnEnable()
     {
-        // Booster.booster4 += TriggerBooster;
+        Booster.booster4 += TriggerBooster;
     }
 
     private void OnDisable()
     {
-        // Booster.booster4 -= TriggerBooster;
+        Booster.booster4 -= TriggerBooster;
     }
 
     private void TriggerBooster()
