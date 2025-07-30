@@ -17,7 +17,5 @@ public class Booster : MonoBehaviour
 
     public static void Booster3Clicked() => booster3?.Invoke();
 
-    // public static void Booster4Clicked() => booster4?.Invoke();
-
     public static void Booster4Clicked() => booster4?.Invoke();
 }
