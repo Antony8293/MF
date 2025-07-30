@@ -176,14 +176,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetScale: {x: 0, y: 0, z: 0}
+  isAutoScale: 1
   level: 2
   evolutionTree: {fileID: 0}
   isFirstCollision: 1
   isOverLineTriggered: 0
-  idleClip: {fileID: 7400000, guid: b971730a57de2374ba47ad11d94bc7f1, type: 2}
   deadClip: {fileID: 7400000, guid: 841a4fa8eb9561c4391e17292892039b, type: 2}
+  idleClip: {fileID: 7400000, guid: b971730a57de2374ba47ad11d94bc7f1, type: 2}
+  mergeClip: {fileID: 0}
   isAnimated: 1
   hasTriggeredDead: 0
+  timeTriggerMerge: 0
+  isMergeAnimationPlaying: 0
+  mergingNeighbor: {fileID: 0}
+  _eyesControl: {fileID: 0}
 --- !u!114 &6270593136505055436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,7 +220,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   squashX: 1.05
   squashY: 0.95
-  duration: 0.05
+  squashDuration: 0.06
+  stretchDuration: 0.08
+  returnDuration: 0.1
   minVelocity: 1
   cooldown: 0.5
   visual: {fileID: 0}
@@ -258,6 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a59cf5cf8021c344aef64453c74a0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  duration: 2.78
 --- !u!1 &8231140308786708800
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,8 @@ using UnityEngine;
 public class ScaleSmall : MonoBehaviour
 {
     private Vector3 orginScale;
-
+    [SerializeField]
+    private float duration = 0.5f;  
     private void OnEnable()
     {
         // Booster.booster4 += TriggerBooster;
@@ -17,10 +18,11 @@ public class ScaleSmall : MonoBehaviour
 
     private void TriggerBooster()
     {
+        // Lưu lại scale gốc của đối tượng khi kích hoạt
         orginScale = gameObject.transform.localScale;
-
-        transform.DOScale(orginScale * 0.75f, 1.0f);
-        Invoke("BackToOrigin", 1.5f);
+        // Thực hiện scale xuống 75% kích thước gốc
+        transform.DOScale(orginScale * 0.9f, 0);
+        Invoke("BackToOrigin", duration);
     }
 
     private void BackToOrigin()
