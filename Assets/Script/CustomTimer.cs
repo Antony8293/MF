@@ -121,8 +121,59 @@ public class CustomTimer : MonoBehaviour
         }
     }
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
+        // Dừng timer hiện tại (nếu có)
+        timerRunning = false;
+        timerPaused = false;
+        
+        // Reset các biến transition
+        isColorTransitioning = false;
+        hasTriggeredWarning = false;
+        colorTransitionTimer = 0f;
+        
+        // Cập nhật timeInput từ các giá trị hours, minutes, seconds hiện tại
+        timeInput = ReturnTotalSeconds();
         timeRemaining = timeInput;
+        
+        Debug.Log($"Timer enabled and reset with initial time: {timeRemaining} seconds");
+        
+        // Reset UI về trạng thái ban đầu
+        if (countMethod == CountMethod.CountDown)
+        {
+            if (standardSlider)
+            {
+                standardSlider.maxValue = ReturnTotalSeconds();
+                standardSlider.value = standardSlider.maxValue;
+            }
+            if (dialSlider)
+            {
+                dialSlider.fillAmount = 1f;
+                dialSlider.color = originalDialColor;
+            }
+        }
+        else
+        {
+            if (standardSlider)
+            {
+                standardSlider.maxValue = ReturnTotalSeconds();
+                standardSlider.value = standardSlider.minValue;
+            }
+            if (dialSlider)
+            {
+                dialSlider.fillAmount = 0f;
+                dialSlider.color = originalDialColor;
+            }
+        }
+        
+        // Cập nhật hiển thị
+        DisplayInTextObject();
+        
+        // Tự động start timer nếu startAtRuntime = true
+        if (startAtRuntime)
+        {
+            timerRunning = true;
+        }
     }
 
     void Start()

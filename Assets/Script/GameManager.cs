@@ -318,7 +318,7 @@ public class GameManager : MonoBehaviour
 
         GameOverUICanvas.SetActive(true);
         YourScoreText.SetText("Score: " + Scores);
-        
+
         Destroy(nextCircleGO);
         Destroy(draggingCircleGO);
         
@@ -855,13 +855,36 @@ public class GameManager : MonoBehaviour
             draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
     }
 
+    public void PauseGame()
+    {
+        isPaused = true;
+
+        Time.timeScale = 0;
+
+        if (draggingCircleGO != null)
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
+    }
 
     public void ResumeGame()
     {
-        if (!isPaused) return;
-        TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
+        // if (!isPaused) return;
+        // TogglePause(); // dùng lại toggle để đảm bảo đồng bộ
+
+        isPaused = false;
+
+        Time.timeScale = 1;
+
+        if (draggingCircleGO != null)
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isPaused;
     }
 
+    public void SetBlockFruitDragging(bool isBlock)
+    {
+        if (draggingCircleGO != null)
+        {
+            draggingCircleGO.GetComponent<MoveCircle>().isBlockByUI = isBlock;
+        }
+    }
 
     private void DelayNotChoosingMouseState()
     {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,6 +11,12 @@ public class UIManager : MonoBehaviour
     public GameObject darkBG; // Gán GameObject DarkBG
     public GameObject adsCountdownPanel; // Gán GameObject AdCountdownPanel
 
+    public float adsCountdownTime = 30f; // Thời gian đếm ngược quảng cáo
+    public TextMeshProUGUI adsCountdownText; // Gán TMP_Text để hiển thị thời gian đếm ngược
+
+    public GameObject adBreakPanel; // Gán GameObject AdBreakPanel
+    public SettingPanelUI pausePanel; // Gán GameObject PausePanel
+
     private void Awake()
     {
         if (instance == null)
@@ -20,6 +27,20 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject); // Nếu đã có instance, hủy đối tượng này
         }
+    }
+
+    private void Update()
+    {
+        if (adsCountdownTime > 0)
+        {
+            adsCountdownTime -= Time.deltaTime; // Giảm thời gian đếm ngược
+            adsCountdownText.text = Mathf.Ceil(adsCountdownTime).ToString(); // Cập nhật văn bản đếm ngược
+        }
+        else
+        {
+            OpenAdsBreak(); // Mở popup quảng cáo khi hết thời gian
+        }
+
     }
 
     public void OpenRateUsURL()
@@ -95,7 +116,7 @@ public class UIManager : MonoBehaviour
                 moveComponent.isBlockByUI = true;
         }
     }
-    
+
     public void CloseAdsCountdownPopup()
     {
         if (adsCountdownPanel != null)
@@ -103,5 +124,57 @@ public class UIManager : MonoBehaviour
             adsCountdownPanel.SetActive(false);
             darkBG.SetActive(false); // Ẩn nền mờ
         }
+    }
+
+    public void OpenAdsBreak()
+    {
+        if (adBreakPanel == null)
+        {
+            Debug.LogError("UIManager: adBreakPanel is not assigned!");
+            return;
+        }
+
+        GameManager.instance.SetBlockFruitDragging(true); // Chặn kéo khi mở quảng cáo
+
+        adBreakPanel.GetComponent<SettingPanelUI>().Show();
+        darkBG.SetActive(true); // Hiện nền mờ
+    }
+
+    public void CloseAdsBreak()
+    {
+        adsCountdownTime = 30f; // Dừng đếm ngược quảng cáo
+        GameManager.instance.SetBlockFruitDragging(false);
+
+        if (adBreakPanel != null)
+        {
+            adBreakPanel.SetActive(false);
+            darkBG.SetActive(false); // Ẩn nền mờ
+        }
+    }
+
+    public void OpenPausePanel()
+    {
+        if (pausePanel == null)
+        {
+            Debug.LogWarning("pausePanel is null!");
+            return;
+        }
+
+        pausePanel.Show(); // DOTween show
+        darkBG.SetActive(true); // Hiện nền mờ
+
+
+        GameManager.instance.PauseGame();
+    }
+
+    public void ClosePausePanel()
+    {
+        if (pausePanel != null)
+        {
+            pausePanel.Hide(); // DOTween hide
+            darkBG.SetActive(false); // Ẩn nền mờ
+        }
+
+        GameManager.instance.ResumeGame(); // Đóng popup và tiếp tục game
     }
 }
