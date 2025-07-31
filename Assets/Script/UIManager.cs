@@ -50,15 +50,15 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (adsCountdownTime > 0)
-        {
-            adsCountdownTime -= Time.deltaTime; // Giảm thời gian đếm ngược
-            adsCountdownText.text = Mathf.Ceil(adsCountdownTime).ToString(); // Cập nhật văn bản đếm ngược
-        }
-        else
-        {
-            OpenAdsBreak(); // Mở popup quảng cáo khi hết thời gian
-        }
+        // if (adsCountdownTime > 0)
+        // {
+        //     adsCountdownTime -= Time.deltaTime; // Giảm thời gian đếm ngược
+        //     adsCountdownText.text = Mathf.Ceil(adsCountdownTime).ToString(); // Cập nhật văn bản đếm ngược
+        // }
+        // else
+        // {
+        //     OpenAdsBreak(); // Mở popup quảng cáo khi hết thời gian
+        // }
 
     }
 
@@ -157,6 +157,17 @@ public class UIManager : MonoBehaviour
 
         adBreakPanel.GetComponent<SettingPanelUI>().Show();
         darkBG.SetActive(true); // Hiện nền mờ
+    }
+
+    public void SetTMPAdsTimer(string text)
+    {
+        if (adsCountdownText == null)
+        {
+            Debug.LogError("UIManager: adsCountdownText is not assigned!");
+            return;
+        }
+
+        adsCountdownText.text = text; // Cập nhật văn bản đếm ngược
     }
 
     public void CloseAdsBreak()
