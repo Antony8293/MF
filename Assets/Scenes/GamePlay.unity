@@ -3494,6 +3494,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 3831148824922621619, guid: 657f3d7bd2ecc114aae7b3b552e4faaa, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -8335689079571636726, guid: 48856bba2b7342b4fb437ba60b8af397, type: 3}
     - target: {fileID: 5059280608581401700, guid: 657f3d7bd2ecc114aae7b3b552e4faaa, type: 3}
       propertyPath: m_fontColor.b
       value: 1
@@ -5086,7 +5090,7 @@ PrefabInstance:
     - target: {fileID: 3831148824922621619, guid: 657f3d7bd2ecc114aae7b3b552e4faaa, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -915251725770379298, guid: 4c9c39190fccb8f428404164aa31f94e, type: 3}
+      objectReference: {fileID: -8416354257052922336, guid: 951062ba537e5dc4f9bb15dcec311dcc, type: 3}
     - target: {fileID: 5059280608581401700, guid: 657f3d7bd2ecc114aae7b3b552e4faaa, type: 3}
       propertyPath: m_text
       value: Music
@@ -5868,7 +5872,7 @@ PrefabInstance:
     - target: {fileID: 3831148824922621619, guid: 657f3d7bd2ecc114aae7b3b552e4faaa, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 2363734461446537473, guid: fe4bcd6ecb9dbd8489a2101e2a6afd1e, type: 3}
+      objectReference: {fileID: -1905684861663631648, guid: bcc656a8ced19604890f2e270a72f914, type: 3}
     - target: {fileID: 5059280608581401700, guid: 657f3d7bd2ecc114aae7b3b552e4faaa, type: 3}
       propertyPath: m_text
       value: Vibrate
