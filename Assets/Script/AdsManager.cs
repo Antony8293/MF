@@ -88,9 +88,7 @@ public class AdsManager : MonoBehaviour
         {
             Debug.Log("Showing Rewarded Ad");
 
-            GameManager.instance.isGameOver = false; // Đặt lại trạng thái game over nếu có
-            GameManager.instance.ResumeGame(); // Resume game
-
+            GameManager.instance.ReviveGame(); // Cứu sống game
             UIManager.instance.CloseAdsCountdownPopup();
         }
         else if (adsType == AdsType.Interstitial)

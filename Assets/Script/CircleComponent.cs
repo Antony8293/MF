@@ -8,6 +8,13 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
+public enum circleState
+{
+    Idle,
+    Merging,
+    Dead,
+}
+
 public class CircleComponent : MonoBehaviour
 {
     // public static event Action<CircleComponent> AddCircleQueueToDestroy;
@@ -66,6 +73,10 @@ public class CircleComponent : MonoBehaviour
     public EyesControl _eyesControl;
 
     private GameObject aimingGO;
+
+    public bool isDead = false;
+
+    public circleState currentState = circleState.Idle;
 
     private void OnEnable()
     {
@@ -226,29 +237,38 @@ public class CircleComponent : MonoBehaviour
 
     private void Update()
     {
-        if (!_moveCircle.enabled && !isFirstCollision && !isOverLineTriggered && !hasTriggeredDead)
+        if (!_moveCircle.enabled && !isFirstCollision && !isOverLineTriggered && !hasTriggeredDead && currentState != circleState.Dead)
         {
             hasTriggeredDead = true;
+
+            currentState = circleState.Dead;
             _animator.SetTrigger("TriggerDead");
-            PlayDeadEffect();
+
+            // PlayDeadEffect(); // Chơi hiệu ứng chết
         }
 
-        if (!_moveCircle.enabled && !isFirstCollision && isOverLineTriggered && hasTriggeredDead)
+        if (!_moveCircle.enabled && !isFirstCollision && isOverLineTriggered && hasTriggeredDead && currentState == circleState.Dead)
         {
             hasTriggeredDead = false;
+
+            currentState = circleState.Idle;
             _animator.SetTrigger("TriggerIdle");
+
             StopDeadEffect();
         }
 
         if (timeTriggerMerge > 0f)
         {
             // Trigger merge animation chỉ một lần khi bắt đầu
-            if (!isMergeAnimationPlaying && !hasTriggeredDead)
+            if (!isMergeAnimationPlaying && !hasTriggeredDead && currentState != circleState.Merging)
             {
-                _animator.SetTrigger("TriggerMerge");
                 isMergeAnimationPlaying = true;
+
+                currentState = circleState.Merging;
+                _animator.SetTrigger("TriggerMerge");
             }
 
+            // Nếu đang merge animation và chưa trigger dead => set target eyes vào neighborMerging
             if (isMergeAnimationPlaying && !hasTriggeredDead)
             {
                 if (_eyesControl.target != mergingNeighbor.transform)
@@ -260,11 +280,12 @@ public class CircleComponent : MonoBehaviour
             // Countdown thời gian trigger merge
             timeTriggerMerge -= Time.deltaTime;
         }
-        else if (timeTriggerMerge <= 0f && isMergeAnimationPlaying)
+        else if (timeTriggerMerge <= 0f && isMergeAnimationPlaying && currentState == circleState.Merging)
         {
             // Kết thúc merge animation, trigger back
             isMergeAnimationPlaying = false;
 
+            currentState = circleState.Idle;
             _animator.SetTrigger("TriggerIdle");
             _eyesControl?.SetTargetEyes(_eyesControl.target);
 
@@ -272,17 +293,14 @@ public class CircleComponent : MonoBehaviour
             timeTriggerMerge = 0f;
         }
 
-        if (GameManager.instance.isGameOver && !hasTriggeredDead)
+        if (GameManager.instance.isGameOver && !isDead)
         {
-            _animator.SetTrigger("TriggerDead");
-            _rigidbody.bodyType = RigidbodyType2D.Static;
-            enabled = false;
+            SetDead();
         }
-        else if (GameManager.instance.isGameOver && hasTriggeredDead)
+
+        if (!GameManager.instance.isGameOver && isDead)
         {
-            _deadEffectSequence?.Kill();
-            _rigidbody.bodyType = RigidbodyType2D.Static;
-            enabled = false;
+            SetAlive();
         }
 
         if (GameManager.instance.isBoosterTriggered) return;
@@ -327,7 +345,7 @@ public class CircleComponent : MonoBehaviour
         {
             sr.DOColor(new Color(0.5f, 0.5f, 0.5f), 0f);
             visual.localScale = Vector3.one; // Reset scale
-            DelayCheckGameOver();
+            SetGameOverByCircle();
         });
     }
 
@@ -345,10 +363,36 @@ public class CircleComponent : MonoBehaviour
             visual.localScale = Vector3.one;
     }
 
+    public void SetDead()
+    {
+        if (!hasTriggeredDead)
+        {
+            _animator.SetTrigger("TriggerDead");
+            _rigidbody.bodyType = RigidbodyType2D.Static;
+            // enabled = false;
+        }
+        else if (hasTriggeredDead)
+        {
+            _deadEffectSequence?.Kill();
+            _rigidbody.bodyType = RigidbodyType2D.Static;
+            // enabled = false;
+        }
+
+        isDead = true; // Đánh dấu là đã chết
+    }
+
+    public void SetAlive()
+    {
+        hasTriggeredDead = false;
+        StopDeadEffect();
+        _animator.SetTrigger("TriggerIdle");
+        _rigidbody.bodyType = RigidbodyType2D.Dynamic; // Đặt lại body type
+        enabled = true; // Bật lại component
+        isDead = false; // Đánh dấu là đã sống lại
+    }
 
 
-
-    public void DelayCheckGameOver()
+    public void SetGameOverByCircle()
     {
         if (!isOverLineTriggered && !GameManager.instance.isGameOver)
         {
@@ -383,7 +427,6 @@ public class CircleComponent : MonoBehaviour
         if (isFirstCollision)
         {
             isFirstCollision = false;
-            // StartCoroutine(DelayCheckGameOver());
         }
 
         // 1. Nếu đã đang merge → bỏ qua

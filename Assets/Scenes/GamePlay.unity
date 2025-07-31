@@ -11103,9 +11103,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1046945633}
-        m_TargetAssemblyTypeName: AdsManager, Assembly-CSharp
-        m_MethodName: HandleRewardedAdCountdown
+      - m_Target: {fileID: 2102661546}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: GameOver
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11791,6 +11791,7 @@ MonoBehaviour:
   isGameOver: 0
   isPlayingTutorial: 0
   isShaking: 0
+  isBoosterTriggered: 0
 --- !u!4 &2102661547
 Transform:
   m_ObjectHideFlags: 0

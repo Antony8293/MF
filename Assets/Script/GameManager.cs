@@ -313,7 +313,24 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return; // Tránh gọi nhiều lần
 
+        isGameOver = true;
+
+        draggingCircleGO.SetActive(false); // Ẩn circle đang kéo
+        nextCircleGO.SetActive(false); // Ẩn circle tiếp theo
+
         AdsManager.instance.HandleRewardedAdCountdown(); // Bật rewarded ad countdown
+
+    }
+
+    public void ReviveGame()
+    {
+        if (!isGameOver) return; // Tránh gọi khi chưa game over
+
+        isGameOver = false;
+
+        draggingCircleGO.SetActive(true); // Hiện circle đang kéo
+        nextCircleGO.SetActive(true); // Hiện circle tiếp theo
+
 
     }
 
@@ -330,7 +347,7 @@ public class GameManager : MonoBehaviour
 
         Destroy(nextCircleGO);
         Destroy(draggingCircleGO);
-        
+
         UIManager.instance.CloseCurrentPopup(); // Đóng popup hiện tại nếu có
     }
 
