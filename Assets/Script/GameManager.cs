@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
 
     public int HandleCircleSpawningSupport()
     {
+        // Kiểm tra xem có thể spawn circle hỗ trợ hay không
         bool isLowScore = Scores <= 1000;
         bool canSpawnSupport = (isLowScore && circleSpawningSupportCount <= 10) || (!isLowScore && circleSpawningSupportCount <= 5);
 
@@ -263,14 +264,17 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // Đặt trạng thái chuột ban đầu
         MouseState = mouseState.notChoosing;
         GameInit();
+        // Đặt tốc độ khung hình mục tiêu
         Application.targetFrameRate = 60;
 
+        // Lấy điểm cao nhất từ PlayerPrefs
         HighScore = PlayerPrefs.GetInt("highscore", 0);
         HighScoreText.SetText(HighScore.ToString());
 
-        GameObject lineGameOver = GameObject.Find("LineGameOver");
+        GameObject lineGameOver = GameObject.Find("OverLine");
         if (lineGameOver != null)
         {
             lineGameOverY = lineGameOver.transform.position.y;
@@ -279,6 +283,7 @@ public class GameManager : MonoBehaviour
 
     private Vector3 UIToWorldPosition(RectTransform uiRect)
     {
+        // Chuyển đổi vị trí từ RectTransform sang Vector3 trong không gian thế giới
         Vector3 screenPos = RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, uiRect.position);
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);
         worldPos.z = 0f;
@@ -312,7 +317,8 @@ public class GameManager : MonoBehaviour
 
     public void TriggerGameOverPanel()
     {
-        Debug.Log("Game Over triggered");
+        AudioManager.instance.PlayGameOverSound();
+        //Debug.Log("Game Over triggered");
         isGameOver = true;
 
         if (HighScore < Scores) PlayerPrefs.SetInt("highscore", Scores);
@@ -352,7 +358,7 @@ public class GameManager : MonoBehaviour
         // Set volume to 50%
         audioSource.volume = 0.5f;
 
-        AudioClip swooshClip = Resources.Load<AudioClip>("SFX/funny-swish");
+        AudioClip swooshClip = Resources.Load<AudioClip>("SFX/");
         if (swooshClip != null)
         {
             audioSource.clip = swooshClip;
@@ -380,6 +386,8 @@ public class GameManager : MonoBehaviour
         nextCircleGO = null;
 
         SpawnNextCircle();
+
+        AudioManager.instance.PlayDropSound();
 
         // SetDragging?.Invoke();
     }
@@ -474,7 +482,7 @@ public class GameManager : MonoBehaviour
         int nextLevel = c1.Level + 1;
 
         PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect, nextLevel);
-
+        AudioManager.instance.PlayMergeSound();
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
 
@@ -772,7 +780,9 @@ public class GameManager : MonoBehaviour
             {
                 int smallestLevel = smallest.GetComponent<CircleComponent>().Level;
                 PracticeEffect("VFX/Custom_FruitExplosion", smallest.GameObject().transform.position, evolutionTree.levels[smallestLevel - 1].colorEffect, smallestLevel);
+                AudioManager.instance.PlayBoosterSmallestSound();
                 Destroy(smallest.GameObject());
+
             }
         }
     }
