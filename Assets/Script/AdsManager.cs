@@ -12,13 +12,14 @@ public class AdsManager : MonoBehaviour
     public static AdsManager instance;
     public float timeUntilNextAdBreak = 30f; // Thời gian giữa các quảng cáo
     public AdsType currentAdType = AdsType.Banner;
+    public GameObject adsPlayingPanel; // Gán GameObject để hiển thị quảng cáo đang phát
 
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -116,19 +117,24 @@ public class AdsManager : MonoBehaviour
     private void StartPlayingAd(System.Action onAdComplete)
     {
         Debug.Log("Starting ad playback...");
+
+        adsPlayingPanel.SetActive(true); // Hiển thị panel quảng cáo
         
-        // Giả lập việc quảng cáo đang phát trong 5 giây
-        Invoke("CompleteAd", 5f);
-        
+        GameManager.instance.SetBlockFruitDragging(true); // Chặn kéo trái cây
+
         // Lưu callback để gọi khi ad hoàn thành
         adCompleteCallback = onAdComplete;
     }
     
     private System.Action adCompleteCallback;
     
-    private void CompleteAd()
+    public void CompleteAd()
     {
         Debug.Log("Ad playback completed!");
+
+        adsPlayingPanel.SetActive(false);
+
+        GameManager.instance.SetBlockFruitDragging(false); // Bỏ chặn kéo trái cây
         
         // Gọi callback khi ad hoàn thành
         adCompleteCallback?.Invoke();
