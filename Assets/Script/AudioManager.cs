@@ -80,13 +80,12 @@ public class AudioManager : MonoBehaviour
         setBackgroundMusic(hasBackgroundMusic); // Thiết lập trạng thái âm nhạc nền
         setEffectSound(hasEffectSound); // Thiết lập trạng thái âm thanh hiệu ứng
         setVibrate(hasVibrate); // Thiết lập trạng thái rung
-        Debug.Log("AudioManager Start: hasBackgroundMusic = " + hasBackgroundMusic + ", hasEffectSound = " + hasEffectSound + ", hasVibrate = " + hasVibrate);
         if (hasBackgroundMusic)
         {
             PlayBackgroundMusic(); // Phát âm thanh nền nếu đã bật
         }
     }
-    
+
     public void setBackgroundMusic(bool value)
     {
         hasBackgroundMusic = value;
@@ -102,17 +101,10 @@ public class AudioManager : MonoBehaviour
             musicSource.Stop(); // Dừng âm thanh nền nếu đã tắt
             musicOn.SetActive(false);
             musicOff.SetActive(true);
-           
+
         }
     }
 
-    public void Vibrate()
-    {
-        if (!hasVibrate) return;
-        #if UNITY_ANDROID || UNITY_IOS
-            Handheld.Vibrate();
-        #endif
-    }
 
     public void setVibrate(bool value)
     {
@@ -130,7 +122,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    
     public void setEffectSound(bool value)
     {
         hasEffectSound = value;
@@ -146,7 +137,14 @@ public class AudioManager : MonoBehaviour
             soundOn.SetActive(true);
             soundOff.SetActive(false);
         }
-        Debug.Log("setEffectSound: hasEffectSound = " + hasEffectSound);
+    }
+    
+    public void Vibrate()
+    {
+        if (!hasVibrate) return;
+        #if UNITY_ANDROID || UNITY_IOS
+            Handheld.Vibrate();
+        #endif
     }
 
     public void PlayBackgroundMusic()
@@ -227,7 +225,6 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMergeSound()
     {
-        Debug.Log("Playing merge sound" + hasEffectSound);
         if (hasEffectSound)
         {
             audioSource.PlayOneShot(mergeClip); // Phát âm thanh khi thực hiện merge
