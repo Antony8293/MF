@@ -775,16 +775,19 @@ public class GameManager : MonoBehaviour
     {
         UnityEngine.Object smallest = null;
         Transform parent = GameObject.Find("Circles").transform;
+        int index = 0; // Khởi tạo index để tạo delay khác nhau cho mỗi object
+        
         foreach (var circle in parent)
         {
             smallest = (circle as Transform).gameObject;
             if (smallest.GetComponent<CircleComponent>().Level == 1 || smallest.GetComponent<CircleComponent>().Level == 2)
             {
                 int smallestLevel = smallest.GetComponent<CircleComponent>().Level;
-                PracticeEffect("VFX/Custom_FruitExplosion", smallest.GameObject().transform.position, evolutionTree.levels[smallestLevel - 1].colorEffect, smallestLevel);
-                AudioManager.instance.PlayBoosterSmallestSound();
-                Destroy(smallest.GameObject());
-
+                
+                
+                // Delay tăng dần cho mỗi object: 0.1f, 0.2f, 0.3f, ...
+                StartCoroutine(DelayedDestroySingle(smallest.GameObject(), smallestLevel, 0.1f + (index * 0.05f)));
+                index++; // Tăng index cho object tiếp theo
             }
         }
     }
@@ -977,6 +980,20 @@ public class GameManager : MonoBehaviour
         if (obj2 != null)
         {
             Destroy(obj2);
+        }
+    }
+
+    private IEnumerator DelayedDestroySingle(GameObject obj, int smallestLevel, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Kiểm tra null trước khi destroy để tránh lỗi
+        if (obj != null)
+        {
+            PracticeEffect("VFX/Custom_FruitExplosion", obj.transform.position, evolutionTree.levels[smallestLevel - 1].colorEffect, smallestLevel);
+            AudioManager.instance.PlayBoosterSmallestSound();
+
+            Destroy(obj);
         }
     }
 }
