@@ -358,16 +358,16 @@ public class GameManager : MonoBehaviour
         // Set volume to 50%
         audioSource.volume = 0.5f;
 
-        AudioClip swooshClip = Resources.Load<AudioClip>("SFX/");
-        if (swooshClip != null)
-        {
-            audioSource.clip = swooshClip;
-            audioSource.Play();
-        }
-        else
-        {
-            Debug.LogWarning("SFX/funny-swish.mp3 not found in Resources folder!");
-        }
+        // AudioClip swooshClip = Resources.Load<AudioClip>("SFX/");
+        // if (swooshClip != null)
+        // {
+        //     audioSource.clip = swooshClip;
+        //     audioSource.Play();
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("SFX/funny-swish.mp3 not found in Resources folder!");
+        // }
 
         draggingCircleGO.transform.DOMove(droppingCirclePos, 0.5f).SetEase(Ease.OutExpo).OnComplete(() =>
         {
@@ -483,6 +483,10 @@ public class GameManager : MonoBehaviour
 
         PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect, nextLevel);
         AudioManager.instance.PlayMergeSound();
+        if(nextLevel > maxLevelSpawn)
+        {
+            AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
+        }
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
 
