@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ContinueBtn : MonoBehaviour
+public class BreathingButton : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     bool isClicked = false; // Biến để theo dõi trạng thái nút
@@ -32,15 +32,5 @@ public class ContinueBtn : MonoBehaviour
             // Khi đã click, trở về scale gốc
             transform.localScale = Vector3.Lerp(transform.localScale, originalScale, Time.deltaTime * 5f);
         }
-    }
-
-    public void OnClick()
-    {
-        // Thực hiện hành động khi nút được nhấn
-        isClicked = true;
-        Debug.Log("Continue button clicked!");
-
-        UIManager.instance.CloseCurrentPopup(); // Đóng popup hiện tại
-        GameManager.instance.ResumeGame(); // Tiếp tục trò chơi
     }
 }
