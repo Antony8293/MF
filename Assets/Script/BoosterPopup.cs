@@ -44,8 +44,14 @@ public class BoosterPopup : MonoBehaviour
     public void OnUseBoosterClicked(int boosterIndex)
     {
         if (boosterIndex < 0 || boosterIndex >= 4) return;
-        uiManager?.CloseCurrentPopup(); // Đóng popup sau
-        StartCoroutine(DelayInvokeBooster(boosterIndex));
+
+        AdsManager.instance.ShowAd(AdsType.Rewarded, () =>
+        {
+            uiManager?.CloseCurrentPopup(); // Đóng popup sau
+            StartCoroutine(DelayInvokeBooster(boosterIndex));
+        });
+
+
     }
 
     private System.Collections.IEnumerator DelayInvokeBooster(int boosterIndex)
@@ -71,7 +77,7 @@ public class BoosterPopup : MonoBehaviour
                 uiManager.UIScaleShakingBoosterEffect(Const.START_EFFECT); // Hiệu ứng scale
                 break;
         }
-                    
+
         gameObject.SetActive(false);
     }
 }

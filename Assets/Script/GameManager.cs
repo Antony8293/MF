@@ -311,7 +311,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return; // Tránh gọi nhiều lần
 
-        UIManager.instance.OpenAdsCountdownPopup(); // Hiện countdown ads
+        AdsManager.instance.HandleRewardedAdCountdown(); // Bật rewarded ad countdown
 
     }
 
