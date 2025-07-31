@@ -439,7 +439,7 @@ public class CircleComponent : MonoBehaviour
             if (newObj != null)
             {
                 PracticeEffect?.Invoke("VFX/Custom_RespawnExplosion", gameObject.transform.position, evolutionTree.levels[nextLevel - 1].colorEffect, nextLevel);
-
+                AudioManager.instance.PlayBoosterUpgradeSound();
                 // Gán parent nếu cần
                 newObj.transform.SetParent(GameObject.Find("Circles").transform);
 
@@ -470,6 +470,7 @@ public class CircleComponent : MonoBehaviour
         else
         {
             PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, Color.white, nextLevel);
+            AudioManager.instance.PlayBoosterUpgradeSound();
         }
 
     }
