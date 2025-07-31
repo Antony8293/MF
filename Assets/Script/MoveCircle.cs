@@ -82,6 +82,7 @@ public class MoveCircle : MonoBehaviour
     {
         if (GameManager.MouseState == mouseState.DestroyChoosing && isDrop)
         {
+            AudioManager.instance.PlayBoosterHammerSound(); // Phát âm thanh khi nhấn nút
             FinishBosster(true);
         }
         else if (GameManager.MouseState == mouseState.UpgradeChoosing && isDrop)

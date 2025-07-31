@@ -120,24 +120,24 @@ public class CustomTimer : MonoBehaviour
             originalDialColor = dialSlider.color;
         }
     }
-
     private void OnEnable()
     {
+        AudioManager.instance.PlayCountdownSound();
         // Dừng timer hiện tại (nếu có)
         timerRunning = false;
         timerPaused = false;
-        
+
         // Reset các biến transition
         isColorTransitioning = false;
         hasTriggeredWarning = false;
         colorTransitionTimer = 0f;
-        
+
         // Cập nhật timeInput từ các giá trị hours, minutes, seconds hiện tại
         timeInput = ReturnTotalSeconds();
         timeRemaining = timeInput;
-        
+
         Debug.Log($"Timer enabled and reset with initial time: {timeRemaining} seconds");
-        
+
         // Reset UI về trạng thái ban đầu
         if (countMethod == CountMethod.CountDown)
         {
@@ -165,15 +165,20 @@ public class CustomTimer : MonoBehaviour
                 dialSlider.color = originalDialColor;
             }
         }
-        
+
         // Cập nhật hiển thị
         DisplayInTextObject();
-        
+
         // Tự động start timer nếu startAtRuntime = true
         if (startAtRuntime)
         {
             timerRunning = true;
         }
+    }
+
+    void OnDisable()
+    {
+        AudioManager.instance.StopSound();
     }
 
     void Start()
