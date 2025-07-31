@@ -3,9 +3,10 @@ using DG.Tweening;
 
 public class AimingComponent : MonoBehaviour
 {
-    bool isAiming = false;
+    public bool isTargeted = false;
     Vector3 originalRotation;
     private Sequence rotationSequence;
+    private bool hasProcessedBooster = false; // Flag để tránh loop enable/disable
     
     void Awake()
     {
@@ -23,14 +24,15 @@ public class AimingComponent : MonoBehaviour
     {
         // Force rotation về (0, 0, 0) mỗi khi enable
         transform.rotation = Quaternion.Euler(originalRotation);
-        
-        isAiming = true;
+
+        isTargeted = false; // Đánh dấu đã chọn mục tiêu
+        hasProcessedBooster = false; // Reset flag khi enable
         OnAiming(); // Bắt đầu hiệu ứng aiming ngay khi khởi tạo
     }
 
     public void OnDisable()
     {
-        isAiming = false;
+        isTargeted = false;
         if (rotationSequence != null)
         {
             rotationSequence.Kill(); // Dừng sequence cụ thể
@@ -41,9 +43,18 @@ public class AimingComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isAiming)
+        if (GameManager.instance.isBoosterTriggered)
         {
-            OnChose();
+            if (isTargeted)
+            {
+                Debug.Log("AimingComponent: isTargeted = true");
+                OnChose();
+            }
+            else
+            {
+                gameObject.SetActive(false); // Tắt gameobject nếu không được chọn
+            }
+            
         }
     }
 

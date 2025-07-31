@@ -95,6 +95,8 @@ public class GameManager : MonoBehaviour
     private int maxLevelSpawn = 5;
 
     public bool isShaking = false;
+
+    public bool isBoosterTriggered = false;
     private void Awake()
     {
         if (instance == null)
@@ -912,6 +914,7 @@ public class GameManager : MonoBehaviour
     private void DelayNotChoosingMouseState()
     {
         MouseState = mouseState.notChoosing;
+        isBoosterTriggered = false; 
     }
 
     public static void TriggerMouseNotChoosing() => MouseNotChoosing?.Invoke();

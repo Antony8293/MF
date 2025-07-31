@@ -83,15 +83,35 @@ public class MoveCircle : MonoBehaviour
         if (GameManager.MouseState == mouseState.DestroyChoosing && isDrop)
         {
             AudioManager.instance.PlayBoosterHammerSound(); // Phát âm thanh khi nhấn nút
-            FinishBosster(true);
+            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
+
+            StartCoroutine(DelayBoosterEffect(() =>
+            {
+
+
+                FinishBosster(true);
+            }));
         }
         else if (GameManager.MouseState == mouseState.UpgradeChoosing && isDrop)
         {
-            gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
+            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
 
-            FinishBosster(false);
+            StartCoroutine(DelayBoosterEffect(() =>
+            {
+                gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
 
+                FinishBosster(false);
+            }));
         }
+    }
+
+    private System.Collections.IEnumerator DelayBoosterEffect(Action onComplete)
+    {
+        yield return new WaitForSeconds(1f);
+        onComplete?.Invoke();
+
     }
 
     void Update()
