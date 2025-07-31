@@ -287,7 +287,7 @@ public class CircleComponent : MonoBehaviour
 
         if ((GameManager.MouseState == mouseState.DestroyChoosing || GameManager.MouseState == mouseState.UpgradeChoosing) && _moveCircle.isDrop)
         {
-            Debug.Log($"[{name}] MouseState is DestroyChoosing, enabling AimingComponent.");
+            // Debug.Log($"[{name}] MouseState is DestroyChoosing, enabling AimingComponent.");
             if (aimingGO != null)
                 aimingGO.SetActive(true); // Hiện AimingComponent khi đang chọn phá hủy
         }

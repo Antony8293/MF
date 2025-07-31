@@ -104,11 +104,35 @@ public class AdsManager : MonoBehaviour
             return;
         }
 
-        // Gọi callback nếu có
-        callback?.Invoke();
 
-        // Giả lập việc quảng cáo đã phát xong sau 5 giây
-        Invoke("OnAdFinished", 5f);
+        // Giả lập phát quảng cáo với callback
+        StartPlayingAd(() => {
+            callback?.Invoke();
+            OnAdFinished();
+        });
+    }
+
+    // Hàm giả lập phát quảng cáo
+    private void StartPlayingAd(System.Action onAdComplete)
+    {
+        Debug.Log("Starting ad playback...");
+        
+        // Giả lập việc quảng cáo đang phát trong 5 giây
+        Invoke("CompleteAd", 5f);
+        
+        // Lưu callback để gọi khi ad hoàn thành
+        adCompleteCallback = onAdComplete;
+    }
+    
+    private System.Action adCompleteCallback;
+    
+    private void CompleteAd()
+    {
+        Debug.Log("Ad playback completed!");
+        
+        // Gọi callback khi ad hoàn thành
+        adCompleteCallback?.Invoke();
+        adCompleteCallback = null;
     }
 
     public void OnAdFinished()
