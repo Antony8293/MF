@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ScaleSmall : MonoBehaviour
 {
+     [SerializeField]    
+    private float duration = 3f;
     private Vector3 orginScale;
 
     private void OnEnable()
@@ -19,12 +21,12 @@ public class ScaleSmall : MonoBehaviour
     {
         orginScale = gameObject.transform.localScale;
 
-        transform.DOScale(orginScale * 0.75f, 1.0f);
-        Invoke("BackToOrigin", 1.5f);
+        transform.DOScale(orginScale * 0.75f, duration);
+        Invoke("BackToOrigin", duration);
     }
 
     private void BackToOrigin()
     {
-        transform.DOScale(orginScale, 1.0f);
+        transform.DOScale(orginScale, duration);
     }
 }
