@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c91a6808173b0842b916fd962104aaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTargeted: 0
 --- !u!1 &1459430481230685380
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,6 +117,7 @@ GameObject:
   - component: {fileID: -1899198456313316854}
   - component: {fileID: 9104235817193994563}
   - component: {fileID: 3616849744434480561}
+  - component: {fileID: 4184153946425398226}
   m_Layer: 0
   m_Name: Fruit10
   m_TagString: Untagged
@@ -270,7 +272,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459430481230685380}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b06b521f994e78b4296c21ab99a55108, type: 3}
   m_Name: 
@@ -290,6 +292,8 @@ MonoBehaviour:
   isMergeAnimationPlaying: 0
   mergingNeighbor: {fileID: 0}
   _eyesControl: {fileID: 0}
+  isDead: 0
+  currentState: 0
 --- !u!114 &6270593136505055436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,6 +370,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a59cf5cf8021c344aef64453c74a0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  duration: 3
+--- !u!114 &4184153946425398226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459430481230685380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69bec656816c0c44194a20f23648ef07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _moveCircle: {fileID: 0}
 --- !u!1 &2772555593839907321
 GameObject:
   m_ObjectHideFlags: 0
