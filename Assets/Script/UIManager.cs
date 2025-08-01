@@ -224,34 +224,35 @@ public class UIManager : MonoBehaviour
 
 
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(camera.transform.DOMove(new Vector3(0, 0, -21f), scaleShakeDuration).SetEase(Ease.InOutCubic));
-            sequence.Append(boxSprite.transform.DOMove(originalBoxSpritePosition + new Vector3(0, 0.5f, 0), 1f).SetEase(Ease.InOutCubic));
-            sequence.OnComplete(() =>
-            {
-                Booster.Booster4Clicked();
-            });
+            sequence.Append(camera.transform.DOMove(new Vector3(0, 0, -19f), scaleShakeDuration).SetEase(Ease.OutQuint))
+                    .Join(boxSprite.transform.DOMove(originalBoxSpritePosition + new Vector3(0, 0.3f, 0), scaleShakeDuration + 0.2f).SetEase(Ease.OutBack))
+                    .OnComplete(() =>
+                    {
+                        Booster.Booster4Clicked();
+                    });
         }
         else
         {
             // Trở về trạng thái ban đầu
             Sequence sequence = DOTween.Sequence();
 
-            sequence.Append(boxSprite.transform.DOMove(originalBoxSpritePosition, 1f).SetEase(Ease.InOutCubic));
-            sequence.Append(camera.transform.DOMove(
-                originalCameraPosition, // Vị trí cũ của camera
-                scaleShakeDuration // Thời gian hiệu ứng
-            ).SetEase(Ease.InOutCubic)).OnComplete(() =>
-            {
-                camera.orthographic = true; // Đổi về orthographic
-                pipe.SetActive(true);
-                canvas_world.SetActive(false);
-                canvas_camera.SetActive(true);
+            sequence.Append(boxSprite.transform.DOMove(originalBoxSpritePosition, scaleShakeDuration + 0.15f).SetEase(Ease.OutBounce))
+                    .Join(camera.transform.DOMove(
+                        originalCameraPosition, // Vị trí cũ của camera
+                        scaleShakeDuration // Thời gian hiệu ứng
+                    ).SetEase(Ease.OutQuint))
+                    .OnComplete(() =>
+                    {
+                        camera.orthographic = true; // Đổi về orthographic
+                        pipe.SetActive(true);
+                        canvas_world.SetActive(false);
+                        canvas_camera.SetActive(true);
 
-                GameManager.instance.draggingCircleGO.SetActive(true); // Ẩn đối tượng kéo khi bắt đầu hiệu ứng
-                GameManager.instance.nextCircleGO.SetActive(true); // Ẩn đối tượng tiếp theo khi bắt đầu hiệu ứng
+                        GameManager.instance.draggingCircleGO.SetActive(true); // Hiện đối tượng kéo
+                        GameManager.instance.nextCircleGO.SetActive(true); // Hiện đối tượng tiếp theo
 
-                boxCollider.transform.SetParent(null); // Tách BoxCollider ra khỏi BoxSprite
-            });
+                        boxCollider.transform.SetParent(null); // Tách BoxCollider ra khỏi BoxSprite
+                    });
         }
 
     }
