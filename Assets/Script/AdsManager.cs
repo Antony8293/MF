@@ -10,7 +10,8 @@ public enum AdsType
 public class AdsManager : MonoBehaviour
 {
     public static AdsManager instance;
-    public float timeUntilNextAdBreak = 30f; // Thời gian giữa các quảng cáo
+    private float timeUntilNextAdBreak; // Thời gian giữa các quảng cáo
+    public float initialAdBreakTime = 120f; // Thời gian khởi tạo giữa các quảng cáo
     public AdsType currentAdType = AdsType.Banner;
     public GameObject adsPlayingPanel; // Gán GameObject để hiển thị quảng cáo đang phát
 
@@ -25,6 +26,10 @@ public class AdsManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    private void Start()
+    {
+        timeUntilNextAdBreak = initialAdBreakTime; // Khởi tạo thời gian đếm ngược quảng cáo
     }
 
     private void Update()
@@ -149,6 +154,6 @@ public class AdsManager : MonoBehaviour
         currentAdType = AdsType.Banner;
 
         // Reset thời gian đếm ngược quảng cáo
-        timeUntilNextAdBreak = 30f;
+        timeUntilNextAdBreak = initialAdBreakTime;
     }
 }

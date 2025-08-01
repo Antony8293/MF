@@ -5655,7 +5655,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92cce079c6767b442a70e5310d52d284, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeUntilNextAdBreak: 30
+  initialAdBreakTime: 120
   currentAdType: 0
   adsPlayingPanel: {fileID: 1724193426}
 --- !u!4 &1046945634
@@ -5769,6 +5769,14 @@ PrefabInstance:
     - target: {fileID: 1153429973221232308, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423864414165372112, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
+      propertyPath: seconds
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423864414165372112, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
+      propertyPath: timeRemaining
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2423864414165372112, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
       propertyPath: onTimerEnd.m_PersistentCalls.m_Calls.Array.size
@@ -11791,6 +11799,7 @@ MonoBehaviour:
   isGameOver: 0
   isPlayingTutorial: 0
   isShaking: 0
+  isBoosterTriggered: 0
 --- !u!4 &2102661547
 Transform:
   m_ObjectHideFlags: 0
@@ -12575,6 +12584,14 @@ PrefabInstance:
     - target: {fileID: 1153429973221232308, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423864414165372112, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
+      propertyPath: seconds
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2423864414165372112, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
+      propertyPath: timeRemaining
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2423864414165372112, guid: f731c2a508609364ba30fce5532bc62d, type: 3}
       propertyPath: onTimerEnd.m_PersistentCalls.m_Calls.Array.size
