@@ -59,6 +59,7 @@ public class ShakeObject : MonoBehaviour
             if (elapsed < durationShaking) //rung trong thời gian cài
             {
                 AudioManager.instance.PlayBoosterShakeSound(); // Phát âm thanh rung
+                AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
                 //Tạo giá trị ngẫu nhiên cho vị trí X và Y, giúp đối tượng di chuyển nhẹ quanh vị trí gốc, tạo cảm giác rung.
                 float x = Random.Range(-1f, 1f) * magnitude;
                 float y = Random.Range(-1f, 1f) * magnitude;

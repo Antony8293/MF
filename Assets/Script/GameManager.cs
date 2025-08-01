@@ -775,7 +775,7 @@ public class GameManager : MonoBehaviour
     // }
 
 
-    private void Destroy_Smallest()
+    private void Destroy_Smallest(int removeLevel)
     {
         UnityEngine.Object smallest = null;
         Transform parent = GameObject.Find("Circles").transform;
@@ -784,7 +784,7 @@ public class GameManager : MonoBehaviour
         foreach (var circle in parent)
         {
             smallest = (circle as Transform).gameObject;
-            if (smallest.GetComponent<CircleComponent>().Level == 1 || smallest.GetComponent<CircleComponent>().Level == 2)
+            if (smallest.GetComponent<CircleComponent>().Level <= removeLevel)
             {
                 int smallestLevel = smallest.GetComponent<CircleComponent>().Level;
                 
