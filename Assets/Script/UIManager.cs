@@ -252,6 +252,8 @@ public class UIManager : MonoBehaviour
                         GameManager.instance.nextCircleGO.SetActive(true); // Hiện đối tượng tiếp theo
 
                         boxCollider.transform.SetParent(null); // Tách BoxCollider ra khỏi BoxSprite
+
+                        GameManager.instance.isBoosterTriggered = false; // Đánh dấu đã kết thúc hiệu ứng
                     });
         }
 
