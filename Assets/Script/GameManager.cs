@@ -485,10 +485,7 @@ public class GameManager : MonoBehaviour
 
         PracticeEffect("VFX/Custom_FruitExplosion", spawnPos, evolutionTree.levels[nextLevel - 1].colorEffect, nextLevel);
         AudioManager.instance.PlayMergeSound();
-        if(nextLevel > maxLevelSpawn)
-        {
-            AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
-        }
+        AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
         bool isOverLineTriggeredChild = c1.isOverLineTriggered && c2.isOverLineTriggered;
         InstantiateMergedCircle(nextLevel, spawnPos, isOverLineTriggeredChild);
 

@@ -138,14 +138,6 @@ public class AudioManager : MonoBehaviour
             soundOff.SetActive(false);
         }
     }
-    
-    public void Vibrate()
-    {
-        if (!hasVibrate) return;
-        #if UNITY_ANDROID || UNITY_IOS
-            Handheld.Vibrate();
-        #endif
-    }
 
     public void PlayBackgroundMusic()
     {
@@ -238,7 +230,51 @@ public class AudioManager : MonoBehaviour
             audioSource.PlayOneShot(dropClip); // Phát âm thanh khi thả đối tượng
         }
         
-    }   
-    
-    
+    }
+    public void Vibrate()
+    {
+        if (!hasVibrate) return;
+        #if UNITY_ANDROID || UNITY_IOS
+            Handheld.Vibrate();
+        #endif
+    }
+    // public void Vibrate()
+    // {
+    //     if (!hasVibrate) return;
+    //     long milliseconds = 100;
+    //     #if UNITY_ANDROID && !UNITY_EDITOR
+    //         AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+    //         AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+    //         AndroidJavaObject context = activity.Call<AndroidJavaObject>("getApplicationContext");
+    //         AndroidJavaObject vibrator = context.Call<AndroidJavaObject>("getSystemService", "vibrator");
+
+    //         if (vibrator != null)
+    //         {
+    //             // API 26 trở lên dùng VibrationEffect
+    //             AndroidJavaClass version = new AndroidJavaClass("android.os.Build$VERSION");
+    //             int sdkInt = version.GetStatic<int>("SDK_INT");
+
+    //             if (sdkInt >= 26)
+    //             {
+    //                 AndroidJavaClass vibrationEffectClass = new AndroidJavaClass("android.os.VibrationEffect");
+    //                 AndroidJavaObject effect = vibrationEffectClass.CallStatic<AndroidJavaObject>(
+    //                     "createOneShot", milliseconds, 255); // 255 là cường độ max
+    //                 vibrator.Call("vibrate", effect);
+    //             }
+    //             else
+    //             {
+    //                 vibrator.Call("vibrate", milliseconds);
+    //             }
+    //         }
+    //     #elif UNITY_IOS
+    //                 // iOS không hỗ trợ rung trực tiếp từ Unity, cần sử dụng plugin hoặc viết code native
+    //                 // Có thể sử dụng UnityEngine.iOS.Device.Vibrate() nếu cần rung đơn giản
+    //                 UnityEngine.iOS.Device.Vibrate();
+    //     #else
+    //             // Handheld.Vibrate() không hoạt động trên iOS và Android trong Unity Editor
+    //             // Nên chỉ sử dụng trong các build thực tế
+    //             //Handheld.Vibrate(); 
+    //             Debug.LogWarning("Vibration is not supported on this platform.");
+    //             #endif
+    // }
 }

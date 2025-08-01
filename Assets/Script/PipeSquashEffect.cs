@@ -13,7 +13,7 @@ public class PipeSquashEffect : MonoBehaviour
     public float squashY = 0.95f;
     void Start()
     {
-
+        TriggerPipeSquash();
     }
 
     // Update is called once per frame
