@@ -1,25 +1,8 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class ShakeObject : MonoBehaviour
 {
-    [SerializeField]
-    private float durationShaking = 2f;
-
-    [SerializeField]    
-    private float delayShaking = 1f;
-
-    [SerializeField]
-    private float magnitude = 0.5f; 
-
-    [SerializeField]
-    private float rotationMagnitude = 5f;
-
-    [SerializeField]
-    private float AmplitudeX = 0.2f;
-
-    [SerializeField]
-    private float FrequencyX = 1f;
-
     private Vector3 originalPos;
     private Quaternion originalRot;
     private float elapsed = 0f;
@@ -28,6 +11,7 @@ public class ShakeObject : MonoBehaviour
     private void OnEnable()
     {
         Booster.booster4 += StartShaking;
+        // StartShaking();
     }
 
     private void OnDisable()
@@ -37,52 +21,61 @@ public class ShakeObject : MonoBehaviour
 
     private void StartShaking()
     {
-        Invoke("DelayShaking", 1.0f);
-        
+        Invoke("DelayShaking", 0f);
     }
 
     private void DelayShaking()
     {
-        if (!isShaking)
+        if (!isShaking && target != null)
         {
             originalPos = transform.localPosition;
             originalRot = transform.localRotation;
             elapsed = 0f;
             isShaking = true;
+            ShakeAndRotate();
         }
     }
 
-    void Update()
-    {
-        if (isShaking)
-        {
-            if (elapsed < durationShaking) //rung trong thời gian cài
-            {
-                AudioManager.instance.PlayBoosterShakeSound(); // Phát âm thanh rung
-                //Tạo giá trị ngẫu nhiên cho vị trí X và Y, giúp đối tượng di chuyển nhẹ quanh vị trí gốc, tạo cảm giác rung.
-                float x = Random.Range(-1f, 1f) * magnitude;
-                float y = Random.Range(-1f, 1f) * magnitude;
-                //Tạo giá trị ngẫu nhiên cho góc xoay Z, giúp đối tượng xoay nhẹ quanh trục Z, tạo cảm giác rung.
-                float zRot = Mathf.Sin(Time.time * 50f) * rotationMagnitude;
-                // Đung đưa theo trục X (dao động sin)
-                float swingX = Mathf.Sin(Time.time * FrequencyX) * AmplitudeX; 
+    public RectTransform target;
+    public float moveDistance = 0.2f;     // Di chuyển trái/phải
+    public float rotateAngle = 10f;       // Góc xoay Z
+    public float stepDuration = 0.1f;     // Thời gian mỗi bước
 
-                //Cập nhật vị trí và góc xoay của đối tượng dựa trên các giá trị ngẫu nhiên đã tạo.
-                transform.localPosition = originalPos + new Vector3(x + swingX, y, 0f);
-                transform.localRotation = Quaternion.Euler(0, 0, zRot);
-                //Tăng thời gian đã trôi qua.
-                elapsed += Time.deltaTime;
-            }
-            else
-            {
-                isShaking = false;
-                transform.localPosition = originalPos;
-                transform.localRotation = originalRot;
-                if (gameObject.name == "DynamicBoxCollider")
-                {
-                    UIManager.instance.UIScaleShakingBoosterEffect(Const.END_EFFECT);
-                }
-            }
-        }
+    public void ShakeAndRotate()
+    {
+        Vector2 originalPos = target.anchoredPosition;
+        Vector3 originalRot = target.localEulerAngles;
+
+        Sequence seq = DOTween.Sequence();
+
+        // Bước 1: Rung mạnh đầu tiên (OutBounce để tạo cảm giác va đập)
+        seq.Append(target.DOAnchorPosX(originalPos.x + moveDistance, stepDuration))
+           .Join(target.DOLocalRotate(new Vector3(0, 0, -rotateAngle), stepDuration))
+           .SetEase(Ease.OutBounce);
+
+        // Bước 2: Rung ngược lại mạnh hơn (InOutElastic để tạo độ đàn hồi)
+        seq.Append(target.DOAnchorPosX(originalPos.x - moveDistance, stepDuration * 2))
+           .Join(target.DOLocalRotate(new Vector3(0, 0, rotateAngle), stepDuration * 2))
+           .SetEase(Ease.InOutElastic);
+       
+        // Bước 3: Rung nhẹ dần (OutBack để tạo hiệu ứng overshoot nhẹ)
+        seq.Append(target.DOAnchorPosX(originalPos.x + moveDistance * 0.5f, stepDuration))
+           .Join(target.DOLocalRotate(new Vector3(0, 0, -rotateAngle * 0.5f), stepDuration))
+           .SetEase(Ease.OutBack);
+
+        // Bước 4: Về vị trí ban đầu mượt mà (InOutQuart để smooth finish)
+        seq.Append(target.DOAnchorPosX(originalPos.x, stepDuration))
+           .Join(target.DOLocalRotate(originalRot, stepDuration))
+           .SetEase(Ease.InOutQuart);
+
+        // Thêm callback khi hoàn thành
+        seq.OnComplete(() =>
+        {
+            isShaking = false;
+            target.anchoredPosition = originalPos;
+            target.localEulerAngles = originalRot;
+
+            UIManager.instance.UIScaleShakingBoosterEffect(Const.END_EFFECT);
+        });
     }
 }

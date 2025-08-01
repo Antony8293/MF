@@ -2646,17 +2646,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 540393688}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durationShaking: 2
-  delayShaking: 1
-  magnitude: 0.2
-  rotationMagnitude: 3
-  AmplitudeX: 0.2
-  FrequencyX: 3
+  target: {fileID: 0}
+  moveDistance: 0.2
+  rotateAngle: 10
+  stepDuration: 0.1
 --- !u!114 &540393693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2664,7 +2662,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 540393688}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a59cf5cf8021c344aef64453c74a0b5, type: 3}
   m_Name: 
@@ -9140,12 +9138,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durationShaking: 2
-  delayShaking: 1
-  magnitude: 0.2
-  rotationMagnitude: 5
-  AmplitudeX: 0.2
-  FrequencyX: 1
+  target: {fileID: 1504834235}
+  moveDistance: -200
+  rotateAngle: 10
+  stepDuration: 0.6
 --- !u!114 &1504834238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9745,7 +9741,7 @@ MonoBehaviour:
   camera: {fileID: 519420031}
   boxSprite: {fileID: 1504834234}
   boxCollider: {fileID: 1937300394}
-  scaleShakeDuration: 2
+  scaleShakeDuration: 0.5
 --- !u!4 &1655481589
 Transform:
   m_ObjectHideFlags: 0
@@ -10966,17 +10962,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1937300394}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durationShaking: 2
-  delayShaking: 1
-  magnitude: 0.1
-  rotationMagnitude: 3
-  AmplitudeX: 0.2
-  FrequencyX: 1
+  target: {fileID: 0}
+  moveDistance: 0.2
+  rotateAngle: 10
+  stepDuration: 0.1
 --- !u!1 &1996426090
 GameObject:
   m_ObjectHideFlags: 0
@@ -11791,6 +11785,7 @@ MonoBehaviour:
   isGameOver: 0
   isPlayingTutorial: 0
   isShaking: 0
+  isBoosterTriggered: 0
 --- !u!4 &2102661547
 Transform:
   m_ObjectHideFlags: 0
