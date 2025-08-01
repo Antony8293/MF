@@ -285,7 +285,14 @@ public class CircleComponent : MonoBehaviour
             enabled = false;
         }
 
-        if (GameManager.instance.isBoosterTriggered) return;
+        if (GameManager.instance.isBoosterTriggered)
+        {
+            _rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
+        }
+        else
+        {
+            _rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        }
 
         if ((GameManager.MouseState == mouseState.DestroyChoosing || GameManager.MouseState == mouseState.UpgradeChoosing) && _moveCircle.isDrop)
         {
