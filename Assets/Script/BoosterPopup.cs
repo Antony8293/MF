@@ -74,6 +74,7 @@ public class BoosterPopup : MonoBehaviour
                 break;
             case 3:
                 // Sử dụng booster Shake the Box
+                GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
                 uiManager.UIScaleShakingBoosterEffect(Const.START_EFFECT); // Hiệu ứng scale
                 break;
         }
