@@ -23,9 +23,9 @@ public class UIManager : MonoBehaviour
     public Camera camera; // Gán Camera để sử dụng trong UIScaleShakingBoosterEffect
     private Vector3 originalCameraPosition; // Lưu vị trí gốc của camera
 
-    public GameObject boxSprite;
+    public GameObject boxWrapper;
     public GameObject boxCollider; // Gán GameObject BoxCollider để sử dụng trong UIScaleShakingBoosterEffect
-    private Vector3 originalBoxSpritePosition; // Lưu vị trí gốc của BoxSprite
+    private Vector3 originalboxWrapperPosition; // Lưu vị trí gốc của boxWrapper
     private Vector3 originalBoxColliderPosition; // Lưu vị trí gốc của BoxCollider
     public float scaleShakeDuration = 0.5f; // Thời gian hiệu ứng scale khi sử dụng booster Shake the Box
 
@@ -44,7 +44,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         originalCameraPosition = camera.transform.position; // Lưu vị trí gốc của camera
-        originalBoxSpritePosition = boxSprite.transform.position; // Lưu vị trí gốc của BoxSprite
+        originalboxWrapperPosition = boxWrapper.transform.position; // Lưu vị trí gốc của boxWrapper
         originalBoxColliderPosition = boxCollider.transform.position; // Lưu vị trí gốc của BoxCollider
     }
 
@@ -220,24 +220,25 @@ public class UIManager : MonoBehaviour
             canvas_world.SetActive(true);
             canvas_camera.SetActive(false);
 
-            boxCollider.transform.SetParent(boxSprite.transform); // Đặt BoxCollider làm con của BoxSprite
-
+            boxWrapper.gameObject.SetActive(true); // Hiện boxWrapper
+            boxCollider.transform.SetParent(boxWrapper.GetComponentInChildren<ShakeObject>().transform); // Đặt BoxCollider làm con của boxWrapper
 
             Sequence sequence = DOTween.Sequence();
             sequence.Append(camera.transform.DOMove(new Vector3(0, 0, -19f), scaleShakeDuration).SetEase(Ease.OutQuint))
-                    .Join(boxSprite.transform.DOMove(originalBoxSpritePosition + new Vector3(0, 0.3f, 0), scaleShakeDuration + 0.2f).SetEase(Ease.OutBack))
+                    // .Join(boxWrapper.transform.DOMove(originalboxWrapperPosition + new Vector3(0, 0.3f, 0), scaleShakeDuration + 0.2f).SetEase(Ease.OutBack))
                     .OnComplete(() =>
                     {
                         Booster.Booster4Clicked();
                     });
+
         }
         else
         {
             // Trở về trạng thái ban đầu
             Sequence sequence = DOTween.Sequence();
 
-            sequence.Append(boxSprite.transform.DOMove(originalBoxSpritePosition, scaleShakeDuration + 0.15f).SetEase(Ease.OutBounce))
-                    .Join(camera.transform.DOMove(
+            // sequence.Append(boxWrapper.transform.DOMove(originalboxWrapperPosition, scaleShakeDuration + 0.15f).SetEase(Ease.OutBounce))
+            sequence.Append(camera.transform.DOMove(
                         originalCameraPosition, // Vị trí cũ của camera
                         scaleShakeDuration // Thời gian hiệu ứng
                     ).SetEase(Ease.OutQuint))
@@ -251,9 +252,10 @@ public class UIManager : MonoBehaviour
                         GameManager.instance.draggingCircleGO.SetActive(true); // Hiện đối tượng kéo
                         GameManager.instance.nextCircleGO.SetActive(true); // Hiện đối tượng tiếp theo
 
-                        boxCollider.transform.SetParent(null); // Tách BoxCollider ra khỏi BoxSprite
+                        boxCollider.transform.SetParent(null); // Tách BoxCollider ra khỏi boxWrapper
 
                         GameManager.instance.isBoosterTriggered = false; // Đánh dấu đã kết thúc hiệu ứng
+                        boxWrapper.gameObject.SetActive(false); // Ẩn boxWrapper
                     });
         }
 
