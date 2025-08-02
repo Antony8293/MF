@@ -595,7 +595,7 @@ public class GameManager : MonoBehaviour
                         circleComp.targetScale.y * 0.9f, // Co Y
                         circleComp.targetScale.z
                     );
-                    scaleSequence.Append(newObj.transform.DOScale(stretchScale, 0.15f).SetEase(Ease.OutQuad));
+                    scaleSequence.Append(newObj.transform.DOScale(stretchScale, 0.2f).SetEase(Ease.OutQuad));
 
 
                     // Giai đoạn 2: Squash (co X, giãn Y)
@@ -604,12 +604,12 @@ public class GameManager : MonoBehaviour
                         circleComp.targetScale.y * 1.1f, // Giãn Y
                         circleComp.targetScale.z
                     );
-                    scaleSequence.Append(newObj.transform.DOScale(squashScale, 0.15f).SetEase(Ease.OutBack));
+                    scaleSequence.Append(newObj.transform.DOScale(squashScale, 0.2f).SetEase(Ease.OutBack));
 
                     // Đồng thời đổi màu từ tối về bình thường trong giai đoạn settle
                     if (spriteRenderer != null)
                     {
-                        scaleSequence.Join(spriteRenderer.DOColor(originalColor, 0.15f).SetEase(Ease.OutQuad));
+                        scaleSequence.Join(spriteRenderer.DOColor(originalColor, 0.2f).SetEase(Ease.OutQuad));
                         // Debug.Log($"[{newObj.name}] Started color transition back to normal");
                     }
 

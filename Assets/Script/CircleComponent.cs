@@ -64,6 +64,8 @@ public class CircleComponent : MonoBehaviour
     public bool isMergeAnimationPlaying = false;
     public GameObject mergingNeighbor;
     public EyesControl _eyesControl;
+    [SerializeField]
+    private bool fallingCollision = false;
 
     private void OnEnable()
     {
@@ -220,7 +222,7 @@ public class CircleComponent : MonoBehaviour
             PlayDeadEffect();
         }
 
-        if (!_moveCircle.enabled && !isFirstCollision && isOverLineTriggered && hasTriggeredDead)
+        if (!_moveCircle.enabled && !isFirstCollision && isOverLineTriggered && hasTriggeredDead && !fallingCollision)
         {
             hasTriggeredDead = false;
             _animator.SetTrigger("TriggerIdle");
@@ -317,7 +319,16 @@ public class CircleComponent : MonoBehaviour
             visual.localScale = Vector3.one;
     }
 
+    IEnumerator DelayTriggerMerge(float time)
+    {
+        fallingCollision = true; // Đánh dấu đang rơi
+        _animator.SetTrigger("TriggerMerge");
 
+        yield return new WaitForSeconds(time);
+
+        _animator.SetTrigger("TriggerIdle");
+        fallingCollision = false; // Reset trạng thái rơi
+    }
 
 
     public void DelayCheckGameOver()
@@ -365,6 +376,13 @@ public class CircleComponent : MonoBehaviour
         if (!collision.gameObject.TryGetComponent(out CircleComponent otherCircle)) return;
 
         // 3. Nếu cấp khác nhau hoặc đối tượng kia đang merge → bỏ qua
+        if (!fallingCollision && collision.relativeVelocity.magnitude > 1f)
+        {
+            StartCoroutine(DelayTriggerMerge(1f)); // Delay trigger merge animation
+
+            // 3. Nếu cấp khác nhau hoặc đối tượng kia đang merge → bỏ qua
+
+        }
         if (this.Level != otherCircle.Level || otherCircle.isMerging) return;
 
         // 4. Đảm bảo chỉ 1 trong 2 xử lý
