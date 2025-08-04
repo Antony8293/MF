@@ -115,6 +115,15 @@ public class AudioManager : MonoBehaviour
         #endif
     }
 
+        public void VibrateWithDuration(float duration = 0.2f)
+    {
+        if (!hasVibrate) return;
+        #if UNITY_ANDROID || UNITY_IOS
+            //Handheld.Vibrate();
+            Most_HapticFeedback.GenerateWithCooldown(Most_HapticFeedback.HapticTypes.SoftImpact, duration);
+        #endif
+    }
+
     public void setVibrate(bool value)
     {
         hasVibrate = value;
