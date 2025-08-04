@@ -29,7 +29,9 @@ public class ShakeObject : MonoBehaviour
         {
             isShaking = true;
             animator.enabled = true; // Enable the animator to start shaking
-            // StartCoroutine(WaitForAnimationEnd());
+                                     // StartCoroutine(WaitForAnimationEnd());
+            AudioManager.instance.PlayBoosterShakeSound(); // Phát âm thanh rung
+            AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
         }
     }
 
