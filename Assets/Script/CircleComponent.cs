@@ -294,6 +294,8 @@ public class CircleComponent : MonoBehaviour
             _rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
 
+        if (GameManager.instance.isBoosterTriggered) return;
+
         if ((GameManager.MouseState == mouseState.DestroyChoosing || GameManager.MouseState == mouseState.UpgradeChoosing) && _moveCircle.isDrop)
         {
             // Debug.Log($"[{name}] MouseState is DestroyChoosing, enabling AimingComponent.");
