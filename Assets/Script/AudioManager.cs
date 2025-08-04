@@ -1,3 +1,4 @@
+using Solo.MOST_IN_ONE;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -105,6 +106,13 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void Vibrate()
+    {
+        if (!hasVibrate) return;
+        #if UNITY_ANDROID || UNITY_IOS
+            Handheld.Vibrate();
+        #endif
+    }
 
     public void setVibrate(bool value)
     {
