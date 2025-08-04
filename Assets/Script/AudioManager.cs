@@ -1,3 +1,4 @@
+using Solo.MOST_IN_ONE;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -105,6 +106,14 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void Vibrate()
+    {
+        if (!hasVibrate) return;
+        #if UNITY_ANDROID || UNITY_IOS
+            //Handheld.Vibrate();
+            Most_HapticFeedback.Generate(Most_HapticFeedback.HapticTypes.SoftImpact);
+        #endif
+    }
 
     public void setVibrate(bool value)
     {
@@ -139,14 +148,6 @@ public class AudioManager : MonoBehaviour
         }
     }
     
-    public void Vibrate()
-    {
-        if (!hasVibrate) return;
-        #if UNITY_ANDROID || UNITY_IOS
-            Handheld.Vibrate();
-        #endif
-    }
-
     public void PlayBackgroundMusic()
     {
         if (hasBackgroundMusic && !musicSource.isPlaying)
