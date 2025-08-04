@@ -1,33 +1,21 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class ShakeObject : MonoBehaviour
 {
-    [SerializeField]
-    private float durationShaking = 2f;
-
-    [SerializeField]    
-    private float delayShaking = 1f;
-
-    [SerializeField]
-    private float magnitude = 0.5f; 
-
-    [SerializeField]
-    private float rotationMagnitude = 5f;
-
-    [SerializeField]
-    private float AmplitudeX = 0.2f;
-
-    [SerializeField]
-    private float FrequencyX = 1f;
-
-    private Vector3 originalPos;
-    private Quaternion originalRot;
-    private float elapsed = 0f;
     private bool isShaking = false;
+    private Animator animator;
 
     private void OnEnable()
     {
         Booster.booster4 += StartShaking;
+        // StartShaking();
+    }
+
+    private void Start()
+    {
+        // Cache animator component
+        animator = GetComponent<Animator>();
     }
 
     private void OnDisable()
@@ -37,53 +25,63 @@ public class ShakeObject : MonoBehaviour
 
     private void StartShaking()
     {
-        Invoke("DelayShaking", 1.0f);
-        
-    }
-
-    private void DelayShaking()
-    {
-        if (!isShaking)
+        if (animator != null)
         {
-            originalPos = transform.localPosition;
-            originalRot = transform.localRotation;
-            elapsed = 0f;
             isShaking = true;
+            animator.enabled = true; // Enable the animator to start shaking
+                                     // StartCoroutine(WaitForAnimationEnd());
+            AudioManager.instance.PlayBoosterShakeSound(); // Phát âm thanh rung
+            AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
         }
     }
 
-    void Update()
+    // // Simple coroutine to wait for animation end
+    // private System.Collections.IEnumerator WaitForAnimationEnd()
+    // {
+    //     if (animator == null) yield break;
+
+    //     // Wait for at least one frame to ensure animation starts
+    //     yield return new WaitForEndOfFrame();
+
+    //     // Wait until one complete animation cycle finishes
+    //     while (animator.enabled)
+    //     {
+    //         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+    //         // Check if animation finished one complete cycle (normalizedTime >= 1.0 and not transitioning)
+    //         if (stateInfo.normalizedTime >= 1.0f && !animator.IsInTransition(0))
+    //         {
+    //             break; // One animation cycle completed
+    //         }
+
+    //         yield return null; // Wait for next frame
+    //     }
+
+    //     // Animation completed - run callback
+    //     OnAnimationEnd();
+    // }
+
+    // private void OnAnimationEnd()
+    // {
+    //     // Tắt animator sau khi chạy xong 1 lần animation clip
+    //     if (animator != null)
+    //     {
+    //         animator.enabled = false; // Disable animator after one animation cycle
+    //     }
+
+    //     isShaking = false;
+
+    //     // Chạy callback sau khi animation hoàn thành
+    //     UIManager.instance?.UIScaleShakingBoosterEffect(Const.END_EFFECT);
+    // }
+
+    public void OnAnimationEnd()
     {
         if (isShaking)
         {
-            if (elapsed < durationShaking) //rung trong thời gian cài
-            {
-                AudioManager.instance.PlayBoosterShakeSound(); // Phát âm thanh rung
-                AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
-                //Tạo giá trị ngẫu nhiên cho vị trí X và Y, giúp đối tượng di chuyển nhẹ quanh vị trí gốc, tạo cảm giác rung.
-                float x = Random.Range(-1f, 1f) * magnitude;
-                float y = Random.Range(-1f, 1f) * magnitude;
-                //Tạo giá trị ngẫu nhiên cho góc xoay Z, giúp đối tượng xoay nhẹ quanh trục Z, tạo cảm giác rung.
-                float zRot = Mathf.Sin(Time.time * 50f) * rotationMagnitude;
-                // Đung đưa theo trục X (dao động sin)
-                float swingX = Mathf.Sin(Time.time * FrequencyX) * AmplitudeX; 
-
-                //Cập nhật vị trí và góc xoay của đối tượng dựa trên các giá trị ngẫu nhiên đã tạo.
-                transform.localPosition = originalPos + new Vector3(x + swingX, y, 0f);
-                transform.localRotation = Quaternion.Euler(0, 0, zRot);
-                //Tăng thời gian đã trôi qua.
-                elapsed += Time.deltaTime;
-            }
-            else
-            {
-                isShaking = false;
-                transform.localPosition = originalPos;
-                transform.localRotation = originalRot;
-                if (gameObject.name == "DynamicBoxCollider")
-                {
-                    UIManager.instance.UIScaleShakingBoosterEffect(Const.END_EFFECT);
-                }
-            }
+            isShaking = false;
+            UIManager.instance?.UIScaleShakingBoosterEffect(Const.END_EFFECT);
+            animator.enabled = false; // Disable animator after one animation cycle
         }
     }
 }
