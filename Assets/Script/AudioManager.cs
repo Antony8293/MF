@@ -110,7 +110,8 @@ public class AudioManager : MonoBehaviour
     {
         if (!hasVibrate) return;
         #if UNITY_ANDROID || UNITY_IOS
-            Handheld.Vibrate();
+            //Handheld.Vibrate();
+            Most_HapticFeedback.Generate(Most_HapticFeedback.HapticTypes.SoftImpact);
         #endif
     }
 
@@ -147,14 +148,6 @@ public class AudioManager : MonoBehaviour
         }
     }
     
-    public void Vibrate()
-    {
-        if (!hasVibrate) return;
-        #if UNITY_ANDROID || UNITY_IOS
-            Handheld.Vibrate();
-        #endif
-    }
-
     public void PlayBackgroundMusic()
     {
         if (hasBackgroundMusic && !musicSource.isPlaying)
