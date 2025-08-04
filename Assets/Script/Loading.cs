@@ -9,7 +9,7 @@ public class Loading : MonoBehaviour
     public static string NEXT_SCENE = "GamePlay"; // Tên scene cần load, đổi nếu khác
     public GameObject progressBar;
     public TextMeshProUGUI loadingText;
-    private float loadingTime = 10f; // Thời gian cố định để hiển thị loading
+    private float loadingTime = 2f; // Thời gian cố định để hiển thị loading
     void Start()
     {
         StartCoroutine(LoadScene(NEXT_SCENE));
@@ -59,7 +59,9 @@ public class Loading : MonoBehaviour
             loadingText.SetText($"Loading... {percent * 100f:0}%");
             yield return null;
         }
-        yield return new WaitForSeconds(1f); // Thêm thời gian chờ cuối
+        yield return new WaitForSeconds(0.5f); // Thêm thời gian chờ cuối
+
+        // FruitBouncer.isJumping = false; // Dừng nhảy của FruitBouncer nếu có
         operation.allowSceneActivation = true;
     }
 }

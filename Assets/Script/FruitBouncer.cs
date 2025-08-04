@@ -4,10 +4,11 @@ using UnityEngine;
 public class FruitBouncer : MonoBehaviour
 {
     public PipeSquashEffect PipeSquashEffect;
-    private bool isJumping = true;
-
+    public static bool isJumping = true;
+    Vector3 originalScale;
     void Start()
     {
+        originalScale = gameObject.transform.localScale;
         StartCoroutine(JumpLoop());
     }
 
@@ -22,21 +23,25 @@ public class FruitBouncer : MonoBehaviour
     private System.Collections.IEnumerator JumpSequence()
     {
         bool finished = false;
-        transform.DOJump(transform.position + Vector3.up * 6f, 0.5f, 1, 3f)
-            .OnStart(() =>
-            {
-                transform.DOScale(new Vector3(1.15f, 0.85f, 1f), 0.12f).SetEase(Ease.OutQuad);
-            })
+        Vector3 startPos = transform.position;
+        Vector3 groundPos = startPos + Vector3.down * 3f; // Rơi xuống đất
+        Vector3 jumpPos = startPos; // Vị trí nhảy lên lại
+
+        // 1. Rơi xuống
+        transform.DOMove(groundPos, 0.5f).SetEase(Ease.InQuad)
             .OnComplete(() =>
             {
-                transform.DOScale(new Vector3(0.85f, 1.15f, 1f), 0.12f).SetEase(Ease.OutBack)
+                // 2. Squash khi chạm đất
+                transform.DOScale(new Vector3(originalScale.x * 1.3f, originalScale.y * 0.7f, originalScale.z), 0.12f).SetEase(Ease.OutQuad)
                     .OnComplete(() =>
                     {
-                        transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBounce);
-                        finished = true;
+                        // 3. Nhảy lên lại
+                        transform.DOScale(originalScale, 0.18f).SetEase(Ease.OutBounce);
+                        transform.DOMove(jumpPos, 0.5f).SetEase(Ease.OutQuad)
+                            .OnComplete(() => { finished = true; });
                     });
             });
-        // Đợi cho đến khi hiệu ứng nhảy hoàn thành
+        // Đợi cho đến khi hiệu ứng hoàn thành
         while (!finished)
             yield return null;
     }
