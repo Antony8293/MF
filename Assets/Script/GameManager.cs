@@ -97,6 +97,7 @@ public class GameManager : MonoBehaviour
     public bool isShaking = false;
 
     public bool isBoosterTriggered = false;
+    public bool isPendingGameOver = false;
     private void Awake()
     {
         if (instance == null)
@@ -775,7 +776,7 @@ public class GameManager : MonoBehaviour
     // }
 
 
-    private void Destroy_Smallest(int level)
+    public void Destroy_Smallest(int level)
     {
         UnityEngine.Object smallest = null;
         Transform parent = GameObject.Find("Circles").transform;
@@ -787,7 +788,6 @@ public class GameManager : MonoBehaviour
             if (smallest.GetComponent<CircleComponent>().Level <= level)
             {
                 int smallestLevel = smallest.GetComponent<CircleComponent>().Level;
-                
                 
                 // Delay tăng dần cho mỗi object: 0.1f, 0.2f, 0.3f, ...
                 StartCoroutine(DelayedDestroySingle(smallest.GameObject(), smallestLevel, 0.1f + (index * 0.05f)));

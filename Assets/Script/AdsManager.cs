@@ -64,7 +64,7 @@ public class AdsManager : MonoBehaviour
     public void HandleRewardedAdCountdown()
     {
         currentAdType = AdsType.Rewarded;
-
+        GameManager.instance.isPendingGameOver = true;
         // Implement your ad showing logic here
         UIManager.instance.OpenAdsCountdownPopup();
     }
@@ -93,7 +93,6 @@ public class AdsManager : MonoBehaviour
         {
             Debug.Log("Showing Rewarded Ad");
 
-            GameManager.instance.isGameOver = false; // Đặt lại trạng thái game over nếu có
             GameManager.instance.ResumeGame(); // Resume game
 
             UIManager.instance.CloseAdsCountdownPopup();
@@ -112,7 +111,8 @@ public class AdsManager : MonoBehaviour
 
 
         // Giả lập phát quảng cáo với callback
-        StartPlayingAd(() => {
+        StartPlayingAd(() =>
+        {
             callback?.Invoke();
             OnAdFinished();
         });
@@ -124,15 +124,15 @@ public class AdsManager : MonoBehaviour
         Debug.Log("Starting ad playback...");
 
         adsPlayingPanel.SetActive(true); // Hiển thị panel quảng cáo
-        
+
         GameManager.instance.SetBlockFruitDragging(true); // Chặn kéo trái cây
 
         // Lưu callback để gọi khi ad hoàn thành
         adCompleteCallback = onAdComplete;
     }
-    
+
     private System.Action adCompleteCallback;
-    
+
     public void CompleteAd()
     {
         Debug.Log("Ad playback completed!");
@@ -140,7 +140,13 @@ public class AdsManager : MonoBehaviour
         adsPlayingPanel.SetActive(false);
 
         GameManager.instance.SetBlockFruitDragging(false); // Bỏ chặn kéo trái cây
-        
+
+        if (GameManager.instance.isPendingGameOver)
+        {
+            GameManager.instance.isPendingGameOver = false; // Đặt lại trạng thái game over nếu có
+            GameManager.instance.Destroy_Smallest(4);
+        }
+
         // Gọi callback khi ad hoàn thành
         adCompleteCallback?.Invoke();
         adCompleteCallback = null;

@@ -66,6 +66,7 @@ public class CircleComponent : MonoBehaviour
     public EyesControl _eyesControl;
 
     private GameObject aimingGO;
+    private bool isTempDead = false;
 
     private void OnEnable()
     {
@@ -226,6 +227,21 @@ public class CircleComponent : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.instance.isPendingGameOver)
+        {
+            if (!isTempDead)
+            {
+                isTempDead = true;
+                _animator.SetTrigger("TriggerDead");
+            }
+            return;
+        }
+        else if (isTempDead)
+        {
+            isTempDead = false;
+            _animator.SetTrigger("TriggerIdle");
+        }
+
         if (!_moveCircle.enabled && !isFirstCollision && !isOverLineTriggered && !hasTriggeredDead)
         {
             hasTriggeredDead = true;
