@@ -13,22 +13,11 @@ using Sych.ShareAssets.Runtime;
 using Sych.ShareAssets.Example.Tools;
 using UnityEngine.SocialPlatforms.Impl;
 
-public enum mouseState
-{
-    notChoosing,
-    DestroyChoosing,
-    UpgradeChoosing,
-}
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public static event Action MouseNotChoosing;
-
     public static event Action SetDragging;
-
-    public static mouseState MouseState { get; private set; } = mouseState.notChoosing;
 
     [SerializeField]
     private UnityEngine.Object[] Circles;
@@ -112,29 +101,19 @@ public class GameManager : MonoBehaviour
     private void OnDisable()
     {
         MoveCircle.Setup -= DelaySpawnCircles;
-        Booster.boosTer1 -= Destroy_Smallest;
-        Booster.booster2 -= ChangeDestroyMouseState;
-        Booster.booster3 -= ChangeUpgradeMouseState;
-        MouseNotChoosing -= ChangeNotChoosingMouseState;
-        // CircleComponent.AddCircleQueueToDestroy -= ReportCollision;
         CircleComponent.OnCircleMerged -= MergeCircles;
-        // GameOverLine.GameOVer -= GameOver;
         MoveCircle.PracticeEffect -= PracticeEffect;
         CircleComponent.PracticeEffect -= PracticeEffect;
+        BoosterManager.PracticeEffect -= PracticeEffect;
 
     }
     private void OnEnable()
     {
         MoveCircle.Setup += DelaySpawnCircles;
-        Booster.boosTer1 += Destroy_Smallest;
-        Booster.booster2 += ChangeDestroyMouseState;
-        Booster.booster3 += ChangeUpgradeMouseState;
-        MouseNotChoosing += ChangeNotChoosingMouseState;
-        // CircleComponent.AddCircleQueueToDestroy += ReportCollision;
         CircleComponent.OnCircleMerged += MergeCircles;
-        // GameOverLine.GameOVer += GameOver;
         MoveCircle.PracticeEffect += PracticeEffect;
         CircleComponent.PracticeEffect += PracticeEffect;
+        BoosterManager.PracticeEffect += PracticeEffect;
 
         if (evolutionTree == null)
         {
@@ -266,8 +245,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Đặt trạng thái chuột ban đầu
-        MouseState = mouseState.notChoosing;
         GameInit();
         // Đặt tốc độ khung hình mục tiêu
         Application.targetFrameRate = 60;
@@ -702,37 +679,6 @@ public class GameManager : MonoBehaviour
                     Debug.LogWarning($"[{newObj.name}] Không tìm thấy CircleCollider2D trong object con.");
                 }
 
-                // // kiểm tra của mới sinh nằm dưới hay trên line game over
-                // GameObject lineGameOver = GameObject.Find("LineGameOver");
-                // if (lineGameOver != null)
-                // {
-                //     float fruitY = newObj.transform.position.y;
-                //     float lineY = lineGameOver.transform.position.y;
-
-                //     if (fruitY < lineY)
-                //     {
-                //         newObj.GetComponent<CircleComponent>().isOverLineTriggered = true;
-                //         // Debug.Log("Quả mới sinh nằm dưới line game over");
-                //         // Xử lý khi quả nằm dưới line
-                //     }
-                //     else
-                //     {
-                //         CircleComponent cc = newObj.GetComponent<CircleComponent>();
-                //         if (cc != null)
-                //         {
-                //             // cc.StartCoroutine(cc.DelayCheckGameOver());
-                //             newObj.GetComponent<CircleComponent>().isOverLineTriggered = false;
-
-                //         }
-                //         // Debug.Log("Quả mới sinh nằm trên hoặc bằng line game over");
-                //         // Xử lý khi quả nằm trên hoặc bằng line
-                //     }
-                // }
-                // else
-                // {
-                //     Debug.LogWarning("Không tìm thấy LineGameOver trong scene.");
-                // }
-
                 if (isPlayingTutorial)
                     newObj.GetComponent<CircleComponent>().isOverLineTriggered = true;
                 else
@@ -746,54 +692,6 @@ public class GameManager : MonoBehaviour
     {
         Scores += score;
         ScoreText.SetText(Scores.ToString());
-    }
-
-
-    // private UnityEngine.Object Find_Smallest_Fruit()
-    // {
-    //     Transform parent = GameObject.Find("Circles").transform;
-    //     int min_index = 100;
-    //     UnityEngine.Object smallest = null;
-
-    //     foreach (var circle in parent)
-    //     {
-    //         string name = (circle as Transform).gameObject.name.Replace("(Clone)", "");
-
-    //         for (int i = 0; i < Circles.Length; i++)
-    //         {
-    //             if (Circles[i].name == name)
-    //             {
-    //                 if (i <= min_index)
-    //                 {
-    //                     min_index = i;
-    //                     smallest = (circle as Transform).gameObject;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return smallest;
-    // }
-
-
-    private void Destroy_Smallest(int level)
-    {
-        UnityEngine.Object smallest = null;
-        Transform parent = GameObject.Find("Circles").transform;
-        int index = 0; // Khởi tạo index để tạo delay khác nhau cho mỗi object
-        
-        foreach (var circle in parent)
-        {
-            smallest = (circle as Transform).gameObject;
-            if (smallest.GetComponent<CircleComponent>().Level <= level)
-            {
-                int smallestLevel = smallest.GetComponent<CircleComponent>().Level;
-                
-                
-                // Delay tăng dần cho mỗi object: 0.1f, 0.2f, 0.3f, ...
-                StartCoroutine(DelayedDestroySingle(smallest.GameObject(), smallestLevel, 0.1f + (index * 0.05f)));
-                index++; // Tăng index cho object tiếp theo
-            }
-        }
     }
 
     private void ReportCollision(CircleComponent circle)
@@ -918,19 +816,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void DelayNotChoosingMouseState()
-    {
-        MouseState = mouseState.notChoosing;
-        isBoosterTriggered = false; 
-    }
-
-    public static void TriggerMouseNotChoosing() => MouseNotChoosing?.Invoke();
-    private void ChangeNotChoosingMouseState() => Invoke("DelayNotChoosingMouseState", 0.5f);
-    private void ChangeDestroyMouseState() => MouseState = mouseState.DestroyChoosing;
-
     private void DelaySpawnCircles() => Invoke("HandleSpawnCircles", 0.2f);
-
-    private void ChangeUpgradeMouseState() => MouseState = mouseState.UpgradeChoosing;
 
     private IEnumerator DelayedSquashTrigger(SquashStretch squashStretch, Vector2 normal, float velocity, Vector2 contactPoint, float delay)
     {
@@ -987,17 +873,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator DelayedDestroySingle(GameObject obj, int smallestLevel, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        // Kiểm tra null trước khi destroy để tránh lỗi
-        if (obj != null)
-        {
-            PracticeEffect("VFX/Custom_FruitExplosion", obj.transform.position, evolutionTree.levels[smallestLevel - 1].colorEffect, smallestLevel);
-            AudioManager.instance.PlayBoosterSmallestSound();
-
-            Destroy(obj);
-        }
-    }
 }

@@ -224,6 +224,53 @@ public class CircleComponent : MonoBehaviour
         }
     }
 
+    
+    private void OnMouseDown()
+    {
+        if (BoosterManager.instance.boosterChosen == BoosterManager.BOOSTER_HAMMER)
+        {
+            AudioManager.instance.PlayBoosterHammerSound(); // Phát âm thanh khi nhấn nút
+            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
+
+            StartCoroutine(DelayBoosterEffect(() =>
+            {
+                FinishBooster(true);
+            }));
+        }
+        else if (BoosterManager.instance.boosterChosen == BoosterManager.BOOSTER_UPGRADE)
+        {
+            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
+
+            StartCoroutine(DelayBoosterEffect(() =>
+            {
+                gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
+
+                FinishBooster(false);
+            }));
+        }
+    }
+
+    private void FinishBooster(Boolean isColorEffect = false)
+    {
+        if (isColorEffect)
+        {
+            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect, gameObject.GetComponent<CircleComponent>().Level);
+        }
+
+        GameManager.TriggerMouseNotChoosing();
+        BoosterManager.instance.boosterChosen = BoosterManager.BOOSTER_NON; // Reset booster state
+        Destroy(gameObject);
+    }
+
+
+    private System.Collections.IEnumerator DelayBoosterEffect(Action onComplete)
+    {
+        yield return new WaitForSeconds(1f);
+        onComplete?.Invoke();
+    }
+
     private void Update()
     {
         if (!_moveCircle.enabled && !isFirstCollision && !isOverLineTriggered && !hasTriggeredDead)
@@ -296,15 +343,14 @@ public class CircleComponent : MonoBehaviour
 
         if (GameManager.instance.isBoosterTriggered) return;
 
-        if ((GameManager.MouseState == mouseState.DestroyChoosing || GameManager.MouseState == mouseState.UpgradeChoosing) && _moveCircle.isDrop)
+        if ((BoosterManager.instance.boosterChosen == BoosterManager.BOOSTER_HAMMER || BoosterManager.instance.boosterChosen == BoosterManager.BOOSTER_UPGRADE) && _moveCircle.isDrop)
         {
-            // Debug.Log($"[{name}] MouseState is DestroyChoosing, enabling AimingComponent.");
             if (aimingGO != null)
                 aimingGO.SetActive(true); // Hiện AimingComponent khi đang chọn phá hủy
         }
         else
         {
-            // Tắt AimingComponent khi không ở trạng thái DestroyChoosing
+            // Tắt AimingComponent khi không ở trạng thái BOOSTER_HAMMER
             if (aimingGO != null && aimingGO.activeSelf)
                 aimingGO.SetActive(false);
         }

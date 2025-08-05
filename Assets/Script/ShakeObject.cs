@@ -8,7 +8,7 @@ public class ShakeObject : MonoBehaviour
 
     private void OnEnable()
     {
-        Booster.booster4 += StartShaking;
+        BoosterManager.booster4 += StartShaking;
         // StartShaking();
     }
 
@@ -20,7 +20,7 @@ public class ShakeObject : MonoBehaviour
 
     private void OnDisable()
     {
-        Booster.booster4 -= StartShaking;
+        BoosterManager.booster4 -= StartShaking;
     }
 
     private void StartShaking()

@@ -22,9 +22,8 @@ public class MoveCircle : MonoBehaviour
     [SerializeField]
     // private GameObject Hook;
 
-    private float GameoverY;
-
-    private float EvolutionTreeY;
+    private float topLimitY;
+    private float bottomLimitY;
     CircleCollider2D childCollider;
 
     [SerializeField]
@@ -37,8 +36,8 @@ public class MoveCircle : MonoBehaviour
 
     void Start()
     {
-        GameoverY = GameObject.Find("NextCirclePoint").transform.position.y;
-        EvolutionTreeY = GameObject.Find("EvolutionTree").transform.position.y;
+        topLimitY    = GameObject.Find("NextCirclePoint").transform.position.y;
+        //bottomLimitY = GameObject.Find("EvolutionTree").transform.position.y;
 
         childCollider = GetComponentInChildren<CircleCollider2D>();
         childCollider.enabled = false;
@@ -77,43 +76,6 @@ public class MoveCircle : MonoBehaviour
         // Hook = GameObject.Find("Hook");
     }
 
-
-    private void OnMouseDown()
-    {
-        if (GameManager.MouseState == mouseState.DestroyChoosing && isDrop)
-        {
-            AudioManager.instance.PlayBoosterHammerSound(); // Phát âm thanh khi nhấn nút
-            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
-            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
-
-            StartCoroutine(DelayBoosterEffect(() =>
-            {
-
-
-                FinishBosster(true);
-            }));
-        }
-        else if (GameManager.MouseState == mouseState.UpgradeChoosing && isDrop)
-        {
-            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
-            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
-
-            StartCoroutine(DelayBoosterEffect(() =>
-            {
-                gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
-
-                FinishBosster(false);
-            }));
-        }
-    }
-
-    private System.Collections.IEnumerator DelayBoosterEffect(Action onComplete)
-    {
-        yield return new WaitForSeconds(1f);
-        onComplete?.Invoke();
-
-    }
-
     void Update()
     {
         if (isBlockByUI)
@@ -127,7 +89,6 @@ public class MoveCircle : MonoBehaviour
             {
                 isBlockedUntilMouseUp = true;
             }
-
             return;
         }
 
@@ -139,15 +100,16 @@ public class MoveCircle : MonoBehaviour
             }
             return;
         }
+
         // Gộp bắt đầu kéo và kéo thành 1
-        if (Input.GetMouseButton(0) && !isDrop && GameManager.MouseState == mouseState.notChoosing && isReady)
+        if (Input.GetMouseButton(0) && !isDrop && BoosterManager.instance.boosterChosen == BoosterManager.BOOSTER_NON && isReady)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
 
-            // Kiểm tra giới hạn Y
-            if (mousePos.y > GameoverY || mousePos.y < EvolutionTreeY) return;
-
+            // Kiểm tra giới hạn Y, trên giới hạn Y hoặc booster đã được chọn thì không thả 
+            if (mousePos.y > topLimitY) return;
+            
             isDragging = true;
 
             var rb = GetComponent<Rigidbody2D>();
@@ -218,10 +180,7 @@ public class MoveCircle : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
-
-
 
     private void SetupInstiate(UnityEngine.Object circle)
     {
@@ -229,15 +188,4 @@ public class MoveCircle : MonoBehaviour
         circle.GetComponent<MoveCircle>().isDragging = false;
     }
 
-    private void FinishBosster(Boolean isColorEffect = false)
-    {
-        if (isColorEffect)
-        {
-            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect, gameObject.GetComponent<CircleComponent>().Level);
-        }
-
-        GameManager.TriggerMouseNotChoosing();
-
-        Destroy(gameObject);
-    }
 }

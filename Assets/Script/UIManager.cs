@@ -225,7 +225,7 @@ public class UIManager : MonoBehaviour
 
             Sequence sequence = DOTween.Sequence();
             sequence.InsertCallback(0f, () => {
-                        Booster.Booster4Clicked(); // Chạy ngay khi sequence bắt đầu
+                        BoosterManager.Booster4Clicked(); // Chạy ngay khi sequence bắt đầu
                     })
                     .Append(camera.transform.DOMove(new Vector3(0, 0, -19f), scaleShakeDuration).SetEase(Ease.OutQuint));
                     // .Join(boxWrapper.transform.DOMove(originalboxWrapperPosition + new Vector3(0, 0.3f, 0), scaleShakeDuration + 0.2f).SetEase(Ease.OutBack))
