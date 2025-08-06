@@ -181,7 +181,7 @@ public class MoveCircle : MonoBehaviour
         }
 
         // 2. Thả vật thể
-        if (Input.GetMouseButtonUp(0) && isDragging && !isDrop && BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_NON)
+        if (Input.GetMouseButtonUp(0) && isDragging && !isDrop && BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_NON && !BoosterManager.instance.GetBoosterActived())
         {
             gameObject.GetComponent<LineRenderer>().enabled = false;
             isDragging = false;

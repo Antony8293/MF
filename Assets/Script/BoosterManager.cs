@@ -11,7 +11,7 @@ public class BoosterManager : MonoBehaviour
     public static int BOOSTER_UPGRADE = 2; // Booster nâng cấp
     public static int BOOSTER_SHAKE = 3; // Booster lắc hộp
     private int boosterChosen = BOOSTER_NON; // Trạng thái của booster, -1 là không có booster nào được kích hoạt
-    private bool isBoosterActived = false; 
+    private bool isBoosterActived = false;
     public static event Action<String, Vector3, Color, int> PracticeEffect;
 
     public static event Action ShakeBox;
@@ -101,7 +101,7 @@ public class BoosterManager : MonoBehaviour
         }
         SetBoosterState(BOOSTER_NON); // Reset trạng thái booster sau khi sử dụng
     }
-    
+
     public void FinishBooster(Boolean isColorEffect = false, GameObject gameObject = null)
     {
         if (isColorEffect)
@@ -135,7 +135,7 @@ public class BoosterManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         onComplete?.Invoke();
     }
-    
-    public static void ShakeBoxClicked() => ShakeBox?.Invoke();
 
+    public static void ShakeBoxClicked() => ShakeBox?.Invoke();
+    
 }
