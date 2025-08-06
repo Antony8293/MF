@@ -43,7 +43,8 @@ public class AimingComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.instance.isBoosterTriggered)
+        // if (GameManager.instance.isBoosterTriggered)
+        if(BoosterManager.instance.GetBoosterActived())
         {
             if (isTargeted)
             {

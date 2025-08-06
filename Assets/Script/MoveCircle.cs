@@ -9,7 +9,7 @@ public class MoveCircle : MonoBehaviour
 
     public static event Action SetDropping;
 
-    public static event Action<String, Vector3, Color, int> PracticeEffect;
+    // public static event Action<String, Vector3, Color, int> PracticeEffect;
 
     public bool isDrop = false;
 
@@ -22,7 +22,7 @@ public class MoveCircle : MonoBehaviour
     [SerializeField]
     // private GameObject Hook;
 
-    private float GameoverY;
+    private float topLimitY;
 
     private float EvolutionTreeY;
     CircleCollider2D childCollider;
@@ -37,7 +37,7 @@ public class MoveCircle : MonoBehaviour
 
     void Start()
     {
-        GameoverY = GameObject.Find("NextCirclePoint").transform.position.y;
+        topLimitY = GameObject.Find("NextCirclePoint").transform.position.y;
         EvolutionTreeY = GameObject.Find("EvolutionTree").transform.position.y;
 
         childCollider = GetComponentInChildren<CircleCollider2D>();
@@ -78,41 +78,41 @@ public class MoveCircle : MonoBehaviour
     }
 
 
-    private void OnMouseDown()
-    {
-        if (GameManager.MouseState == mouseState.DestroyChoosing && isDrop)
-        {
-            AudioManager.instance.PlayBoosterHammerSound(); // Phát âm thanh khi nhấn nút
-            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
-            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
+    // private void OnMouseDown()
+    // {
+    //     if (GameManager.MouseState == mouseState.DestroyChoosing && isDrop)
+    //     {
+    //         AudioManager.instance.PlayBoosterHammerSound(); // Phát âm thanh khi nhấn nút
+    //         GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+    //         gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
 
-            StartCoroutine(DelayBoosterEffect(() =>
-            {
+    //         StartCoroutine(DelayBoosterEffect(() =>
+    //         {
 
 
-                FinishBosster(true);
-            }));
-        }
-        else if (GameManager.MouseState == mouseState.UpgradeChoosing && isDrop)
-        {
-            GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
-            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
+    //             FinishBosster(true);
+    //         }));
+    //     }
+    //     else if (GameManager.MouseState == mouseState.UpgradeChoosing && isDrop)
+    //     {
+    //         GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+    //         gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
 
-            StartCoroutine(DelayBoosterEffect(() =>
-            {
-                gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
+    //         StartCoroutine(DelayBoosterEffect(() =>
+    //         {
+    //             gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
 
-                FinishBosster(false);
-            }));
-        }
-    }
+    //             FinishBosster(false);
+    //         }));
+    //     }
+    // }
 
-    private System.Collections.IEnumerator DelayBoosterEffect(Action onComplete)
-    {
-        yield return new WaitForSeconds(1f);
-        onComplete?.Invoke();
+    // private System.Collections.IEnumerator DelayBoosterEffect(Action onComplete)
+    // {
+    //     yield return new WaitForSeconds(1f);
+    //     onComplete?.Invoke();
 
-    }
+    // }
 
     void Update()
     {
@@ -140,13 +140,15 @@ public class MoveCircle : MonoBehaviour
             return;
         }
         // Gộp bắt đầu kéo và kéo thành 1
-        if (Input.GetMouseButton(0) && !isDrop && GameManager.MouseState == mouseState.notChoosing && isReady)
+        // if (Input.GetMouseButton(0) && !isDrop && GameManager.MouseState == mouseState.notChoosing && isReady)
+        if (Input.GetMouseButton(0) && !isDrop && BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_NON && isReady)
+
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
 
             // Kiểm tra giới hạn Y
-            if (mousePos.y > GameoverY || mousePos.y < EvolutionTreeY) return;
+            if (mousePos.y > topLimitY) return;
 
             isDragging = true;
 
@@ -179,7 +181,7 @@ public class MoveCircle : MonoBehaviour
         }
 
         // 2. Thả vật thể
-        if (Input.GetMouseButtonUp(0) && isDragging && !isDrop)
+        if (Input.GetMouseButtonUp(0) && isDragging && !isDrop && BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_NON)
         {
             gameObject.GetComponent<LineRenderer>().enabled = false;
             isDragging = false;
@@ -229,15 +231,15 @@ public class MoveCircle : MonoBehaviour
         circle.GetComponent<MoveCircle>().isDragging = false;
     }
 
-    private void FinishBosster(Boolean isColorEffect = false)
-    {
-        if (isColorEffect)
-        {
-            PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect, gameObject.GetComponent<CircleComponent>().Level);
-        }
+    // private void FinishBosster(Boolean isColorEffect = false)
+    // {
+    //     if (isColorEffect)
+    //     {
+    //         PracticeEffect?.Invoke("VFX/Custom_FruitExplosion", gameObject.transform.position, gameObject.GetComponent<CircleComponent>().evolutionTree.levels[gameObject.GetComponent<CircleComponent>().Level - 1].colorEffect, gameObject.GetComponent<CircleComponent>().Level);
+    //     }
 
-        GameManager.TriggerMouseNotChoosing();
-
-        Destroy(gameObject);
-    }
+    //     // GameManager.TriggerMouseNotChoosing();
+    //     BoosterManager.instance.SetBoosterState(BoosterManager.BOOSTER_NON);
+    //     Destroy(gameObject);
+    // }
 }

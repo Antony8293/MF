@@ -3,12 +3,13 @@ using DG.Tweening;
 
 public class ShakeObject : MonoBehaviour
 {
-    private bool isShaking = false;
+    public bool isShaking = false;
     private Animator animator;
 
     private void OnEnable()
     {
-        Booster.booster4 += StartShaking;
+        // Booster.booster4 += StartShaking;
+        BoosterManager.ShakeBox += StartShaking; // Subscribe to the ShakeBox event
         // StartShaking();
     }
 
@@ -20,7 +21,8 @@ public class ShakeObject : MonoBehaviour
 
     private void OnDisable()
     {
-        Booster.booster4 -= StartShaking;
+        // Booster.booster4 -= StartShaking;
+        BoosterManager.ShakeBox -= StartShaking;
     }
 
     private void StartShaking()
