@@ -13,22 +13,22 @@ using Sych.ShareAssets.Runtime;
 using Sych.ShareAssets.Example.Tools;
 using UnityEngine.SocialPlatforms.Impl;
 
-public enum mouseState
-{
-    notChoosing,
-    DestroyChoosing,
-    UpgradeChoosing,
-}
+// public enum mouseState
+// {
+//     notChoosing,
+//     DestroyChoosing,
+//     UpgradeChoosing,
+// }
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public static event Action MouseNotChoosing;
+    // public static event Action MouseNotChoosing;
 
     public static event Action SetDragging;
 
-    public static mouseState MouseState { get; private set; } = mouseState.notChoosing;
+    // public static mouseState MouseState { get; private set; } = mouseState.notChoosing;
 
     [SerializeField]
     private UnityEngine.Object[] Circles;
@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
 
     public bool isShaking = false;
 
-    public bool isBoosterTriggered = false;
+    // public bool isBoosterTriggered = false;
     public bool isPendingGameOver = false;
     private void Awake()
     {
@@ -113,28 +113,28 @@ public class GameManager : MonoBehaviour
     private void OnDisable()
     {
         MoveCircle.Setup -= DelaySpawnCircles;
-        Booster.boosTer1 -= Destroy_Smallest;
-        Booster.booster2 -= ChangeDestroyMouseState;
-        Booster.booster3 -= ChangeUpgradeMouseState;
-        MouseNotChoosing -= ChangeNotChoosingMouseState;
+        // Booster.boosTer1 -= Destroy_Smallest;
+        // Booster.booster2 -= ChangeDestroyMouseState;
+        // Booster.booster3 -= ChangeUpgradeMouseState;
+        // MouseNotChoosing -= ChangeNotChoosingMouseState;
         // CircleComponent.AddCircleQueueToDestroy -= ReportCollision;
         CircleComponent.OnCircleMerged -= MergeCircles;
         // GameOverLine.GameOVer -= GameOver;
-        MoveCircle.PracticeEffect -= PracticeEffect;
+        BoosterManager.PracticeEffect -= PracticeEffect;
         CircleComponent.PracticeEffect -= PracticeEffect;
 
     }
     private void OnEnable()
     {
         MoveCircle.Setup += DelaySpawnCircles;
-        Booster.boosTer1 += Destroy_Smallest;
-        Booster.booster2 += ChangeDestroyMouseState;
-        Booster.booster3 += ChangeUpgradeMouseState;
-        MouseNotChoosing += ChangeNotChoosingMouseState;
+        // Booster.boosTer1 += Destroy_Smallest;
+        // Booster.booster2 += ChangeDestroyMouseState;
+        // Booster.booster3 += ChangeUpgradeMouseState;
+        // MouseNotChoosing += ChangeNotChoosingMouseState;
         // CircleComponent.AddCircleQueueToDestroy += ReportCollision;
         CircleComponent.OnCircleMerged += MergeCircles;
         // GameOverLine.GameOVer += GameOver;
-        MoveCircle.PracticeEffect += PracticeEffect;
+        BoosterManager.PracticeEffect += PracticeEffect;
         CircleComponent.PracticeEffect += PracticeEffect;
 
         if (evolutionTree == null)
@@ -268,7 +268,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Đặt trạng thái chuột ban đầu
-        MouseState = mouseState.notChoosing;
+        // MouseState = mouseState.notChoosing;
+        BoosterManager.instance.SetBoosterState(BoosterManager.BOOSTER_NON);
+
         GameInit();
         // Đặt tốc độ khung hình mục tiêu
         Application.targetFrameRate = 60;
@@ -918,19 +920,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void DelayNotChoosingMouseState()
-    {
-        MouseState = mouseState.notChoosing;
-        isBoosterTriggered = false; 
-    }
+    // private void DelayNotChoosingMouseState()
+    // {
+    //     MouseState = mouseState.notChoosing;
+    //     isBoosterTriggered = false; 
+    // }
 
-    public static void TriggerMouseNotChoosing() => MouseNotChoosing?.Invoke();
-    private void ChangeNotChoosingMouseState() => Invoke("DelayNotChoosingMouseState", 0.5f);
-    private void ChangeDestroyMouseState() => MouseState = mouseState.DestroyChoosing;
+    // public static void TriggerMouseNotChoosing() => MouseNotChoosing?.Invoke();
+    // private void ChangeNotChoosingMouseState() => Invoke("DelayNotChoosingMouseState", 0.5f);
+    // private void ChangeDestroyMouseState() => MouseState = mouseState.DestroyChoosing;
 
     private void DelaySpawnCircles() => Invoke("HandleSpawnCircles", 0.2f);
 
-    private void ChangeUpgradeMouseState() => MouseState = mouseState.UpgradeChoosing;
+    // private void ChangeUpgradeMouseState() => MouseState = mouseState.UpgradeChoosing;
 
     private IEnumerator DelayedSquashTrigger(SquashStretch squashStretch, Vector2 normal, float velocity, Vector2 contactPoint, float delay)
     {

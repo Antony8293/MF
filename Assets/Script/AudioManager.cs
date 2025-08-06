@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
     private AudioClip boosterSmallestClip; // Âm thanh khi sử dụng booster Smallest
 
     [SerializeField]
-    private AudioClip bôosterHammerClip; // Âm thanh khi sử dụng booster Hammer
+    private AudioClip boosterHammerClip; // Âm thanh khi sử dụng booster Hammer
 
     [SerializeField]
     private AudioClip boosterUpgradeClip; // Âm thanh khi sử dụng booster Upgrade
@@ -211,7 +211,7 @@ public class AudioManager : MonoBehaviour
     {
         if (hasEffectSound)
         {
-            audioSource.PlayOneShot(bôosterHammerClip); // Phát âm thanh khi sử dụng booster Hammer
+            audioSource.PlayOneShot(boosterHammerClip); // Phát âm thanh khi sử dụng booster Hammer
         }
     }
 

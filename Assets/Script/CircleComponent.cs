@@ -301,7 +301,8 @@ public class CircleComponent : MonoBehaviour
             enabled = false;
         }
 
-        if (GameManager.instance.isBoosterTriggered)
+        // if (GameManager.instance.isBoosterTriggered)
+        if (BoosterManager.instance.GetBoosterActived())
         {
             _rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
         }
@@ -310,9 +311,11 @@ public class CircleComponent : MonoBehaviour
             _rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
 
-        if (GameManager.instance.isBoosterTriggered) return;
+        // if (GameManager.instance.isBoosterTriggered) return;
+        if (BoosterManager.instance.GetBoosterActived()) return;
 
-        if ((GameManager.MouseState == mouseState.DestroyChoosing || GameManager.MouseState == mouseState.UpgradeChoosing) && _moveCircle.isDrop)
+        // if ((GameManager.MouseState == mouseState.DestroyChoosing || GameManager.MouseState == mouseState.UpgradeChoosing) && _moveCircle.isDrop)
+        if ((BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_HAMMER || BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_UPGRADE) && _moveCircle.isDrop)
         {
             // Debug.Log($"[{name}] MouseState is DestroyChoosing, enabling AimingComponent.");
             if (aimingGO != null)
@@ -370,8 +373,40 @@ public class CircleComponent : MonoBehaviour
             visual.localScale = Vector3.one;
     }
 
+    private void OnMouseDown()
+    {
+        // if (GameManager.MouseState == mouseState.DestroyChoosing && isDrop)
+        if (BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_HAMMER)
+        {
+            // GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+            BoosterManager.instance.SetBoosterActived(true); // Đánh dấu đã chọn mục tiêu
+            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
+            StartCoroutine(DelayBoosterEffect(() =>
+            {
+                AudioManager.instance.PlayBoosterHammerSound(); // Phát âm thanh khi nhấn nút
+                BoosterManager.instance.FinishBooster(true, gameObject);
+            }));
+        }
+            // else if (GameManager.MouseState == mouseState.UpgradeChoosing && isDrop)
+        else if (BoosterManager.instance.GetBoosterState() == BoosterManager.BOOSTER_UPGRADE)
+        {
+            // GameManager.instance.isBoosterTriggered = true; // Đánh dấu đã kích hoạt booster
+            BoosterManager.instance.SetBoosterActived(true); // Đánh dấu đã chọn mục tiêu
+            gameObject.GetComponentInChildren<AimingComponent>().isTargeted = true; // Đánh dấu đã chọn mục tiêu
 
+            StartCoroutine(DelayBoosterEffect(() =>
+            {
+                gameObject.GetComponent<CircleComponent>()?.OnUpgrade?.Invoke();
+                BoosterManager.instance.FinishBooster(false, gameObject);
+            }));
+        }
+    }
+    private System.Collections.IEnumerator DelayBoosterEffect(Action onComplete)
+    {
+        yield return new WaitForSeconds(1f);
+        onComplete?.Invoke();
 
+    }
 
     public void DelayCheckGameOver()
     {
