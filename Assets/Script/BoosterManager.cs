@@ -18,6 +18,8 @@ public class BoosterManager : MonoBehaviour
 
     public static BoosterManager instance;
 
+    public Animator boxAnimator;
+
     void Awake()
     {
         if (instance == null)
@@ -136,6 +138,27 @@ public class BoosterManager : MonoBehaviour
         onComplete?.Invoke();
     }
 
-    public static void ShakeBoxClicked() => ShakeBox?.Invoke();
-    
+    // public static void ShakeBoxClicked() => ShakeBox?.Invoke();
+    public void ShakeBoxClicked()
+    {
+        Debug.Log("StartShaking called");
+        if (boxAnimator != null)
+        {
+            boxAnimator.enabled = true; // Enable the animator to start shaking
+                                        // StartCoroutine(WaitForAnimationEnd());
+            AudioManager.instance.PlayBoosterShakeSound(); // Phát âm thanh rung
+            AudioManager.instance.Vibrate(); // Rung thiết bị nếu có
+        }
+    }
+
+    public void OnAnimationEnd()
+    {
+        // if (isShaking)
+        {
+            // isShaking = false;
+        }
+        boxAnimator.enabled = false; // Disable animator after one animation cycle
+        UIManager.instance?.UIScaleShakingBoosterEffect(Const.END_EFFECT);
+    }
+
 }

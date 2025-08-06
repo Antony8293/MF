@@ -224,11 +224,13 @@ public class UIManager : MonoBehaviour
             boxCollider.transform.SetParent(boxWrapper.GetComponentInChildren<ShakeObject>().transform); // Đặt BoxCollider làm con của boxWrapper
 
             Sequence sequence = DOTween.Sequence();
-            sequence.InsertCallback(0f, () => {
-                        BoosterManager.ShakeBoxClicked(); // Chạy ngay khi sequence bắt đầu
-                    })
+            sequence.InsertCallback(0f, () =>
+            {
+                Debug.Log("ShakeBoxClicked called from UIScaleShakingBoosterEffect");
+                BoosterManager.instance.ShakeBoxClicked(); // Chạy ngay khi sequence bắt đầu
+            })
                     .Append(camera.transform.DOMove(new Vector3(0, 0, -19f), scaleShakeDuration).SetEase(Ease.OutQuint));
-                    // .Join(boxWrapper.transform.DOMove(originalboxWrapperPosition + new Vector3(0, 0.3f, 0), scaleShakeDuration + 0.2f).SetEase(Ease.OutBack))
+            // .Join(boxWrapper.transform.DOMove(originalboxWrapperPosition + new Vector3(0, 0.3f, 0), scaleShakeDuration + 0.2f).SetEase(Ease.OutBack))
 
         }
         else
@@ -254,6 +256,7 @@ public class UIManager : MonoBehaviour
                         boxCollider.transform.SetParent(null); // Tách BoxCollider ra khỏi boxWrapper
 
                         // GameManager.instance.isBoosterTriggered = false; // Đánh dấu đã kết thúc hiệu ứng
+                        BoosterManager.instance.SetBoosterState(BoosterManager.BOOSTER_NON);
                         BoosterManager.instance.SetBoosterActived(false); // Reset trạng thái booster đã kích hoạt
                         boxWrapper.gameObject.SetActive(false); // Ẩn boxWrapper
                     });

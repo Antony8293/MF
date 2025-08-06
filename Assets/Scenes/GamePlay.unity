@@ -2651,6 +2651,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isShaking: 0
 --- !u!114 &540393693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3779,6 +3780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5adec9ec11b73444fafbdc89720280b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boxAnimator: {fileID: 838806595}
 --- !u!4 &738855497
 Transform:
   m_ObjectHideFlags: 0
@@ -4685,7 +4687,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838806592}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 3870043027fb34a4db65f3864297b5ca, type: 2}
   m_CullingMode: 0
@@ -4711,6 +4713,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isShaking: 0
 --- !u!1 &839229868
 GameObject:
   m_ObjectHideFlags: 0
@@ -9342,6 +9345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isShaking: 0
 --- !u!222 &1504834239
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11137,6 +11141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79434f0a6edcea744a3c17b6bf22a875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isShaking: 0
 --- !u!1 &1996426090
 GameObject:
   m_ObjectHideFlags: 0
