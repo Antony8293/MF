@@ -8255,9 +8255,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2102661546}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: ShareClicked
+      - m_Target: {fileID: 2146684107}
+        m_TargetAssemblyTypeName: ToolManager, Assembly-CSharp
+        m_MethodName: DestroyChoosen
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
