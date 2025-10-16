@@ -4179,10 +4179,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1655481588}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: OpenBoosterPopup
-        m_Mode: 3
+      - m_Target: {fileID: 2146684107}
+        m_TargetAssemblyTypeName: ToolManager, Assembly-CSharp
+        m_MethodName: LoadFile
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4309,6 +4309,37 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1185536403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1185536404}
+  m_Layer: 0
+  m_Name: Crates
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1185536404
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185536403}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.74461, y: -3.32107, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1197360070
 GameObject:
   m_ObjectHideFlags: 0
@@ -7607,9 +7638,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2102661546}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: TogglePause
+      - m_Target: {fileID: 2146684107}
+        m_TargetAssemblyTypeName: ToolManager, Assembly-CSharp
+        m_MethodName: SaveFile
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8831,6 +8862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73d6651de9b12a84fbed5eba188bcf6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Crates: {fileID: 1185536403}
   Crate: {fileID: 1842037437750742874, guid: d8154e9b008852e43973702e6617b932, type: 3}
 --- !u!4 &2146684108
 Transform:
@@ -9088,3 +9120,4 @@ SceneRoots:
   - {fileID: 1937300396}
   - {fileID: 1996426091}
   - {fileID: 2146684108}
+  - {fileID: 1185536404}
