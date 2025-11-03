@@ -23,8 +23,6 @@ public class ScrollLevelLogger : MonoBehaviour
 
         int currentLevel = Mathf.RoundToInt(value.y * (totalLevels - 1)) + 1;
 
-        Debug.Log($"📜 Đang ở Level: {currentLevel}");
-
         levelText.text = $"Level: {currentLevel}";
     }
 }
