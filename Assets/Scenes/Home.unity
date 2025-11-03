@@ -646,6 +646,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollRect: {fileID: 259251809}
   totalLevels: 7
+  levelText: {fileID: 1861463191}
 --- !u!1 &436644342
 GameObject:
   m_ObjectHideFlags: 0
