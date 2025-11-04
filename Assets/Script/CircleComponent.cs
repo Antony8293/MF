@@ -329,8 +329,24 @@ public class CircleComponent : MonoBehaviour
 
     }
 
+    private List<GameObject> collidingObjects = new List<GameObject>();
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collidingObjects.Contains(collision.gameObject))
+        {
+            collidingObjects.Remove(collision.gameObject);
+        }
+    }
+
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!collidingObjects.Contains(collision.gameObject))
+        {
+            collidingObjects.Add(collision.gameObject);
+        }
+
         if (gameObject.GetComponent<MoveCircle>().enabled) return;
         // Va chạm tường bên lần đầu không tính va chạm đầu => tránh trigger dead anim
         if (isFirstCollision && ((collision.GetContact(0).collider.gameObject.name == "LeftWall" ||
@@ -339,6 +355,8 @@ public class CircleComponent : MonoBehaviour
             // Debug.Log($"{name} va chạm với {collision.GetContact(0).collider.gameObject.name} lần đầu, bỏ qua");
             return;
         }
+
+        List<GameObject> saveCollidingObjects = new List<GameObject>(collidingObjects);
 
         // Debug.Log($"{name} va chạm với {collision.gameObject.name}");
         // --- 1. Xử lý squash/stretch nếu có ---
@@ -373,6 +391,12 @@ public class CircleComponent : MonoBehaviour
             // 5. Đánh dấu đang merge
             isMerging = true;
             otherCircle.isMerging = true;
+
+            foreach (GameObject obj in saveCollidingObjects)
+            {
+                if(obj.tag == "Crate") 
+                    obj.GetComponent<DowngradeShield>().Downgrade();
+            }
 
             // 6. Xác định vị trí merge (lấy điểm tiếp xúc đầu tiên)
             contactPoint = collision.GetContact(0).point;
