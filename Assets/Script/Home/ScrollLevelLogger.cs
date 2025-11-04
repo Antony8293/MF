@@ -1,11 +1,14 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ScrollLevelLogger : MonoBehaviour
 {
+    public static Action<int> onLevelChoosen;
+
     public ScrollRect scrollRect;  // Kéo ScrollRect vào đây trong Inspector
-    public int totalLevels = 10;   // Tổng số level hiển thị (hoặc số item con trong Content)
+    public int totalLevels = 6;   // Tổng số level hiển thị (hoặc số item con trong Content)
 
     public TextMeshProUGUI levelText;
 
@@ -25,4 +28,10 @@ public class ScrollLevelLogger : MonoBehaviour
 
         levelText.text = $"Level: {currentLevel}";
     }
+
+    public void ChooseLevel()
+    {
+        int chosenLevel = Int32.Parse(levelText.text.Replace("Level: ", ""));
+        onLevelChoosen?.Invoke(chosenLevel);
+    } 
 }

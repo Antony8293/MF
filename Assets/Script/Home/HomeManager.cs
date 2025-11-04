@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HomeManager : MonoBehaviour
 {
@@ -21,6 +22,14 @@ public class HomeManager : MonoBehaviour
     {
         ModeManager.advChosen += turnOnAdvMode;
         ModeManager.classicChosen += turnOnClassicMode;
+        ScrollLevelLogger.onLevelChoosen += onLevelChoosen;
+    }
+
+    void OnDisable()
+    {
+        ModeManager.advChosen -= turnOnAdvMode;
+        ModeManager.classicChosen -= turnOnClassicMode;
+        ScrollLevelLogger.onLevelChoosen -= onLevelChoosen;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -40,10 +49,16 @@ public class HomeManager : MonoBehaviour
         HomeCanvas.SetActive(false);
         AdvCanvas.SetActive(true);
     }
-    
+
     private void turnOnClassicMode()
     {
 
+    }
+    
+    private void onLevelChoosen(int level)
+    {
+        if (level == 1)
+            AsyncLoader._instance.LoadLevelBtn("Level1");
     }
 
 }
