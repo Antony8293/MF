@@ -25,12 +25,23 @@ public class CrateData
 }
 
 [System.Serializable]
+public class FruitData
+{
+    public Vector3 position;
+    public int fruitType;
+}
+
+[System.Serializable]
 public class LevelData
 {
     public List<CrateData> crates = new List<CrateData>();
-    public LevelData(List<CrateData> crates)
+
+    public List<FruitData> fruits = new List<FruitData>();
+
+    public LevelData(List<CrateData> crates, List<FruitData> levelData)
     {
         this.crates = crates;
+        this.fruits = levelData;
     }
 
     public LevelData() { }
@@ -97,7 +108,7 @@ public class ToolManager : MonoBehaviour
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (mousePos.y > 1.5f || mousePos.x < -1.7f || mousePos.x > 1.7f || mousePos.y < -1.8f) return;
             mousePos.z = 0f;
-            GameObject fruit = Instantiate(Fruits[fruitIndex-1], mousePos, Quaternion.identity);
+            GameObject fruit = Instantiate(Fruits[fruitIndex], mousePos, Quaternion.identity);
             fruit.transform.parent = Circles.transform;
             fruit.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             fruit.AddComponent<DestroyObject>();
@@ -113,6 +124,15 @@ public class ToolManager : MonoBehaviour
             CrateData cratedata = new CrateData("crate", crate.position);
             levelData.crates.Add(cratedata);
         }
+
+        foreach (Transform fruit in Circles.transform)
+        {
+            FruitData fruitdata = new FruitData();
+            fruitdata.position = fruit.position;
+            fruitdata.fruitType = int.Parse(fruit.name.Replace("(Clone)", "").Replace("Fruit0", ""))-1;
+            levelData.fruits.Add(fruitdata);
+        }
+
         string json = JsonUtility.ToJson(levelData);
         string path = Application.persistentDataPath + "/level.json";
         File.WriteAllText(path, json);
@@ -126,6 +146,11 @@ public class ToolManager : MonoBehaviour
             Destroy(crate.gameObject);
         }
 
+        foreach (Transform fruit in Circles.transform)
+        {
+            Destroy(fruit.gameObject);
+        }
+
         string path = Application.persistentDataPath + "/level.json";
         if (File.Exists(path))
         {
@@ -135,6 +160,14 @@ public class ToolManager : MonoBehaviour
             {
                 GameObject crate = Instantiate(Crate, crateData.position, Quaternion.identity);
                 crate.transform.parent = Crates.transform;
+            }
+
+            foreach (FruitData fruitData in levelData.fruits)
+            {
+                GameObject fruit = Instantiate(Fruits[fruitData.fruitType], fruitData.position, Quaternion.identity);
+                fruit.transform.parent = Circles.transform;
+                fruit.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                fruit.AddComponent<DestroyObject>();
             }
         }
         else
