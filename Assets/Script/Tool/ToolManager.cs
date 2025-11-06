@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 
 public enum ToolType
@@ -51,6 +52,9 @@ public class ToolManager : MonoBehaviour
 {
 
     public static ToolManager instance;
+
+    [SerializeField]
+    private TMP_InputField levelNameInput;
 
     [SerializeField]
     private GameObject CrateParent;
@@ -134,7 +138,7 @@ public class ToolManager : MonoBehaviour
         }
 
         string json = JsonUtility.ToJson(levelData);
-        string path = Application.persistentDataPath + "/level.json";
+        string path = Application.persistentDataPath + "/" + levelNameInput.text +".json";
         File.WriteAllText(path, json);
         Debug.Log("?? l?u JSON t?i: " + path);
     }
@@ -151,7 +155,7 @@ public class ToolManager : MonoBehaviour
             Destroy(fruit.gameObject);
         }
 
-        string path = Application.persistentDataPath + "/level.json";
+        string path = Application.persistentDataPath + "/" + levelNameInput.text +".json";
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
