@@ -57,6 +57,9 @@ public class ToolManager : MonoBehaviour
     private TMP_InputField levelNameInput;
 
     [SerializeField]
+    private Dictionary<string, int> fruitMap = new Dictionary<string, int>();
+
+    [SerializeField]
     private GameObject CrateParent;
 
     [SerializeField]
@@ -69,6 +72,9 @@ public class ToolManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> Fruits;
+
+    [SerializeField]
+    private GameObject FruitConent;
 
     private int fruitIndex;
 
@@ -177,6 +183,30 @@ public class ToolManager : MonoBehaviour
         else
         {
             Debug.LogWarning("Khong thay file");
+        }
+    }
+
+    private void AddFruitToMap(string fruit)
+    {
+        if (!fruitMap.ContainsKey(fruit))
+        {
+            fruitMap.Add(fruit, 1);
+        }
+        else
+        {
+            fruitMap[fruit] = fruitMap[fruit] + 1;
+        }
+        SetContentOnFruit();
+    }
+
+    private void SetContentOnFruit()
+    {
+        foreach (var item in fruitMap)
+        {
+            GameObject fruitItem = new GameObject(item.Key, typeof(RectTransform));
+            fruitItem.transform.SetParent(FruitConent.transform);
+            TextMeshPro text = fruitItem.AddComponent<TextMeshPro>();
+            text.text = item.Key + " : " + item.Value;
         }
     }
 
