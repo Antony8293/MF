@@ -95,10 +95,13 @@ public class ToolManager : MonoBehaviour
         }
 
         string path = Application.persistentDataPath + "/level.json";
-        if (File.Exists(path))
+
+        var jsonfile = Resources.Load<TextAsset>("level");
+
+
+        if (jsonfile != null)
         {
-            string json = File.ReadAllText(path);
-            Level level = JsonUtility.FromJson<Level>(json);
+            Level level = JsonUtility.FromJson<Level>(jsonfile.text);
 
             foreach (Crate crate in level.crates)
             {
