@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -96,7 +97,7 @@ public class ToolManager : MonoBehaviour
 
         string path = Application.persistentDataPath + "/level.json";
 
-        var jsonfile = Resources.Load<TextAsset>("level");
+        var jsonfile = Resources.Load<TextAsset>("level_1");
 
 
         if (jsonfile != null)
