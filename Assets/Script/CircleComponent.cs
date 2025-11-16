@@ -1,38 +1,63 @@
-// using System;
-// using System.Collections;
-// using System.Collections.Generic;
-// using System.Linq;
-// using DG.Tweening;
-// using TMPro;
-// using UnityEngine;
-// using UnityEngine.PlayerLoop;
-// using UnityEngine.UI;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
+using TMPro;
+using UnityEngine;
+using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
-// public class CircleComponent : MonoBehaviour
-// {
-//     // public static event Action<CircleComponent> AddCircleQueueToDestroy;
+public class CircleComponent : MonoBehaviour
+{
+    // public static event Action<CircleComponent> AddCircleQueueToDestroy;
 
-//     public static event Action<String, Vector3, Color, int> PracticeEffect;
+    public static event Action<String, Vector3, Color, int> PracticeEffect;
 
-//     public static event Action<CircleComponent, CircleComponent, UnityEngine.Vector3> OnCircleMerged;
+    public static event Action<CircleComponent, CircleComponent, UnityEngine.Vector3> OnCircleMerged;
 
-//     public Action OnUpgrade;
+    public Action OnUpgrade;
 
-//     public static event Action<UnityEngine.Object> AfterUpgrade;
+    public static event Action<UnityEngine.Object> AfterUpgrade;
 
-//     public Vector3 targetScale;
-//     public bool isAutoScale = true; // Flag để kiểm soát auto scale = quả sinh ra bởi merge
-//     Vector3 currentScale = Vector3.zero;
+    public Vector3 targetScale;
+    public bool isAutoScale = true; // Flag để kiểm soát auto scale = quả sinh ra bởi merge
+    Vector3 currentScale = Vector3.zero;
 
-//     private Vector2 contactPoint;
-//     bool isMerging = false;
-//     [SerializeField] private int level;
-//     readonly float maxMass = 1f; // Giới hạn khối lượng tối đa của CircleComponent
+    private Vector2 contactPoint;
+    bool isMerging = false;
+    [SerializeField] private int level;
+    readonly float maxMass = 1f; // Giới hạn khối lượng tối đa của CircleComponent
 
-//     public void SetTargetScale(Vector3 scale)
-//     {
-//         targetScale = scale;
-//     }
+    public void SetTargetScale(Vector3 scale)
+    {
+        targetScale = scale;
+    }
+    public void SpawnAtPosDefaultSetting()
+    {
+        // Gán parent nếu cần
+        gameObject.transform.SetParent(GameObject.Find("Circles").transform);
+
+        // Vô hiệu hóa LineRenderer nếu có
+        LineRenderer lr = gameObject.GetComponent<LineRenderer>();
+        if (lr != null) lr.enabled = false;
+
+        // // Tùy chọn: Tạm tắt điều khiển (nếu cần delay)
+        // MoveCircle mv = gameObject.GetComponent<MoveCircle>();
+        // if (mv != null) mv.enabled = false;
+        // mv.SetDropped(); // Sử dụng phương thức mới để set trạng thái drop
+
+        // Bật Collider của con sau khi spawn
+        Collider2D childCollider = gameObject.GetComponentInChildren<CircleCollider2D>();
+        if (childCollider != null)
+        {
+            childCollider.enabled = true;
+        }
+        else
+        {
+            Debug.LogWarning($"[{gameObject.name}] Không tìm thấy CircleCollider2D trong object con.");
+        }
+    }
 //     public int Level => level;
 //     public void SetLevel(int l) => level = l;
 //     [SerializeField] public AnimalEvolutionTree evolutionTree;
@@ -466,4 +491,4 @@
 //         outlineMaterial.SetFloat("_InnerOutlineWidth", compensated);
 //     }
 
-// }
+}

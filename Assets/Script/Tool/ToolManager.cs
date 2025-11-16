@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum ToolType
 {
@@ -76,10 +77,17 @@ public class ToolManager : MonoBehaviour
     [SerializeField]
     private GameObject FruitConent;
 
+    public TextMeshProUGUI savePathText;
+
+    [SerializeField] public AnimalEvolutionTree evolutionTree;
     private int fruitIndex;
 
+    public Sprite newSprite;
     public static ToolType tooltype = ToolType.None;
-
+    void Start()
+    {
+        //  GetComponent<SpriteRenderer>().sprite = newSprite;  
+    }
     private void Awake()
     {
         if(instance == null)
@@ -89,7 +97,7 @@ public class ToolManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }   
+        } 
     }
 
     private void OnEnable()
@@ -111,6 +119,8 @@ public class ToolManager : MonoBehaviour
             mousePos.z = 0f;
             GameObject crate = Instantiate(Crate, mousePos, Quaternion.identity);
             crate.transform.parent = Crates.transform;
+            // crate.GetComponent<SpriteRenderer>().sprite = newSprite;
+            // crate.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         }
 
         if(Input.GetMouseButtonDown(0) && ToolManager.tooltype == ToolType.Fruit)
@@ -122,6 +132,34 @@ public class ToolManager : MonoBehaviour
             fruit.transform.parent = Circles.transform;
             fruit.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             fruit.AddComponent<DestroyObject>();
+            LineRenderer lr = fruit.GetComponent<LineRenderer>();
+            if (lr != null) lr.enabled = false;
+            fruit.GetComponent<Rigidbody2D>().gravityScale = 0;
+
+            // InstantiateCircleDefautLoading(fruitIndex + 1, mousePos);
+
+        }
+    }
+
+    public void InstantiateCircleDefautLoading(int level, Vector3 spawnPos)
+    {
+        AnimalData data = evolutionTree.GetLevelData(level);
+        if (data == null) return;
+
+        GameObject obj = Instantiate(data.prefab, spawnPos, data.prefab.transform.rotation);
+        // obj.transform.localScale = data.prefab.transform.localScale * data.scaleRatio;
+        obj.GetComponent<CircleComponent>().SetTargetScale(data.prefab.transform.localScale * data.scaleRatio);
+        obj.transform.position = spawnPos;
+
+        CircleComponent cc = obj.GetComponent<CircleComponent>();
+        cc.SpawnAtPosDefaultSetting();
+        // cc.isOverLineTriggered = true;
+
+        // Tắt gravity của Rigidbody2D
+        var rb = obj.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.gravityScale = 0;
         }
     }
 
@@ -147,6 +185,8 @@ public class ToolManager : MonoBehaviour
         string path = Application.persistentDataPath + "/" + levelNameInput.text +".json";
         File.WriteAllText(path, json);
         Debug.Log("?? l?u JSON t?i: " + path);
+        savePathText.enabled = true;
+        savePathText.text = "Save Path: " + path;
     }
 
     public void LoadFile()
@@ -178,6 +218,8 @@ public class ToolManager : MonoBehaviour
                 fruit.transform.parent = Circles.transform;
                 fruit.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                 fruit.AddComponent<DestroyObject>();
+                LineRenderer lr = fruit.GetComponent<LineRenderer>();
+                if (lr != null) lr.enabled = false;
             }
         }
         else
