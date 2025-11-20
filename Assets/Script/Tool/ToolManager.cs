@@ -195,7 +195,7 @@ public class ToolManager : MonoBehaviour
             CrateData cratedata = new CrateData(level, crate.position);
             levelData.crates.Add(cratedata);
         }
-
+        level = 2;
         foreach (Transform crate in Jams.transform)
         {
             CrateData cratedata = new CrateData(level, crate.position);
