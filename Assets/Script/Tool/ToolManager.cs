@@ -16,12 +16,12 @@ public enum ToolType
 [System.Serializable]
 public class CrateData
 {
-    public string name;
+    public int level;
     public Vector3 position;
 
-    public CrateData(string name, Vector3 position)
+    public CrateData(int level, Vector3 position)
     {
-        this.name = name;
+        this.level = level;
         this.position = position;
     }
 }
@@ -31,17 +31,28 @@ public class FruitData
 {
     public Vector3 position;
     public int fruitType;
+
+}
+
+[System.Serializable]
+public class GoalData
+{
+    public int total;
+    public int fruitType;
 }
 
 [System.Serializable]
 public class LevelData
 {
+
     public List<CrateData> crates = new List<CrateData>();
-
+    public List<CrateData> jams = new List<CrateData>();
     public List<FruitData> fruits = new List<FruitData>();
-
-    public LevelData(List<CrateData> crates, List<FruitData> levelData)
+    public List<GoalData> goals = new List<GoalData>();
+    public int moves;
+    public LevelData(List<CrateData> jams, List<CrateData> crates, List<FruitData> levelData)
     {
+        this.jams = jams;
         this.crates = crates;
         this.fruits = levelData;
     }
@@ -56,6 +67,7 @@ public class ToolManager : MonoBehaviour
 
     [SerializeField]
     private TMP_InputField levelNameInput;
+    public  TMP_InputField MoveLeftInput;
 
     [SerializeField]
     private Dictionary<string, int> fruitMap = new Dictionary<string, int>();
@@ -65,7 +77,7 @@ public class ToolManager : MonoBehaviour
 
     [SerializeField]
     private GameObject Crates;
-
+    public GameObject Jams;
     [SerializeField]
     private GameObject Circles;
 
@@ -165,13 +177,31 @@ public class ToolManager : MonoBehaviour
 
     public void SaveFile()
     {
+        if (string.IsNullOrEmpty(levelNameInput.text))
+        {
+            Debug.LogWarning("Vui long nhap ten level");
+            return;
+        }
+        if(string.IsNullOrEmpty(MoveLeftInput.text))
+        {
+            Debug.LogWarning("Vui long nhap so luot di");
+            return;
+        }
         LevelData levelData = new LevelData();
+        int level = 1;
         foreach (Transform crate in Crates.transform)
         {
             //Debug.Log(crate.name);
-            CrateData cratedata = new CrateData("crate", crate.position);
+            CrateData cratedata = new CrateData(level, crate.position);
             levelData.crates.Add(cratedata);
         }
+
+        foreach (Transform crate in Jams.transform)
+        {
+            CrateData cratedata = new CrateData(level, crate.position);
+            levelData.jams.Add(cratedata);
+        }
+        levelData.moves = int.Parse(MoveLeftInput.text);
 
         foreach (Transform fruit in Circles.transform)
         {
@@ -184,7 +214,7 @@ public class ToolManager : MonoBehaviour
         string json = JsonUtility.ToJson(levelData);
         string path = Application.persistentDataPath + "/" + levelNameInput.text +".json";
         File.WriteAllText(path, json);
-        Debug.Log("?? l?u JSON t?i: " + path);
+        Debug.Log("Lưu json tại : " + path);
         savePathText.enabled = true;
         savePathText.text = "Save Path: " + path;
     }
@@ -196,12 +226,17 @@ public class ToolManager : MonoBehaviour
             Destroy(crate.gameObject);
         }
 
+        foreach (Transform crate in Jams.transform)
+        {
+            Destroy(crate.gameObject);
+        }
+
         foreach (Transform fruit in Circles.transform)
         {
             Destroy(fruit.gameObject);
         }
 
-        string path = Application.persistentDataPath + "/" + levelNameInput.text +".json";
+        string path = Application.persistentDataPath + "/level_" + levelNameInput.text +".json";
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
@@ -210,6 +245,12 @@ public class ToolManager : MonoBehaviour
             {
                 GameObject crate = Instantiate(Crate, crateData.position, Quaternion.identity);
                 crate.transform.parent = Crates.transform;
+            }
+
+            foreach (CrateData crateData in levelData.jams)
+            {
+                GameObject crate = Instantiate(Crate, crateData.position, Quaternion.identity);
+                crate.transform.parent = Jams.transform;
             }
 
             foreach (FruitData fruitData in levelData.fruits)
@@ -221,10 +262,14 @@ public class ToolManager : MonoBehaviour
                 LineRenderer lr = fruit.GetComponent<LineRenderer>();
                 if (lr != null) lr.enabled = false;
             }
+
+            MoveLeftInput.text = levelData.moves.ToString();
         }
         else
         {
             Debug.LogWarning("Khong thay file");
+            savePathText.enabled = true;
+            savePathText.text = "Khong thay file";
         }
     }
 
