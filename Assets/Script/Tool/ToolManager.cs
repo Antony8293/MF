@@ -9,6 +9,7 @@ public enum ToolType
 {
     None,
     Crate,
+    Jam,
     Destroy,
     Fruit,
 }
@@ -83,6 +84,8 @@ public class ToolManager : MonoBehaviour
 
     public GameObject Crate;
 
+    public GameObject Jam;
+
     [SerializeField]
     private List<GameObject> Fruits;
 
@@ -93,6 +96,9 @@ public class ToolManager : MonoBehaviour
 
     [SerializeField] public AnimalEvolutionTree evolutionTree;
     private int fruitIndex;
+
+    private int crateLevel;
+    private int jamLevel;
 
     public Sprite newSprite;
     public static ToolType tooltype = ToolType.None;
@@ -131,6 +137,23 @@ public class ToolManager : MonoBehaviour
             mousePos.z = 0f;
             GameObject crate = Instantiate(Crate, mousePos, Quaternion.identity);
             crate.transform.parent = Crates.transform;
+            crate.GetComponent<Crate>().level = crateLevel;
+            crate.GetComponent<Crate>().SetCrateSprite(crateLevel);
+            
+            // crate.GetComponent<SpriteRenderer>().sprite = newSprite;
+            // crate.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        }
+
+        if (Input.GetMouseButtonDown(0) && ToolManager.tooltype == ToolType.Jam)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if(mousePos.y > 1.5f || mousePos.x < -1.7f || mousePos.x > 1.7f || mousePos.y < -1.8f) return;
+            mousePos.z = 0f;
+            GameObject crate = Instantiate(Jam, mousePos, Quaternion.identity);
+            crate.transform.parent = Jams.transform;
+            crate.GetComponent<Crate>().level = jamLevel;
+            crate.GetComponent<Crate>().SetCrateSprite(jamLevel);
+            // crate.GetComponent<Crate>().CrateLevelSprites = new();
             // crate.GetComponent<SpriteRenderer>().sprite = newSprite;
             // crate.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         }
@@ -188,17 +211,16 @@ public class ToolManager : MonoBehaviour
             return;
         }
         LevelData levelData = new LevelData();
-        int level = 1;
+
         foreach (Transform crate in Crates.transform)
         {
             //Debug.Log(crate.name);
-            CrateData cratedata = new CrateData(level, crate.position);
+            CrateData cratedata = new CrateData(crate.GetComponent<Crate>().level, crate.position);
             levelData.crates.Add(cratedata);
         }
-        level = 2;
         foreach (Transform crate in Jams.transform)
         {
-            CrateData cratedata = new CrateData(level, crate.position);
+            CrateData cratedata = new CrateData(crate.GetComponent<Crate>().level, crate.position);
             levelData.jams.Add(cratedata);
         }
         levelData.moves = int.Parse(MoveLeftInput.text);
@@ -212,11 +234,11 @@ public class ToolManager : MonoBehaviour
         }
 
         string json = JsonUtility.ToJson(levelData);
-        string path = Application.persistentDataPath + "/" + levelNameInput.text +".json";
+        string path = Application.persistentDataPath + "/level_" + levelNameInput.text +".json";
         File.WriteAllText(path, json);
         Debug.Log("Lưu json tại : " + path);
         savePathText.enabled = true;
-        savePathText.text = "Save Path: " + path;
+        savePathText.text = path;
     }
 
     public void LoadFile()
@@ -245,12 +267,16 @@ public class ToolManager : MonoBehaviour
             {
                 GameObject crate = Instantiate(Crate, crateData.position, Quaternion.identity);
                 crate.transform.parent = Crates.transform;
+                crate.GetComponent<Crate>().level = crateData.level;
+                crate.GetComponent<Crate>().SetCrateSprite(crateData.level);
             }
 
             foreach (CrateData crateData in levelData.jams)
             {
-                GameObject crate = Instantiate(Crate, crateData.position, Quaternion.identity);
+                GameObject crate = Instantiate(Jam, crateData.position, Quaternion.identity);
                 crate.transform.parent = Jams.transform;
+                crate.GetComponent<Crate>().level = crateData.level;
+                crate.GetComponent<Crate>().SetCrateSprite(crateData.level);
             }
 
             foreach (FruitData fruitData in levelData.fruits)
@@ -297,7 +323,17 @@ public class ToolManager : MonoBehaviour
         }
     }
 
-    public void CretaChoosen() => tooltype = ToolType.Crate;
+    public void CrateChoosen(int ilevel)
+    {
+        tooltype = ToolType.Crate;
+        crateLevel = ilevel;
+    }
+
+     public void JamChoosen(int ilevel)
+    {
+        tooltype = ToolType.Jam;
+        jamLevel = ilevel;
+    }
 
     public void DestroyChoosen() => tooltype = ToolType.Destroy;
 
