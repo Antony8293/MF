@@ -442,6 +442,8 @@ public class GameManager : MonoBehaviour
             HandleMergeEffects(c1, c2, spawnPos);
         });
 
+        DEBUGButtonAddScore.instance.OnClickSendScore();
+
     }
     private void HandleMergeEffects(CircleComponent c1, CircleComponent c2, Vector3 spawnPos)
     {
